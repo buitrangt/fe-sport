@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Test</title>
+    <style>
+        .test-container {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-item {
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .test-image {
+            width: 100%;
+            max-width: 400px;
+            height: 200px;
+            object-fit: cover;
+            border: 1px solid #ccc;
+        }
+        .gradient-test {
+            width: 100%;
+            max-width: 400px;
+            height: 200px;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ef4444);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Image Loading Test</h1>
+        
+        <div class="test-item">
+            <h3>1. Stadium Image Test 1</h3>
+            <img 
+                src="https://images.unsplash.com/photo-1459865264687-595d652de67e?auto=format&fit=crop&w=800&q=80" 
+                alt="Stadium 1"
+                class="test-image"
+                onload="console.log('✅ Stadium 1 loaded'); this.nextElementSibling.innerHTML = '✅ Stadium 1 loaded successfully'"
+                onerror="console.log('❌ Stadium 1 failed'); this.nextElementSibling.innerHTML = '❌ Stadium 1 failed to load'"
+            />
+            <div style="margin-top: 10px; font-weight: bold;">⏳ Loading Stadium 1...</div>
+        </div>
+        
+        <div class="test-item">
+            <h3>2. Stadium Image Test 2</h3>
+            <img 
+                src="https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=800&q=80" 
+                alt="Stadium 2"
+                class="test-image"
+                onload="console.log('✅ Stadium 2 loaded'); this.nextElementSibling.innerHTML = '✅ Stadium 2 loaded successfully'"
+                onerror="console.log('❌ Stadium 2 failed'); this.nextElementSibling.innerHTML = '❌ Stadium 2 failed to load'"
+            />
+            <div style="margin-top: 10px; font-weight: bold;">⏳ Loading Stadium 2...</div>
+        </div>
+        
+        <div class="test-item">
+            <h3>3. Pexels Stadium Test</h3>
+            <img 
+                src="https://images.pexels.com/photos/399187/pexels-photo-399187.jpeg?auto=compress&cs=tinysrgb&w=800" 
+                alt="Pexels Stadium"
+                class="test-image"
+                onload="console.log('✅ Pexels stadium loaded'); this.nextElementSibling.innerHTML = '✅ Pexels stadium loaded'"
+                onerror="console.log('❌ Pexels stadium failed'); this.nextElementSibling.innerHTML = '❌ Pexels stadium failed'"
+            />
+            <div style="margin-top: 10px; font-weight: bold;">⏳ Loading Pexels...</div>
+        </div>
+        
+        <div class="test-item">
+            <h3>2. Local SVG Test</h3>
+            <img 
+                src="/images/sports/hero-stadium.svg" 
+                alt="Local SVG Stadium"
+                class="test-image"
+                onload="console.log('✅ Local SVG loaded'); this.nextElementSibling.innerHTML = '✅ SVG loaded successfully'"
+                onerror="console.log('❌ Local SVG failed'); this.nextElementSibling.innerHTML = '❌ SVG failed to load'"
+            />
+            <div style="margin-top: 10px; font-weight: bold;">⏳ Loading SVG...</div>
+        </div>
+        
+        <div class="test-item">
+            <h3>3. Alternative SVG Test</h3>
+            <img 
+                src="/images/sports/football-fallback.svg" 
+                alt="Football SVG"
+                class="test-image"
+                onload="console.log('✅ Football SVG loaded'); this.nextElementSibling.innerHTML = '✅ Football SVG loaded'"
+                onerror="console.log('❌ Football SVG failed'); this.nextElementSibling.innerHTML = '❌ Football SVG failed'"
+            />
+            <div style="margin-top: 10px; font-weight: bold;">⏳ Loading Football SVG...</div>
+        </div>
+        
+        <div class="test-item">
+            <h3>4. Gradient Fallback</h3>
+            <div class="gradient-test">
+                🏟️ Stadium Fallback
+            </div>
+            <div style="margin-top: 10px; font-weight: bold;">✅ Gradient always works</div>
+        </div>
+        
+        <div class="test-item">
+            <h3>5. Network Test</h3>
+            <button onclick="testNetwork()">Test Network Connection</button>
+            <div id="network-result" style="margin-top: 10px;"></div>
+        </div>
+    </div>
+    
+    <script>
+        function testNetwork() {
+            const result = document.getElementById('network-result');
+            result.innerHTML = '⏳ Testing network...';
+            
+            fetch('https://httpbin.org/get')
+                .then(response => response.json())
+                .then(data => {
+                    result.innerHTML = '✅ Network connection OK';
+                    console.log('Network test success:', data);
+                })
+                .catch(error => {
+                    result.innerHTML = '❌ Network connection failed';
+                    console.log('Network test failed:', error);
+                });
+        }
+        
+        // Auto test network on load
+        setTimeout(testNetwork, 1000);
+    </script>
+</body>
+</html>

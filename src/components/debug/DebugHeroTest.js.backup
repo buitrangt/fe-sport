@@ -1,0 +1,67 @@
+import React from 'react';
+
+const DebugHeroTest = () => {
+  const stadiumImages = [
+    'https://images.unsplash.com/photo-1459865264687-595d652de67e?auto=format&fit=crop&w=400&q=80',
+    'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=400&q=80',
+    'https://images.pexels.com/photos/399187/pexels-photo-399187.jpeg?auto=compress&cs=tinysrgb&w=400'
+  ];
+
+  return (
+    <div style={{ 
+      position: 'fixed', 
+      top: '10px', 
+      left: '10px', 
+      background: 'rgba(0,0,0,0.9)', 
+      color: 'white', 
+      padding: '10px',
+      borderRadius: '8px',
+      zIndex: 9999,
+      fontSize: '12px',
+      maxWidth: '320px',
+      maxHeight: '90vh',
+      overflowY: 'auto'
+    }}>
+      <h3>🏟️ Stadium Image Debug</h3>
+      
+      {/* Test multiple stadium images */}
+      {stadiumImages.map((imageUrl, index) => (
+        <div key={index} style={{ marginBottom: '10px' }}>
+          <strong>Stadium {index + 1}:</strong>
+          <img 
+            src={imageUrl}
+            alt={`Stadium test ${index + 1}`}
+            style={{ width: '100%', height: '50px', objectFit: 'cover', marginTop: '5px' }}
+            onLoad={() => console.log(`✅ Stadium ${index + 1} loaded`)}
+            onError={() => console.log(`❌ Stadium ${index + 1} failed`)}
+          />
+        </div>
+      ))}
+      
+      {/* Test local SVG */}
+      <div style={{ marginBottom: '10px' }}>
+        <strong>Local Hero SVG:</strong>
+        <img 
+          src="/images/sports/hero-stadium.svg"
+          alt="Local hero test"
+          style={{ width: '100%', height: '50px', objectFit: 'cover', marginTop: '5px' }}
+          onLoad={() => console.log('✅ Local hero SVG loaded')}
+          onError={() => console.log('❌ Local hero SVG failed')}
+        />
+      </div>
+      
+      {/* Current status */}
+      <div style={{ 
+        marginTop: '10px',
+        padding: '8px',
+        background: 'rgba(34, 197, 94, 0.2)',
+        borderRadius: '4px'
+      }}>
+        <strong>✅ Debug Active</strong><br/>
+        Check console for image loading logs
+      </div>
+    </div>
+  );
+};
+
+export default DebugHeroTest;

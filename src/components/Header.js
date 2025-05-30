@@ -23,36 +23,36 @@ const Header = () => {
   const isAdmin = user?.role === 'ADMIN' || user?.role === 'ORGANIZER';
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+    <header className="bg-gradient-to-r from-red-700 to-blue-700 shadow-lg border-b border-red-800 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="bg-gradient-to-r from-primary-600 to-sports-orange p-2 rounded-lg">
+            <div className="bg-white/20 backdrop-blur-sm p-2 rounded-lg border border-white/30">
               <Trophy className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900">EduSports</span>
+            <span className="text-xl font-bold text-white">EduSports</span>
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             <Link 
               to="/" 
-              className="text-gray-700 hover:text-primary-600 transition-colors font-medium"
+              className="text-white/90 hover:text-white transition-colors font-medium hover:bg-white/10 px-3 py-2 rounded-lg"
             >
-              Home
+              Trang chủ
             </Link>
             <Link 
               to="/tournaments" 
-              className="text-gray-700 hover:text-primary-600 transition-colors font-medium"
+              className="text-white/90 hover:text-white transition-colors font-medium hover:bg-white/10 px-3 py-2 rounded-lg"
             >
-              Tournaments
+              Giải đấu
             </Link>
             <Link 
               to="/news" 
-              className="text-gray-700 hover:text-primary-600 transition-colors font-medium"
+              className="text-white/90 hover:text-white transition-colors font-medium hover:bg-white/10 px-3 py-2 rounded-lg"
             >
-              News
+              Tin tức
             </Link>
           </nav>
 
@@ -62,12 +62,12 @@ const Header = () => {
               <div className="relative">
                 <button
                   onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                  className="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 rounded-lg px-3 py-2 transition-colors"
+                  className="flex items-center space-x-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg px-3 py-2 transition-all duration-300 border border-white/30"
                 >
-                  <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-sports-purple rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-white/30 rounded-full flex items-center justify-center">
                     <User className="h-4 w-4 text-white" />
                   </div>
-                  <span className="hidden sm:block text-sm font-medium text-gray-700">
+                  <span className="hidden sm:block text-sm font-medium text-white">
                     {user?.name || user?.email}
                   </span>
                 </button>
@@ -116,15 +116,15 @@ const Header = () => {
               <div className="flex items-center space-x-2">
                 <Link
                   to="/login"
-                  className="text-gray-700 hover:text-primary-600 font-medium px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                  className="text-white/90 hover:text-white font-medium px-3 py-2 rounded-lg hover:bg-white/10 transition-all duration-300"
                 >
-                  Login
+                  Đăng nhập
                 </Link>
                 <Link
                   to="/register"
-                  className="btn-primary"
+                  className="bg-white text-blue-700 hover:bg-gray-100 font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105"
                 >
-                  Sign Up
+                  Đăng ký
                 </Link>
               </div>
             )}
@@ -132,12 +132,12 @@ const Header = () => {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 rounded-lg hover:bg-gray-100"
+              className="md:hidden p-2 rounded-lg hover:bg-white/10 transition-colors"
             >
               {isMenuOpen ? (
-                <X className="h-6 w-6 text-gray-700" />
+                <X className="h-6 w-6 text-white" />
               ) : (
-                <Menu className="h-6 w-6 text-gray-700" />
+                <Menu className="h-6 w-6 text-white" />
               )}
             </button>
           </div>
@@ -145,28 +145,28 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200">
+          <div className="md:hidden py-4 border-t border-white/20">
             <div className="flex flex-col space-y-2">
               <Link 
                 to="/" 
-                className="text-gray-700 hover:text-primary-600 py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors"
+                className="text-white/90 hover:text-white py-2 px-4 rounded-lg hover:bg-white/10 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Home
+                Trang chủ
               </Link>
               <Link 
                 to="/tournaments" 
-                className="text-gray-700 hover:text-primary-600 py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors"
+                className="text-white/90 hover:text-white py-2 px-4 rounded-lg hover:bg-white/10 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Tournaments
+                Giải đấu
               </Link>
               <Link 
                 to="/news" 
-                className="text-gray-700 hover:text-primary-600 py-2 px-4 rounded-lg hover:bg-gray-100 transition-colors"
+                className="text-white/90 hover:text-white py-2 px-4 rounded-lg hover:bg-white/10 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                News
+                Tin tức
               </Link>
             </div>
           </div>

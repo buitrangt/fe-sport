@@ -1,0 +1,64 @@
+import React, { useState } from 'react';
+
+const SimpleHeroImage = ({ className = '' }) => {
+  const [imageError, setImageError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+
+  console.log('🖼️ SimpleHeroImage render:', { imageError, imageLoaded });
+
+  const handleImageError = (e) => {
+    console.log('❌ Image failed to load:', e.target.src);
+    setImageError(true);
+  };
+
+  const handleImageLoad = (e) => {
+    console.log('✅ Image loaded successfully:', e.target.src);
+    setImageLoaded(true);
+  };
+
+  // Nếu ảnh lỗi, hiển thị fallback
+  if (imageError) {
+    console.log('🔄 Showing fallback background');
+    return (
+      <div 
+        className={`${className} bg-gradient-to-br from-blue-600 via-purple-600 to-red-600 flex items-center justify-center`}
+        style={{
+          backgroundImage: `linear-gradient(rgba(30, 64, 175, 0.9), rgba(124, 58, 237, 0.8), rgba(220, 38, 38, 0.8)), url('/images/sports/hero-stadium.svg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      >
+        <div className="text-white text-center">
+          <div className="text-4xl mb-2">🏟️</div>
+          <div className="text-lg">EduSports Stadium</div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative">
+      {/* Loading placeholder */}
+      {!imageLoaded && (
+        <div className={`absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-red-600 flex items-center justify-center animate-pulse`}>
+          <div className="text-white text-center">
+            <div className="text-4xl mb-2">⏳</div>
+            <div className="text-lg">Loading...</div>
+          </div>
+        </div>
+      )}
+      
+      {/* Main image */}
+      <img
+        src="https://images.unsplash.com/photo-1579952363873-27d3bfad9c0d?auto=format&fit=crop&w=1920&q=80"
+        alt="Stadium thể thao"
+        className={`${className} ${imageLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}
+        onError={handleImageError}
+        onLoad={handleImageLoad}
+        style={{ display: 'block' }}
+      />
+    </div>
+  );
+};
+
+export default SimpleHeroImage;
