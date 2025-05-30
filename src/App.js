@@ -23,6 +23,14 @@ import ProfilePage from './pages/ProfilePage';
 import AdminPanel from './pages/AdminPanel';
 import TournamentAdminDetailPage from './pages/TournamentAdminDetailPage';
 
+// New Management Pages
+import TournamentResultsPage from './pages/TournamentResultsPage';
+import RoundManagementPage from './pages/RoundManagementPage';
+import TeamManagementPage from './pages/TeamManagementPage';
+import TournamentViewerPage from './pages/TournamentViewerPage';
+import DebugPage from './pages/DebugPage';
+import SimpleDebugPage from './pages/SimpleDebugPage';
+
 import HelpCenter from './pages/HelpCenter';
 import ContactUs from './pages/ContactUs';
 import PrivacyPolicy from './pages/PrivacyPolicy';
@@ -130,6 +138,10 @@ function App() {
         >
           <Route index element={<AdminPanel />} />
           <Route path="tournaments" element={<AdminPanel />} />
+          <Route path="results" element={<TournamentResultsPage />} />
+          <Route path="rounds" element={<RoundManagementPage />} />
+          <Route path="teams" element={<TeamManagementPage />} />
+          <Route path="viewer" element={<TournamentViewerPage />} />
         </Route>
 
         {/* Admin Tournament Detail - Separate Layout */}
@@ -141,6 +153,10 @@ function App() {
             </AdminRoute>
           }
         />
+
+        {/* Debug route - always available in development build */}
+        <Route path="/debug" element={<SimpleDebugPage />} />
+        <Route path="/debug-full" element={<DebugPage />} />
 
         {/* Catch all route */}
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -278,44 +278,163 @@ export const teamService = {
     const response = await apiClient.delete(`/api/teams/${id}`);
     return response.data;
   },
+
+  // Admin: Approve team
+  approveTeam: async (teamId) => {
+    console.log('✅ [TeamService] Approving team:', teamId);
+    try {
+      const response = await apiClient.put(`/api/teams/${teamId}/approve`);
+      console.log('✅ [TeamService] Approve team success:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ [TeamService] Approve team failed:', error);
+      throw error;
+    }
+  },
+
+  // Admin: Reject team
+  rejectTeam: async (teamId) => {
+    console.log('❌ [TeamService] Rejecting team:', teamId);
+    try {
+      const response = await apiClient.put(`/api/teams/${teamId}/reject`);
+      console.log('✅ [TeamService] Reject team success:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ [TeamService] Reject team failed:', error);
+      throw error;
+    }
+  },
+
+  // Admin: Update team status
+  updateTeamStatus: async (teamId, status) => {
+    console.log('🔄 [TeamService] Updating team status:', teamId, status);
+    try {
+      const response = await apiClient.put(`/api/teams/${teamId}/status?status=${status}`);
+      console.log('✅ [TeamService] Update team status success:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ [TeamService] Update team status failed:', error);
+      throw error;
+    }
+  },
 };
 
 // ==================== MATCH SERVICE ====================
 export const matchService = {
   // Get matches by tournament
   getMatchesByTournament: async (tournamentId, params = {}) => {
-    const response = await apiClient.get(`/api/tournaments/${tournamentId}/matches`, { params });
-    return response.data;
+    console.log('🥅 [MatchService] Getting matches by tournament ID:', tournamentId, 'params:', params);
+    try {
+      const response = await apiClient.get(`/api/tournaments/${tournamentId}/matches`, { params });
+      console.log('✅ [MatchService] Get matches by tournament success:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ [MatchService] Get matches by tournament failed:', error);
+      console.error('Error details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message,
+        url: error.config?.url
+      });
+      
+      // Return empty data structure for 404 errors
+      if (error.response?.status === 404) {
+        console.log('🔄 [MatchService] Returning empty matches for 404');
+        return {
+          data: {
+            matches: [],
+            pagination: {
+              currentPage: 1,
+              totalPages: 1,
+              totalItems: 0,
+              hasNext: false,
+              hasPrev: false
+            }
+          }
+        };
+      }
+      
+      throw error;
+    }
   },
 
   // Get match by ID
   getMatchById: async (id) => {
-    const response = await apiClient.get(`/api/matches/${id}`);
-    return response.data;
+    console.log('🥅 [MatchService] Getting match by ID:', id);
+    try {
+      const response = await apiClient.get(`/api/matches/${id}`);
+      console.log('✅ [MatchService] Get match by ID success:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ [MatchService] Get match by ID failed:', error);
+      throw error;
+    }
   },
 
   // Create match
   createMatch: async (tournamentId, matchData) => {
-    const response = await apiClient.post(`/api/tournaments/${tournamentId}/matches`, matchData);
-    return response.data;
+    console.log('🥅 [MatchService] Creating match for tournament:', tournamentId, 'data:', matchData);
+    try {
+      const response = await apiClient.post(`/api/tournaments/${tournamentId}/matches`, matchData);
+      console.log('✅ [MatchService] Create match success:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ [MatchService] Create match failed:', error);
+      throw error;
+    }
   },
 
   // Update match score
   updateMatchScore: async (id, scoreData) => {
-    const response = await apiClient.put(`/api/matches/${id}/score`, scoreData);
-    return response.data;
+    console.log('🥅 [MatchService] Updating match score:', id, 'score:', scoreData);
+    try {
+      const response = await apiClient.put(`/api/matches/${id}/score`, scoreData);
+      console.log('✅ [MatchService] Update match score success:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ [MatchService] Update match score failed:', error);
+      throw error;
+    }
   },
 
   // Update match status
   updateMatchStatus: async (id, statusData) => {
-    const response = await apiClient.put(`/api/matches/${id}/status`, statusData);
-    return response.data;
+    console.log('🥅 [MatchService] Updating match status:', id, 'status:', statusData);
+    try {
+      const response = await apiClient.put(`/api/matches/${id}/status`, statusData);
+      console.log('✅ [MatchService] Update match status success:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ [MatchService] Update match status failed:', error);
+      throw error;
+    }
   },
 
   // Get tournament bracket
   getTournamentBracket: async (tournamentId) => {
-    const response = await apiClient.get(`/api/tournaments/${tournamentId}/bracket`);
-    return response.data;
+    console.log('🥅 [MatchService] Getting tournament bracket:', tournamentId);
+    try {
+      const response = await apiClient.get(`/api/tournaments/${tournamentId}/bracket`);
+      console.log('✅ [MatchService] Get tournament bracket success:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ [MatchService] Get tournament bracket failed:', error);
+      
+      // Return empty bracket for 404 errors
+      if (error.response?.status === 404) {
+        console.log('🔄 [MatchService] Returning empty bracket for 404');
+        return {
+          data: {
+            rounds: [],
+            totalRounds: 0,
+            currentRound: 1,
+            matches: []
+          }
+        };
+      }
+      
+      throw error;
+    }
   },
 };
 
