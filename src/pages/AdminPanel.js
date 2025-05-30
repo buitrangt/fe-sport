@@ -14,7 +14,7 @@ import {
   Filter,
   UserCheck,
   UserX,
-  Shield,
+  Shield, 
   Crown,
   AlertTriangle,
   BarChart3,
@@ -128,8 +128,10 @@ const AdminPanel = () => {
       <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-16 bg-gradient-to-r from-red-700 to-blue-700 text-white shadow-lg">
         <div className="flex items-center ml-4">
           {/* Logo hoặc Tên hệ thống */}
-          <Shield className="h-8 w-8 mr-3 text-white" />
-          <span className="text-xl font-bold">Hệ thống quản lý giải đấu</span>
+          <a href="/" className="flex items-center text-white no-underline"> {/* Thêm thẻ <a> ở đây */}
+            <Shield className="h-8 w-8 mr-3 text-white" />
+            <span className="text-xl font-bold">Hệ thống quản lý giải đấu</span>
+          </a>
         </div>
         <div className="flex items-center space-x-6 mr-6">
           <nav className="flex space-x-6">
@@ -182,12 +184,12 @@ const AdminPanel = () => {
       <div className="flex-1 ml-64 mt-16 p-8 bg-gray-50 overflow-auto"> {/* Adjust ml-64 and mt-16 */}
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-900">{accessibleTabs.find(tab => tab.id === activeTab)?.name}</h1>
-          {activeTab === 'tournaments' && (
+          {/* {activeTab === 'tournaments' && (
             <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors">
               <Plus className="h-5 w-5 mr-2" />
               Thêm mới
             </button>
-          )}
+          )} */}
         </div>
 
         {/* {isAdmin && activeTab === 'dashboard' && (
