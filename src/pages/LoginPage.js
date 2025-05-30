@@ -4,10 +4,12 @@ import { useForm } from 'react-hook-form';
 import { Eye, EyeOff, LogIn, Trophy } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import { GoogleLogin } from '@react-oauth/google'; 
+import { FcGoogle } from 'react-icons/fc'; 
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { login, isLoading } = useAuth();
+  const { login, loginWithGoogle, isLoading } = useAuth();
   const navigate = useNavigate();
   
   const {
@@ -28,9 +30,38 @@ const LoginPage = () => {
       navigate('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
-      toast.error(error.response?.data?.message || error.message || 'Login failed');
+      toast.error(error.message || 'Login failed'); 
     }
   };
+
+  // HÀM XỬ LÝ CHO GOOGLE LOGIN KHI THÀNH CÔNG
+  const handleGoogleSuccess = async (response) => {
+    console.log("Google Login Success (via custom button):", response);
+    if (response.access_token) { 
+      toast.error('This custom button setup needs refinement for ID Token flow.');
+      console.error("The `useGoogleLogin` hook returns `access_token`, not `id_token`. Your backend expects `id_token`.");
+
+    }
+  };
+
+  const handleGoogleError = () => {
+    console.log('Google Login Failed');
+    toast.error('Google login failed. Please try again.');
+  };
+
+  const googleLoginRef = React.useRef(null); 
+
+  const handleCustomGoogleButtonClick = () => {
+    if (googleLoginRef.current) {
+      const googleButton = googleLoginRef.current.querySelector('div[role="button"]');
+      if (googleButton) {
+        googleButton.click();
+      } else {
+        console.warn("Could not find the Google login button inside the ref.");
+      }
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-sports-purple flex items-center justify-center p-4">
@@ -144,6 +175,32 @@ const LoginPage = () => {
             </button>
           </form>
 
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-white px-2 text-gray-500">Hoặc</span>
+            </div>
+          </div>
+          <div style={{ display: 'none' }}> 
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess} // Hàm xử lý khi thành công
+              onError={handleGoogleError}   // Hàm xử lý khi lỗi
+              ref={googleLoginRef}
+            />
+          </div>
+
+          <button
+            onClick={handleCustomGoogleButtonClick} 
+            type="button"
+            disabled={isLoading}
+            className="w-full flex justify-center items-center space-x-2 bg-white border border-gray-300 hover:bg-gray-50 disabled:bg-gray-100 text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors duration-200 shadow-sm"
+          >
+            <FcGoogle className="h-6 w-6" /> {/* Icon Google */}
+            <span>Tiếp tục đăng nhập với Google</span>
+          </button>
+
           <div className="mt-8 text-center">
             <p className="text-gray-600">
               Bạn chưa có tài khoản?{' '}
@@ -151,15 +208,6 @@ const LoginPage = () => {
                 Đăng ký
               </Link>
             </p>
-          </div>
-
-          {/* Demo Accounts */}
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            {/* <p className="text-sm text-gray-600 font-medium mb-2">Demo Accounts:</p> */}
-            {/* <div className="text-xs text-gray-500 space-y-1">
-              <p><strong>Admin:</strong> admin@gmail.com / password</p>
-              <p><strong>User:</strong> user@gmail.com / password</p>
-            </div> */}
           </div>
         </div>
 
