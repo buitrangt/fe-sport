@@ -21,6 +21,7 @@ import NewsDetailPage from './pages/NewsDetailPage';
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminPanel from './pages/AdminPanel';
+import TournamentAdminDetailPage from './pages/TournamentAdminDetailPage';
 
 import HelpCenter from './pages/HelpCenter';
 import ContactUs from './pages/ContactUs';
@@ -128,7 +129,18 @@ function App() {
           }
         >
           <Route index element={<AdminPanel />} />
+          <Route path="tournaments" element={<AdminPanel />} />
         </Route>
+
+        {/* Admin Tournament Detail - Separate Layout */}
+        <Route 
+          path="/admin/tournaments/:id" 
+          element={
+            <AdminRoute>
+              <TournamentAdminDetailPage />
+            </AdminRoute>
+          }
+        />
 
         {/* Catch all route */}
         <Route path="*" element={<Navigate to="/" replace />} />

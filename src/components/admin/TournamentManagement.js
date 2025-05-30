@@ -374,7 +374,12 @@ const TournamentManagement = () => {
                           </div>
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">{tournament.name}</div>
+                          <div 
+                            onClick={() => window.location.href = `/admin/tournaments/${tournament.id}`}
+                            className="text-sm font-medium text-blue-600 hover:text-blue-800 cursor-pointer hover:underline transition-colors"
+                          >
+                            {tournament.name}
+                          </div>
                           <div className="text-sm text-gray-500">{getSportTypeLabel(tournament.sportType) || 'Tổng hợp'}</div>
                         </div>
                       </div>
@@ -419,13 +424,6 @@ const TournamentManagement = () => {
                           title="View Tournament"
                         >
                           <Eye className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => window.open(`/admin/tournaments/${tournament.id}/edit`, '_blank')}
-                          className="text-gray-600 hover:text-blue-600 transition-colors"
-                          title="Edit Tournament"
-                        >
-                          <Edit className="h-4 w-4" />
                         </button>
                         {getStatusAction(tournament)}
                         <button
