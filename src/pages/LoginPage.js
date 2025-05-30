@@ -4,14 +4,14 @@ import { useForm } from 'react-hook-form';
 import { Eye, EyeOff, LogIn, Trophy } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
-import { GoogleLogin } from '@react-oauth/google'; 
-import { FcGoogle } from 'react-icons/fc'; 
+import { GoogleLogin } from '@react-oauth/google'; // Thay đổi: Import GoogleLogin component
+import { FcGoogle } from 'react-icons/fc';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { login, loginWithGoogle, isLoading } = useAuth();
+  const { login, loginWithGoogle, isLoading } = useAuth(); 
   const navigate = useNavigate();
-  
+
   const {
     register,
     handleSubmit,
@@ -30,17 +30,30 @@ const LoginPage = () => {
       navigate('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
-      toast.error(error.message || 'Login failed'); 
+      toast.error(error.message || 'Login failed');
     }
   };
 
-  // HÀM XỬ LÝ CHO GOOGLE LOGIN KHI THÀNH CÔNG
-  const handleGoogleSuccess = async (response) => {
-    console.log("Google Login Success (via custom button):", response);
-    if (response.access_token) { 
-      toast.error('This custom button setup needs refinement for ID Token flow.');
-      console.error("The `useGoogleLogin` hook returns `access_token`, not `id_token`. Your backend expects `id_token`.");
+  // HÀM XỬ LÝ KHI GOOGLE LOGIN THÀNH CÔNG (từ GoogleLogin component)
+  const handleGoogleSuccess = async (credentialResponse) => {
+    console.log("Google Login Success (via GoogleLogin component):", credentialResponse);
+    
+    // credentialResponse.credential CHÍNH LÀ GOOGLE ID TOKEN
+    const googleIdToken = credentialResponse.credential;
 
+    if (googleIdToken) {
+      try {
+        // Gửi Google ID Token đến backend của bạn
+        await loginWithGoogle(googleIdToken); // Hàm này trong AuthContext sẽ gửi ID Token
+        toast.success('Google login successful!');
+        navigate('/dashboard');
+      } catch (error) {
+        console.error('Backend login with Google ID Token failed:', error);
+        toast.error(error.message || 'Google login failed on backend.');
+      }
+    } else {
+      toast.error('Google login response missing ID token (credential).');
+      console.error('Google credentialResponse did not contain an ID token.');
     }
   };
 
@@ -48,20 +61,6 @@ const LoginPage = () => {
     console.log('Google Login Failed');
     toast.error('Google login failed. Please try again.');
   };
-
-  const googleLoginRef = React.useRef(null); 
-
-  const handleCustomGoogleButtonClick = () => {
-    if (googleLoginRef.current) {
-      const googleButton = googleLoginRef.current.querySelector('div[role="button"]');
-      if (googleButton) {
-        googleButton.click();
-      } else {
-        console.warn("Could not find the Google login button inside the ref.");
-      }
-    }
-  };
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-sports-purple flex items-center justify-center p-4">
@@ -183,23 +182,16 @@ const LoginPage = () => {
               <span className="bg-white px-2 text-gray-500">Hoặc</span>
             </div>
           </div>
-          <div style={{ display: 'none' }}> 
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess} // Hàm xử lý khi thành công
-              onError={handleGoogleError}   // Hàm xử lý khi lỗi
-              ref={googleLoginRef}
-            />
-          </div>
-
-          <button
-            onClick={handleCustomGoogleButtonClick} 
-            type="button"
-            disabled={isLoading}
-            className="w-full flex justify-center items-center space-x-2 bg-white border border-gray-300 hover:bg-gray-50 disabled:bg-gray-100 text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors duration-200 shadow-sm"
-          >
-            <FcGoogle className="h-6 w-6" /> {/* Icon Google */}
-            <span>Tiếp tục đăng nhập với Google</span>
-          </button>
+          
+          {/* SỬ DỤNG LẠI COMPONENT GoogleLogin */}
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+            // Bạn có thể tùy chỉnh theme/style nếu cần
+            // useOneTap={true} // Kích hoạt One Tap nếu muốn
+            // size="large" // Kích thước nút
+            // width="360" // Chiều rộng nút (tùy chỉnh cho mobile/responsive)
+          />
 
           <div className="mt-8 text-center">
             <p className="text-gray-600">
