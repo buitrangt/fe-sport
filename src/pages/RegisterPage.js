@@ -27,12 +27,12 @@ const RegisterPage = () => {
         email: data.email,
         password: data.password,
       });
-      toast.success('Registration successful! Please login to continue.');
+      toast.success('Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.'); // Đã dịch
       // Navigate and force page refresh to ensure clean state
       navigate('/login');
       window.location.reload();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Registration failed');
+      toast.error(error.response?.data?.message || 'Đăng ký thất bại'); // Đã dịch
     }
   };
 
@@ -52,26 +52,26 @@ const RegisterPage = () => {
         {/* Register Form */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
-            <p className="text-gray-600">Join EduSports to manage your tournaments</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Tạo tài khoản</h1> {/* Đã dịch */}
+            <p className="text-gray-600">Tham gia EduSports để đăng ký các giải đấu</p> {/* Đã dịch */}
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                Full Name
-              </label>
+                Họ và Tên
+              </label> {/* Đã dịch */}
               <input
                 {...register('name', {
-                  required: 'Full name is required',
+                  required: 'Họ và tên là bắt buộc', // Đã dịch
                   minLength: {
                     value: 2,
-                    message: 'Name must be at least 2 characters',
+                    message: 'Tên phải có ít nhất 2 ký tự', // Đã dịch
                   },
                 })}
                 type="text"
                 className="input-field"
-                placeholder="Enter your full name"
+                placeholder="Nhập họ và tên đầy đủ của bạn" // Đã dịch
               />
               {errors.name && (
                 <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
@@ -80,19 +80,19 @@ const RegisterPage = () => {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
-              </label>
+                Địa chỉ Email
+              </label> {/* Đã dịch */}
               <input
                 {...register('email', {
-                  required: 'Email is required',
+                  required: 'Email là bắt buộc', // Đã dịch
                   pattern: {
                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: 'Invalid email address',
+                    message: 'Địa chỉ email không hợp lệ', // Đã dịch
                   },
                 })}
                 type="email"
                 className="input-field"
-                placeholder="Enter your email"
+                placeholder="Nhập địa chỉ email của bạn" // Đã dịch
               />
               {errors.email && (
                 <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
@@ -101,20 +101,20 @@ const RegisterPage = () => {
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
+                Mật khẩu
+              </label> {/* Đã dịch */}
               <div className="relative">
                 <input
                   {...register('password', {
-                    required: 'Password is required',
+                    required: 'Mật khẩu là bắt buộc', // Đã dịch
                     minLength: {
                       value: 6,
-                      message: 'Password must be at least 6 characters',
+                      message: 'Mật khẩu phải có ít nhất 6 ký tự', // Đã dịch
                     },
                   })}
                   type={showPassword ? 'text' : 'password'}
                   className="input-field pr-10"
-                  placeholder="Enter your password"
+                  placeholder="Nhập mật khẩu của bạn" // Đã dịch
                 />
                 <button
                   type="button"
@@ -135,18 +135,18 @@ const RegisterPage = () => {
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                Confirm Password
-              </label>
+                Xác nhận Mật khẩu
+              </label> {/* Đã dịch */}
               <div className="relative">
                 <input
                   {...register('confirmPassword', {
-                    required: 'Please confirm your password',
+                    required: 'Vui lòng xác nhận mật khẩu của bạn', // Đã dịch
                     validate: (value) =>
-                      value === password || 'Passwords do not match',
+                      value === password || 'Mật khẩu không khớp', // Đã dịch
                   })}
                   type={showConfirmPassword ? 'text' : 'password'}
                   className="input-field pr-10"
-                  placeholder="Confirm your password"
+                  placeholder="Xác nhận mật khẩu của bạn" // Đã dịch
                 />
                 <button
                   type="button"
@@ -168,21 +168,21 @@ const RegisterPage = () => {
             <div className="flex items-center">
               <input
                 {...register('acceptTerms', {
-                  required: 'You must accept the terms and conditions',
+                  required: 'Bạn phải chấp nhận các điều khoản và điều kiện', // Đã dịch
                 })}
                 id="accept-terms"
                 type="checkbox"
                 className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
               />
               <label htmlFor="accept-terms" className="ml-2 block text-sm text-gray-700">
-                I agree to the{' '}
+                Tôi đồng ý với{' '} {/* Đã dịch */}
                 <Link to="/terms" className="text-primary-600 hover:text-primary-500">
-                  Terms and Conditions
-                </Link>{' '}
-                and{' '}
+                  Điều khoản và Điều kiện
+                </Link>{' '} {/* Đã dịch */}
+                và{' '} {/* Đã dịch */}
                 <Link to="/privacy" className="text-primary-600 hover:text-primary-500">
-                  Privacy Policy
-                </Link>
+                  Chính sách quyền riêng tư
+                </Link> {/* Đã dịch */}
               </label>
             </div>
             {errors.acceptTerms && (
@@ -199,7 +199,7 @@ const RegisterPage = () => {
               ) : (
                 <>
                   <UserPlus className="h-5 w-5" />
-                  <span>Create Account</span>
+                  <span>Tạo tài khoản</span> {/* Đã dịch */}
                 </>
               )}
             </button>
@@ -207,18 +207,18 @@ const RegisterPage = () => {
 
           <div className="mt-8 text-center">
             <p className="text-gray-600">
-              Already have an account?{' '}
+              Bạn đã có tài khoản?{' '} {/* Đã dịch */}
               <Link to="/login" className="text-primary-600 hover:text-primary-500 font-medium">
-                Sign in
-              </Link>
+                Đăng nhập
+              </Link> {/* Đã dịch */}
             </p>
           </div>
         </div>
 
         <div className="text-center mt-8">
           <Link to="/" className="text-white hover:text-gray-200 text-sm">
-            ← Back to Home
-          </Link>
+            ← Quay lại Trang chủ
+          </Link> {/* Đã dịch */}
         </div>
       </div>
     </div>
