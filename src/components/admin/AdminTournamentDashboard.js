@@ -1,45 +1,45 @@
 import React, { useState } from 'react';
 import { useQuery } from 'react-query';
-import { 
-  Trophy, 
-  Users, 
-  Calendar, 
-  BarChart3, 
-  Play, 
-  Pause, 
-  CheckCircle, 
-  Clock,
+import {
+  Trophy,
+  Users,
+  Calendar,
+  BarChart3,
+  Play,
+  CheckCircle,
+  Clock, // Giữ lại cho Clock icon
   TrendingUp,
-  Target,
-  Award,
   AlertTriangle,
   Plus,
-  Search,
-  Filter,
   RefreshCw,
   Eye,
-  Settings,
-  MoreHorizontal
-} from 'lucide-react';
-import { tournamentService, teamService, matchService } from '../../services';
-import { formatDate, formatDateTime, getStatusColor } from '../../utils/helpers';
+  ArrowRight, // Icon cho nút "View All"
+  Timer, // Thay thế ClockCountdown
+  List // Thay thế ListDashed (nếu có sử dụng)
+} from 'lucide-react'; // Đảm bảo tất cả icon được import đều có trong thư viện
+
+import { tournamentService } from '../../services';
+import { formatDate, getStatusColor } from '../../utils/helpers';
 import LoadingSpinner from '../LoadingSpinner';
 
 const AdminTournamentDashboard = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  // Không cần useQueryClient và useMutation nếu không có chức năng xóa trực tiếp ở đây
+  // const queryClient = useQueryClient();
+  // const deleteTournamentMutation = useMutation(...);
+
+  // Không cần state cho search/filter nếu không có bảng All Tournaments
+  // const [searchQuery, setSearchQuery] = useState('');
+  // const [statusFilter, setStatusFilter] = useState('all');
 
   // Fetch tournaments data
   const { data: tournaments, isLoading: tournamentsLoading, refetch: refetchTournaments } = useQuery(
-    ['admin-tournaments', selectedPeriod],
+    ['admin-tournaments-dashboard'],
     () => tournamentService.getAllTournaments(),
     { staleTime: 5 * 60 * 1000 }
   );
 
-  // Safe extraction of tournaments data with multiple fallbacks
+  // Safe extraction of tournaments data
   let tournamentsList = [];
-  
   try {
     if (Array.isArray(tournaments?.data)) {
       tournamentsList = tournaments.data;
@@ -59,26 +59,25 @@ const AdminTournamentDashboard = () => {
   // Calculate dashboard statistics with safe operations
   const stats = {
     total: Array.isArray(tournamentsList) ? tournamentsList.length : 0,
-    active: Array.isArray(tournamentsList) ? tournamentsList.filter(t => t?.status === 'ONGOING').length : 0,
-    upcoming: Array.isArray(tournamentsList) ? tournamentsList.filter(t => t?.status === 'REGISTRATION' || t?.status === 'READY').length : 0,
+    ongoing: Array.isArray(tournamentsList) ? tournamentsList.filter(t => t?.status === 'ONGOING').length : 0,
+    registration: Array.isArray(tournamentsList) ? tournamentsList.filter(t => t?.status === 'REGISTRATION').length : 0,
+    ready: Array.isArray(tournamentsList) ? tournamentsList.filter(t => t?.status === 'READY').length : 0,
     completed: Array.isArray(tournamentsList) ? tournamentsList.filter(t => t?.status === 'COMPLETED').length : 0,
     totalTeams: Array.isArray(tournamentsList) ? tournamentsList.reduce((acc, t) => acc + (t?.currentTeams || 0), 0) : 0,
-    avgTeamsPerTournament: Array.isArray(tournamentsList) && tournamentsList.length > 0 ? 
-      Math.round(tournamentsList.reduce((acc, t) => acc + (t?.currentTeams || 0), 0) / tournamentsList.length) : 0
+    avgTeamsPerTournament: Array.isArray(tournamentsList) && tournamentsList.length > 0 ?
+      Math.round(tournamentsList.reduce((acc, t) => acc + (t?.currentTeams || 0), 0) / tournamentsList.length) : 0,
   };
 
-  // Filter tournaments with safe operations
-  const filteredTournaments = Array.isArray(tournamentsList) ? tournamentsList.filter(tournament => {
-    if (!tournament) return false;
-    
-    const matchesSearch = !searchQuery || 
-      tournament.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tournament.description?.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesStatus = statusFilter === 'all' || tournament.status === statusFilter;
-    
-    return matchesSearch && matchesStatus;
-  }) : [];
+  // Filter for specific sections
+  const ongoingTournaments = tournamentsList
+    .filter(t => t?.status === 'ONGOING')
+    .sort((a, b) => new Date(a.startDate) - new Date(b.startDate)) // Sắp xếp để hiển thị giải đấu đang diễn ra sớm nhất
+    .slice(0, 3); // Hiển thị 3 giải đấu đang diễn ra gần nhất
+
+  const upcomingTournaments = tournamentsList
+    .filter(t => t?.status === 'REGISTRATION' || t?.status === 'READY')
+    .sort((a, b) => new Date(a.startDate) - new Date(b.startDate)) // Sắp xếp để hiển thị giải đấu sắp tới sớm nhất
+    .slice(0, 3); // Hiển thị 3 giải đấu sắp tới gần nhất
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -95,64 +94,35 @@ const AdminTournamentDashboard = () => {
     }
   };
 
-  const getActionButtons = (tournament) => {
-    const buttons = [];
-    
-    if (tournament.status === 'REGISTRATION') {
-      buttons.push(
-        <button key="manage" className="btn-primary text-xs py-1 px-2">
-          <Settings className="h-3 w-3 mr-1" />
-          Manage
-        </button>
-      );
-    }
-    
-    if (tournament.status === 'ONGOING') {
-      buttons.push(
-        <button key="monitor" className="btn-secondary text-xs py-1 px-2">
-          <Eye className="h-3 w-3 mr-1" />
-          Monitor
-        </button>
-      );
-    }
-    
-    buttons.push(
-      <button key="view" className="btn-secondary text-xs py-1 px-2">
-        <Eye className="h-3 w-3 mr-1" />
-        View
-      </button>
-    );
-    
-    return buttons;
-  };
-
   if (tournamentsLoading) {
     return <LoadingSpinner />;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="bg-gray-50 p-6 rounded-lg shadow-inner min-h-[calc(100vh-160px)]">
+      <div className="max-w-full mx-auto space-y-8">
+
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Tournament Dashboard</h1>
-            <p className="text-gray-600 mt-1">Manage and monitor all tournaments</p>
+            <h1 className="text-3xl font-bold text-gray-900">Tổng quan hệ thống</h1>
+            <p className="text-gray-600 mt-1">Thông tin tổng quan và hoạt động chính</p>
           </div>
-          
+
           <div className="flex items-center space-x-3">
-            <button
+            {/* <button
               onClick={() => refetchTournaments()}
-              className="btn-secondary flex items-center space-x-2"
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg shadow-sm hover:bg-gray-300 transition-colors flex items-center space-x-2"
             >
               <RefreshCw className="h-4 w-4" />
-              <span>Refresh</span>
-            </button>
-            
-            <button className="btn-primary flex items-center space-x-2">
+              <span>Làm mới</span>
+            </button> */}
+
+            {/* Nút tạo giải đấu mới */}
+            {/* <button className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors flex items-center space-x-2">
               <Plus className="h-4 w-4" />
-              <span>New Tournament</span>
-            </button>
+              <span>Giải đấu mới</span>
+            </button> */}
           </div>
         </div>
 
@@ -164,7 +134,7 @@ const AdminTournamentDashboard = () => {
                 <Trophy className="h-6 w-6 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Total Tournaments</p>
+                <p className="text-sm text-gray-600">Tổng giải đấu</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
               </div>
             </div>
@@ -176,8 +146,8 @@ const AdminTournamentDashboard = () => {
                 <Play className="h-6 w-6 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Active Now</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.active}</p>
+                <p className="text-sm text-gray-600">Đang hoạt động</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.ongoing}</p>
               </div>
             </div>
           </div>
@@ -188,8 +158,8 @@ const AdminTournamentDashboard = () => {
                 <Clock className="h-6 w-6 text-orange-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Upcoming</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.upcoming}</p>
+                <p className="text-sm text-gray-600">Sắp tới</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.registration + stats.ready}</p>
               </div>
             </div>
           </div>
@@ -200,77 +170,78 @@ const AdminTournamentDashboard = () => {
                 <Users className="h-6 w-6 text-purple-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Total Teams</p>
+                <p className="text-sm text-gray-600">Tổng số đội</p>
                 <p className="text-2xl font-bold text-gray-900">{stats.totalTeams}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Quick Stats */}
+        {/* Quick Stats & Performance */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Tournament Status Breakdown */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Tournament Status</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <BarChart3 className="h-5 w-5 mr-2 text-indigo-600" />
+              Tình trạng giải đấu
+            </h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                  <span className="text-sm text-gray-700">Ongoing</span>
+                  <span className="text-sm text-gray-700">Đang diễn ra</span>
                 </div>
-                <span className="text-sm font-medium text-gray-900">{stats.active}</span>
+                <span className="text-sm font-medium text-gray-900">{stats.ongoing}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-                  <span className="text-sm text-gray-700">Registration</span>
+                  <span className="text-sm text-gray-700">Đăng ký</span>
                 </div>
-                <span className="text-sm font-medium text-gray-900">
-                  {Array.isArray(tournamentsList) ? tournamentsList.filter(t => t?.status === 'REGISTRATION').length : 0}
-                </span>
+                <span className="text-sm font-medium text-gray-900">{stats.registration}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <span className="text-sm text-gray-700">Completed</span>
+                  <span className="text-sm text-gray-700">Đã hoàn thành</span>
                 </div>
                 <span className="text-sm font-medium text-gray-900">{stats.completed}</span>
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                  <span className="text-sm text-gray-700">Ready</span>
+                  <span className="text-sm text-gray-700">Sẵn sàng</span>
                 </div>
-                <span className="text-sm font-medium text-gray-900">
-                  {Array.isArray(tournamentsList) ? tournamentsList.filter(t => t?.status === 'READY').length : 0}
-                </span>
+                <span className="text-sm font-medium text-gray-900">{stats.ready}</span>
               </div>
             </div>
           </div>
 
           {/* Recent Activity */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <Clock className="h-5 w-5 mr-2 text-gray-600" />
+              Hoạt động gần đây
+            </h3>
             <div className="space-y-3">
-              {Array.isArray(tournamentsList) ? tournamentsList.slice(0, 4).map((tournament, index) => (
-                <div key={tournament.id} className="flex items-center space-x-3">
-                  <div className={`w-2 h-2 rounded-full ${
-                    tournament.status === 'ONGOING' ? 'bg-blue-500' :
-                    tournament.status === 'COMPLETED' ? 'bg-green-500' :
-                    tournament.status === 'REGISTRATION' ? 'bg-orange-500' : 'bg-gray-500'
-                  }`}></div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">
-                      {tournament.name}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {formatDate(tournament.createdAt || tournament.startDate)}
-                    </p>
+              {Array.isArray(tournamentsList) && tournamentsList.length > 0 ? (
+                // Sắp xếp theo ngày tạo hoặc ngày bắt đầu gần nhất
+                [...tournamentsList].sort((a, b) => new Date(b.createdAt || b.startDate) - new Date(a.createdAt || a.startDate)).slice(0, 5).map((tournament) => (
+                  <div key={tournament.id} className="flex items-center space-x-3">
+                    <div className={`w-2 h-2 rounded-full ${getStatusColor(tournament.status).split(' ')[0].replace('text-', 'bg-')}`}></div> {/* Lấy màu nền từ trạng thái */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        {tournament.name}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {formatDate(tournament.createdAt || tournament.startDate)}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              )) : (
+                ))
+              ) : (
                 <div className="text-center py-4 text-gray-500 text-sm">
-                  No recent activity
+                  Không có hoạt động gần đây.
                 </div>
               )}
             </div>
@@ -278,37 +249,40 @@ const AdminTournamentDashboard = () => {
 
           {/* Performance Metrics */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Performance</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <TrendingUp className="h-5 w-5 mr-2 text-green-600" />
+              Hiệu suất
+            </h3>
             <div className="space-y-4">
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm text-gray-600">Completion Rate</span>
+                  <span className="text-sm text-gray-600">Tỷ lệ hoàn thành</span>
                   <span className="text-sm font-medium text-gray-900">
                     {stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0}%
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
+                  <div
                     className="bg-green-600 h-2 rounded-full transition-all duration-300"
-                    style={{ 
-                      width: `${stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}%` 
+                    style={{
+                      width: `${stats.total > 0 ? (stats.completed / stats.total) * 100 : 0}%`
                     }}
                   ></div>
                 </div>
               </div>
-              
+
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm text-gray-600">Avg Teams/Tournament</span>
+                  <span className="text-sm text-gray-600">Trung bình đội/giải đấu</span>
                   <span className="text-sm font-medium text-gray-900">{stats.avgTeamsPerTournament}</span>
                 </div>
               </div>
-              
+
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Active Rate</span>
+                  <span className="text-sm text-gray-600">Tỷ lệ đang hoạt động</span>
                   <span className="text-sm font-medium text-gray-900">
-                    {stats.total > 0 ? Math.round((stats.active / stats.total) * 100) : 0}%
+                    {stats.total > 0 ? Math.round((stats.ongoing / stats.total) * 100) : 0}%
                   </span>
                 </div>
               </div>
@@ -316,139 +290,83 @@ const AdminTournamentDashboard = () => {
           </div>
         </div>
 
-        {/* Filters & Search */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <input
-                  type="text"
-                  placeholder="Search tournaments..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="all">All Status</option>
-                <option value="REGISTRATION">Registration</option>
-                <option value="READY">Ready</option>
-                <option value="ONGOING">Ongoing</option>
-                <option value="COMPLETED">Completed</option>
-              </select>
+        {/* Các phần mới thay thế bảng "All Tournaments" */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Ongoing Tournaments Section */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                <Play className="h-5 w-5 mr-2 text-blue-600" />
+                Giải đấu đang diễn ra
+              </h3>
+              {/* <button className="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center group">
+                Xem tất cả
+                <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
+              </button> */}
             </div>
-            
-            <div className="text-sm text-gray-600">
-              Showing {filteredTournaments.length} of {stats.total} tournaments
+            <div className="p-6 space-y-4">
+              {ongoingTournaments.length > 0 ? (
+                ongoingTournaments.map((tournament) => (
+                  <div key={tournament.id} className="flex items-start space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                    <div className={`flex-shrink-0 p-2 rounded-full ${getStatusColor(tournament.status).split(' ')[0].replace('text-', 'bg-')}`}>
+                       {getStatusIcon(tournament.status)}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-base font-medium text-gray-900">{tournament.name}</p>
+                      <p className="text-sm text-gray-500">{formatDate(tournament.startDate)} - {tournament.currentTeams || 0} đội</p>
+                    </div>
+                    {/* Bạn có thể thêm nút hành động cụ thể ở đây nếu cần */}
+                    {/* <button title="View Details" className="flex-shrink-0 text-gray-400 hover:text-gray-600">
+                      <Eye className="h-5 w-5" />
+                    </button> */}
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-4 text-gray-500 text-sm">
+                  Không có giải đấu nào đang diễn ra.
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Upcoming Tournaments Section */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center">
+                <Timer className="h-5 w-5 mr-2 text-orange-600" /> {/* Sử dụng icon Timer */}
+                Giải đấu sắp tới
+              </h3>
+              {/* <button className="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center group">
+                Xem tất cả
+                <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
+              </button> */}
+            </div>
+            <div className="p-6 space-y-4">
+              {upcomingTournaments.length > 0 ? (
+                upcomingTournaments.map((tournament) => (
+                  <div key={tournament.id} className="flex items-start space-x-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                    <div className={`flex-shrink-0 p-2 rounded-full ${getStatusColor(tournament.status).split(' ')[0].replace('text-', 'bg-')}`}>
+                       {getStatusIcon(tournament.status)}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-base font-medium text-gray-900">{tournament.name}</p>
+                      <p className="text-sm text-gray-500">{formatDate(tournament.startDate)} - Đăng ký: {tournament.currentTeams || 0}/{tournament.maxTeams || 'N/A'}</p>
+                    </div>
+                    {/* Bạn có thể thêm nút hành động cụ thể ở đây nếu cần */}
+                    {/* <button title="View Details" className="flex-shrink-0 text-gray-400 hover:text-gray-600">
+                      <Eye className="h-5 w-5" />
+                    </button> */}
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-4 text-gray-500 text-sm">
+                  Không có giải đấu sắp tới.
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Tournaments Table */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">All Tournaments</h3>
-          </div>
-          
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Tournament
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Teams
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Start Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Progress
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredTournaments.map((tournament) => (
-                  <tr key={tournament.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{tournament.name}</div>
-                        <div className="text-sm text-gray-500 truncate max-w-xs">
-                          {tournament.description}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center space-x-2">
-                        {getStatusIcon(tournament.status)}
-                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(tournament.status)}`}>
-                          {tournament.status}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {tournament.currentTeams || 0}/{tournament.maxTeams}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {formatDate(tournament.startDate)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
-                          <div 
-                            className="bg-blue-600 h-2 rounded-full"
-                            style={{ 
-                              width: `${tournament.maxTeams > 0 ? 
-                                ((tournament.currentTeams || 0) / tournament.maxTeams) * 100 : 0}%` 
-                            }}
-                          ></div>
-                        </div>
-                        <span className="text-xs text-gray-600">
-                          {tournament.maxTeams > 0 ? 
-                            Math.round(((tournament.currentTeams || 0) / tournament.maxTeams) * 100) : 0}%
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex items-center justify-end space-x-2">
-                        {getActionButtons(tournament)}
-                        <button className="text-gray-400 hover:text-gray-600">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            
-            {filteredTournaments.length === 0 && (
-              <div className="text-center py-12">
-                <Trophy className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No tournaments found</h3>
-                <p className="text-gray-600">
-                  {searchQuery || statusFilter !== 'all' 
-                    ? 'Try adjusting your search or filter criteria'
-                    : 'Create your first tournament to get started'
-                  }
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
       </div>
     </div>
   );

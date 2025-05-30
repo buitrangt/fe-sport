@@ -115,6 +115,7 @@ const TournamentManagementFixed = () => {
       }
     }
   );
+  
 
   const deleteTournamentMutation = useMutation(
     (tournamentId) => tournamentService.deleteTournament(tournamentId),
