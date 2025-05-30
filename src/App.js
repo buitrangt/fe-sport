@@ -17,49 +17,55 @@ import TournamentDetailPage from './pages/TournamentDetailPage';
 import NewsPage from './pages/NewsPage';
 import NewsDetailPage from './pages/NewsDetailPage';
 
-// Protected Pages
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminPanel from './pages/AdminPanel';
+
+import TournamentManagement from './components/admin/TournamentManagement';
+import AdminTournamentDetailPage from './components/admin/AdminTournamentDetailPage'; 
 
 import HelpCenter from './pages/HelpCenter';
 import ContactUs from './pages/ContactUs';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
-import AboutUs from './pages/AboutUs'; // Đảm bảo đã import
+import AboutUs from './pages/AboutUs'; 
+
 
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
-  
+
   if (isLoading) {
     return <LoadingSpinner />;
   }
-  
+
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
-  
+
   return children;
 };
 
 // Admin Route Component
 const AdminRoute = ({ children }) => {
   const { user, isAuthenticated, isLoading } = useAuth();
-  
+
   if (isLoading) {
     return <LoadingSpinner />;
   }
-  
+
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
-  
+
+  // Debug log để kiểm tra vai trò
+  console.log('🔒 [AdminRoute] User role:', user?.role);
   if (user?.role !== 'ADMIN' && user?.role !== 'ORGANIZER') {
+    console.log('❌ [AdminRoute] User not authorized. Redirecting to /dashboard');
     return <Navigate to="/dashboard" replace />;
   }
-  
+
   return children;
 };
 
@@ -92,7 +98,7 @@ function App() {
           <Route path="tournaments/:id" element={<TournamentDetailPage />} />
           <Route path="news" element={<NewsPage />} />
           <Route path="news/:id" element={<NewsDetailPage />} />
-          
+
           {/* Các route cho trang tĩnh */}
           <Route path="help-center" element={<HelpCenter />} />
           <Route path="contact-us" element={<ContactUs />} />
@@ -101,13 +107,11 @@ function App() {
           <Route path="about" element={<AboutUs />} />
         </Route>
 
-        {/* Auth Routes - Simple without any wrappers */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
-        {/* Protected Routes */}
-        <Route 
-          path="/dashboard" 
+        <Route
+          path="/dashboard"
           element={
             <ProtectedRoute>
               <Layout />
@@ -118,22 +122,24 @@ function App() {
           <Route path="profile" element={<ProfilePage />} />
         </Route>
 
-        {/* Admin Routes */}
-        <Route 
-          path="/admin" 
+        <Route
+          path="/admin"
           element={
             <AdminRoute>
-              <Layout />
+              <Layout /> {/* Layout của admin */}
             </AdminRoute>
           }
         >
-          <Route index element={<AdminPanel />} />
+          <Route index element={<AdminPanel />} /> {/* Route gốc /admin */}
+          <Route path="tournaments" element={<TournamentManagement />} /> {/* /admin/tournaments */}
+          <Route path="tournaments/:id" element={<AdminTournamentDetailPage />} /> {/* /admin/tournaments/:id */}
+
         </Route>
 
         {/* Catch all route */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      
+
       {/* Toast Notifications */}
       <Toaster
         position="top-right"
