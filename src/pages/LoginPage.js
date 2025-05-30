@@ -4,12 +4,14 @@ import { useForm } from 'react-hook-form';
 import { Eye, EyeOff, LogIn, Trophy } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import { GoogleLogin } from '@react-oauth/google'; // Thay đổi: Import GoogleLogin component
+import { FcGoogle } from 'react-icons/fc';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { login, isLoading } = useAuth();
+  const { login, loginWithGoogle, isLoading } = useAuth(); 
   const navigate = useNavigate();
-  
+
   const {
     register,
     handleSubmit,
@@ -28,8 +30,36 @@ const LoginPage = () => {
       navigate('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
-      toast.error(error.response?.data?.message || error.message || 'Login failed');
+      toast.error(error.message || 'Login failed');
     }
+  };
+
+  // HÀM XỬ LÝ KHI GOOGLE LOGIN THÀNH CÔNG (từ GoogleLogin component)
+  const handleGoogleSuccess = async (credentialResponse) => {
+    console.log("Google Login Success (via GoogleLogin component):", credentialResponse);
+    
+    // credentialResponse.credential CHÍNH LÀ GOOGLE ID TOKEN
+    const googleIdToken = credentialResponse.credential;
+
+    if (googleIdToken) {
+      try {
+        // Gửi Google ID Token đến backend của bạn
+        await loginWithGoogle(googleIdToken); // Hàm này trong AuthContext sẽ gửi ID Token
+        toast.success('Google login successful!');
+        navigate('/dashboard');
+      } catch (error) {
+        console.error('Backend login with Google ID Token failed:', error);
+        toast.error(error.message || 'Google login failed on backend.');
+      }
+    } else {
+      toast.error('Google login response missing ID token (credential).');
+      console.error('Google credentialResponse did not contain an ID token.');
+    }
+  };
+
+  const handleGoogleError = () => {
+    console.log('Google Login Failed');
+    toast.error('Google login failed. Please try again.');
   };
 
   return (
@@ -144,6 +174,25 @@ const LoginPage = () => {
             </button>
           </form>
 
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-white px-2 text-gray-500">Hoặc</span>
+            </div>
+          </div>
+          
+          {/* SỬ DỤNG LẠI COMPONENT GoogleLogin */}
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+            // Bạn có thể tùy chỉnh theme/style nếu cần
+            // useOneTap={true} // Kích hoạt One Tap nếu muốn
+            // size="large" // Kích thước nút
+            // width="360" // Chiều rộng nút (tùy chỉnh cho mobile/responsive)
+          />
+
           <div className="mt-8 text-center">
             <p className="text-gray-600">
               Bạn chưa có tài khoản?{' '}
@@ -151,15 +200,6 @@ const LoginPage = () => {
                 Đăng ký
               </Link>
             </p>
-          </div>
-
-          {/* Demo Accounts */}
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            {/* <p className="text-sm text-gray-600 font-medium mb-2">Demo Accounts:</p> */}
-            {/* <div className="text-xs text-gray-500 space-y-1">
-              <p><strong>Admin:</strong> admin@gmail.com / password</p>
-              <p><strong>User:</strong> user@gmail.com / password</p>
-            </div> */}
           </div>
         </div>
 
