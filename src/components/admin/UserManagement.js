@@ -433,7 +433,7 @@ const UserManagement = () => {
             )}
 
             {/* Export Button */}
-            <div className="flex justify-end">
+            {/* <div className="flex justify-end">
                 <button
                     onClick={handleExportUsers}
                     className="btn-secondary"
@@ -441,7 +441,7 @@ const UserManagement = () => {
                     <Download className="h-4 w-4 mr-2" />
                     Export CSV
                 </button>
-            </div>
+            </div> */}
 
             {/* Users Table */}
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
