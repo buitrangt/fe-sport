@@ -48,14 +48,14 @@ const LoginPage = () => {
         {/* Login Form */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
-            <p className="text-gray-600">Sign in to your account to continue</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Chào mừng trở lại</h1>
+            <p className="text-gray-600">Đăng nhập vào tài khoản của bạn để tiếp tục</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
+                Địa chỉ Email
               </label>
               <input
                 {...register('email', {
@@ -67,7 +67,7 @@ const LoginPage = () => {
                 })}
                 type="email"
                 className="input-field"
-                placeholder="Enter your email"
+                placeholder="Nhập địa chỉ email"
               />
               {errors.email && (
                 <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
@@ -76,7 +76,7 @@ const LoginPage = () => {
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
+                Mật khẩu
               </label>
               <div className="relative">
                 <input
@@ -89,7 +89,7 @@ const LoginPage = () => {
                   })}
                   type={showPassword ? 'text' : 'password'}
                   className="input-field pr-10"
-                  placeholder="Enter your password"
+                  placeholder="Nhập password"
                 />
                 <button
                   type="button"
@@ -117,13 +117,13 @@ const LoginPage = () => {
                   className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                 />
                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                  Remember me
+                  Nhớ mật khẩu
                 </label>
               </div>
 
               <div className="text-sm">
                 <Link to="/forgot-password" className="text-primary-600 hover:text-primary-500">
-                  Forgot password?
+                  Quên mật khẩu ?
                 </Link>
               </div>
             </div>
@@ -138,7 +138,7 @@ const LoginPage = () => {
               ) : (
                 <>
                   <LogIn className="h-5 w-5" />
-                  <span>Sign In</span>
+                  <span>Đăng nhập</span>
                 </>
               )}
             </button>
@@ -146,20 +146,20 @@ const LoginPage = () => {
 
           <div className="mt-8 text-center">
             <p className="text-gray-600">
-              Don't have an account?{' '}
+              Bạn chưa có tài khoản?{' '}
               <Link to="/register" className="text-primary-600 hover:text-primary-500 font-medium">
-                Sign up
+                Đăng ký
               </Link>
             </p>
           </div>
 
           {/* Demo Accounts */}
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600 font-medium mb-2">Demo Accounts:</p>
-            <div className="text-xs text-gray-500 space-y-1">
+            {/* <p className="text-sm text-gray-600 font-medium mb-2">Demo Accounts:</p> */}
+            {/* <div className="text-xs text-gray-500 space-y-1">
               <p><strong>Admin:</strong> admin@gmail.com / password</p>
               <p><strong>User:</strong> user@gmail.com / password</p>
-            </div>
+            </div> */}
           </div>
         </div>
 

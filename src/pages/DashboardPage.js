@@ -9,17 +9,18 @@ import {
   Plus,
   Eye,
   Edit,
-  Award
+  Award,
+  BookOpen // New icon for News
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { tournamentService, teamService } from '../services';
+import { tournamentService, teamService } from '../services'; // teamService might not be needed if 'create team' is removed.
 import LoadingSpinner from '../components/LoadingSpinner';
 import { formatDate, getStatusColor } from '../utils/helpers';
-import TeamCreateModal from '../components/team/TeamCreateModal';
+import TeamCreateModal from '../components/team/TeamCreateModal'; // This component might not be needed if 'create team' is removed.
 
 const DashboardPage = () => {
   const { user } = useAuth();
-  const [isTeamCreateModalOpen, setIsTeamCreateModalOpen] = useState(false);
+  const [isTeamCreateModalOpen, setIsTeamCreateModalOpen] = useState(false); // This state might not be needed if 'create team' is removed.
 
   // Fetch user's tournaments (if organizer/admin) or registered teams
   const { data: tournaments, isLoading: tournamentsLoading } = useQuery(
@@ -70,28 +71,28 @@ const DashboardPage = () => {
 
   const stats = [
     {
-      name: 'Active Tournaments',
+      name: 'Giải đấu đang diễn ra',
       value: userStats?.totalTournaments || 0,
       icon: Trophy,
       color: 'text-sports-orange',
       bgColor: 'bg-orange-100',
     },
     {
-      name: 'Registered Teams',
+      name: 'Đội đã đăng ký',
       value: userStats?.registeredTeams || 0,
       icon: Users,
       color: 'text-sports-green',
       bgColor: 'bg-green-100',
     },
     {
-      name: 'Matches Played',
+      name: 'Trận đấu đã chơi',
       value: userStats?.matchesPlayed || 0,
       icon: Calendar,
       color: 'text-sports-purple',
       bgColor: 'bg-purple-100',
     },
     {
-      name: 'Win Rate',
+      name: 'Tỷ lệ thắng',
       value: userStats?.winRate || '0%',
       icon: TrendingUp,
       color: 'text-sports-pink',
@@ -105,10 +106,10 @@ const DashboardPage = () => {
         {/* Welcome Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back, {user?.name || user?.email}!
+            Chào mừng trở lại, {user?.name || user?.email}!
           </h1>
           <p className="text-lg text-gray-600">
-            Here's what's happening with your tournaments and teams.
+            Đây là những diễn biến mới nhất về các giải đấu và đội của bạn.
           </p>
         </div>
 
@@ -134,7 +135,7 @@ const DashboardPage = () => {
           <div className="card">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-900">
-                {isOrganizerOrAdmin ? 'Your Tournaments' : 'Recent Tournaments'}
+                {isOrganizerOrAdmin ? 'Giải đấu của bạn' : 'Giải đấu gần đây'}
               </h2>
               <div className="flex space-x-2">
                 {isOrganizerOrAdmin && (
@@ -143,7 +144,7 @@ const DashboardPage = () => {
                     className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
                   >
                     <Plus className="h-4 w-4 mr-1" />
-                    Create
+                    Tạo mới
                   </Link>
                 )}
                 <Link
@@ -151,7 +152,7 @@ const DashboardPage = () => {
                   className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                 >
                   <Eye className="h-4 w-4 mr-1" />
-                  View All
+                  Xem tất cả
                 </Link>
               </div>
             </div>
@@ -161,14 +162,14 @@ const DashboardPage = () => {
             ) : (tournaments || []).length === 0 ? (
               <div className="text-center py-8">
                 <Trophy className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                <p className="text-gray-600">No tournaments found</p>
+                <p className="text-gray-600">Không tìm thấy giải đấu nào</p>
                 {isOrganizerOrAdmin && (
                   <Link
                     to="/admin"
                     className="mt-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
                   >
                     <Plus className="h-4 w-4 mr-2" />
-                    Create Your First Tournament
+                    Tạo giải đấu đầu tiên của bạn
                   </Link>
                 )}
               </div>
@@ -183,7 +184,7 @@ const DashboardPage = () => {
                       <div>
                         <h3 className="font-medium text-gray-900">{tournament.name}</h3>
                         <p className="text-sm text-gray-500">
-                          Start: {formatDate(tournament.startDate)}
+                          Bắt đầu: {formatDate(tournament.startDate)}
                         </p>
                       </div>
                     </div>
@@ -214,7 +215,7 @@ const DashboardPage = () => {
 
           {/* Recent Activity */}
           <div className="card">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">Recent Activity</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-6">Hoạt động gần đây</h2>
             
             <div className="space-y-4">
               <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
@@ -223,9 +224,9 @@ const DashboardPage = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-900">
-                    Registered for Spring Championship
+                    Đã đăng ký Giải vô địch mùa xuân
                   </p>
-                  <p className="text-xs text-gray-500">2 hours ago</p>
+                  <p className="text-xs text-gray-500">2 giờ trước</p>
                 </div>
               </div>
 
@@ -235,9 +236,9 @@ const DashboardPage = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-900">
-                    Team "Eagles" updated roster
+                    Đội "Eagles" đã cập nhật danh sách
                   </p>
-                  <p className="text-xs text-gray-500">1 day ago</p>
+                  <p className="text-xs text-gray-500">1 ngày trước</p>
                 </div>
               </div>
 
@@ -247,9 +248,9 @@ const DashboardPage = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-900">
-                    Won match against "Tigers"
+                    Đã thắng trận đấu với "Tigers"
                   </p>
-                  <p className="text-xs text-gray-500">3 days ago</p>
+                  <p className="text-xs text-gray-500">3 ngày trước</p>
                 </div>
               </div>
 
@@ -259,9 +260,9 @@ const DashboardPage = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-900">
-                    Next match scheduled
+                    Trận đấu tiếp theo đã được lên lịch
                   </p>
-                  <p className="text-xs text-gray-500">1 week ago</p>
+                  <p className="text-xs text-gray-500">1 tuần trước</p>
                 </div>
               </div>
             </div>
@@ -271,7 +272,7 @@ const DashboardPage = () => {
                 to="/dashboard/activity"
                 className="text-primary-600 hover:text-primary-700 text-sm font-medium"
               >
-                View All Activity
+                Xem tất cả hoạt động
               </Link>
             </div>
           </div>
@@ -279,15 +280,15 @@ const DashboardPage = () => {
 
         {/* Quick Actions */}
         <div className="mt-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Quick Actions</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-6">Hành động nhanh</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Link
               to="/tournaments"
               className="card hover:shadow-lg transition-shadow duration-300 text-center"
             >
               <Trophy className="h-12 w-12 text-primary-600 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Browse Tournaments</h3>
-              <p className="text-gray-600">Find and join exciting competitions</p>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Duyệt giải đấu</h3>
+              <p className="text-gray-600">Tìm và tham gia các giải đấu hấp dẫn</p>
             </Link>
 
             {isOrganizerOrAdmin ? (
@@ -296,18 +297,19 @@ const DashboardPage = () => {
                 className="card hover:shadow-lg transition-shadow duration-300 text-center"
               >
                 <Plus className="h-12 w-12 text-sports-green mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Create Tournament</h3>
-                <p className="text-gray-600">Start organizing your own tournament</p>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Tạo giải đấu</h3>
+                <p className="text-gray-600">Bắt đầu tổ chức giải đấu của riêng bạn</p>
               </Link>
             ) : (
-              <button
-                onClick={() => setIsTeamCreateModalOpen(true)}
-                className="card hover:shadow-lg transition-shadow duration-300 text-center w-full"
+              // Replaced "Create Team" with "View News"
+              <Link
+                to="/news" // Assuming a route for news exists
+                className="card hover:shadow-lg transition-shadow duration-300 text-center"
               >
-                <Users className="h-12 w-12 text-sports-green mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Create Team</h3>
-                <p className="text-gray-600">Form a team and compete</p>
-              </button>
+                <BookOpen className="h-12 w-12 text-sports-green mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Xem tin tức</h3>
+                <p className="text-gray-600">Luôn cập nhật những tin tức mới nhất</p>
+              </Link>
             )}
 
             <Link
@@ -315,14 +317,15 @@ const DashboardPage = () => {
               className="card hover:shadow-lg transition-shadow duration-300 text-center"
             >
               <Edit className="h-12 w-12 text-sports-purple mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Update Profile</h3>
-              <p className="text-gray-600">Manage your account settings</p>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Cập nhật hồ sơ</h3>
+              <p className="text-gray-600">Quản lý cài đặt tài khoản của bạn</p>
             </Link>
           </div>
         </div>
       </div>
 
-      {/* Team Create Modal */}
+      {/* Team Create Modal - This modal is no longer triggered directly from Quick Actions */}
+      {/* You might want to remove this component and its state if 'create team' functionality is not needed elsewhere */}
       <TeamCreateModal
         isOpen={isTeamCreateModalOpen}
         onClose={() => setIsTeamCreateModalOpen(false)}

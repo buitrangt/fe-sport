@@ -10,11 +10,11 @@ const ContactUs = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-primary-600 to-purple-700 opacity-90"></div>
           <div className="relative text-center py-16 px-6 sm:px-12 text-white">
             <h1 className="text-4xl sm:text-5xl font-extrabold mb-4 animate-fade-in-down">
-              Contact Us
+              Liên hệ chúng tôi
             </h1>
             <p className="text-lg sm:text-xl font-light opacity-90 animate-fade-in-up">
-              We are always happy to hear from you.
-              <br className="hidden sm:inline" /> Please use the information below to connect with the EduSports team.
+              Chúng tôi luôn sẵn lòng lắng nghe từ bạn.
+              <br className="hidden sm:inline" /> Vui lòng sử dụng thông tin bên dưới để kết nối với đội ngũ EduSports.
             </p>
           </div>
         </div>
@@ -24,21 +24,21 @@ const ContactUs = () => {
             {/* Contact Information Column */}
             <div className="space-y-8">
               <h2 className="text-3xl font-bold text-gray-800 mb-4 border-b-2 border-primary-500 pb-2 inline-block">
-                Basic Information
+                Thông tin cơ bản
               </h2>
               <div className="flex items-start space-x-4">
                 <MapPin className="h-6 w-6 text-primary-600 flex-shrink-0 mt-1" />
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900">Address</h3>
-                  <p className="text-gray-700">123 Sports Road, Arena District,</p>
-                  <p className="text-gray-700">Sports City, Vietnam</p>
+                  <h3 className="text-xl font-semibold text-gray-900">Địa chỉ</h3>
+                  <p className="text-gray-700">123 Đường Thể Thao, Khu Arena,</p>
+                  <p className="text-gray-700">Thành phố Thể Thao, Việt Nam</p>
                 </div>
               </div>
 
               <div className="flex items-start space-x-4">
                 <Phone className="h-6 w-6 text-primary-600 flex-shrink-0 mt-1" />
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900">Phone</h3>
+                  <h3 className="text-xl font-semibold text-gray-900">Điện thoại</h3>
                   <p className="text-gray-700">(024) 1234 5678</p>
                 </div>
               </div>
@@ -56,9 +56,9 @@ const ContactUs = () => {
               <div className="flex items-start space-x-4">
                 <Clock className="h-6 w-6 text-primary-600 flex-shrink-0 mt-1" />
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900">Working Hours</h3>
-                  <p className="text-gray-700">Monday - Friday: 8:00 AM - 5:00 PM (GMT+7)</p>
-                  <p className="text-gray-700">Saturday - Sunday: Closed</p>
+                  <h3 className="text-xl font-semibold text-gray-900">Giờ làm việc</h3>
+                  <p className="text-gray-700">Thứ Hai - Thứ Sáu: 8:00 AM - 5:00 PM (GMT+7)</p>
+                  <p className="text-gray-700">Thứ Bảy - Chủ Nhật: Đóng cửa</p>
                 </div>
               </div>
             </div>
@@ -66,13 +66,13 @@ const ContactUs = () => {
             {/* Map or illustrative image column */}
             <div className="flex flex-col justify-center items-center">
               <h2 className="text-3xl font-bold text-gray-800 mb-4 border-b-2 border-primary-500 pb-2 inline-block">
-                Find Us
+                Tìm chúng tôi
               </h2>
               {/* This is where you can embed a Google Maps iframe or an image of a map */}
               <div className="bg-gray-200 w-full h-64 rounded-lg shadow-inner flex items-center justify-center text-gray-600 text-center text-sm">
                 {/* Example Google Maps iframe (replace with your actual URL) */}
                 <iframe
-                  title="Google Maps Location"
+                  title="Vị trí trên Google Maps"
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3723.924403378393!2d105.81708461490267!3d21.035650192734493!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab7801a2e7c9%3A0xc3b8a36c53e8e1f!2zVHLGsOG7nW5nIMSQ4bqhaSBo4buNYyBCw6FjaCBraG9hIEjDoCBO4buZaQ!5e0!3m2!1svi!2svn!4v1684348000000!5m2!1svi!2svn"
                   width="100%"
                   height="100%"
@@ -84,14 +84,14 @@ const ContactUs = () => {
                 {/* Or just a placeholder image: <img src="path/to/your/map.png" alt="Our Location" className="w-full h-full object-cover rounded-lg" /> */}
               </div>
               <p className="mt-4 text-gray-600 text-center">
-                We look forward to seeing you at our location.
+                Chúng tôi rất mong được gặp bạn tại địa điểm của chúng tôi.
               </p>
             </div>
           </div>
 
           {/* Social Media Section (optional) */}
           <div className="mt-12 text-center border-t border-gray-200 pt-8">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">Connect With Us</h2>
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">Kết nối với chúng tôi</h2>
             <div className="flex justify-center space-x-6 text-primary-600">
               <a href="/home" target="_blank" rel="noopener noreferrer" className="hover:text-primary-800 transition-colors">
                 <Facebook className="h-8 w-8" />

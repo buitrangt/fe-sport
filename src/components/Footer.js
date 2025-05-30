@@ -16,8 +16,8 @@ const Footer = () => {
               <span className="text-xl font-bold">EduSports</span>
             </div>
             <p className="text-gray-300 mb-4 max-w-md">
-              The ultimate tournament management system for educational sports. 
-              Organize, manage, and track competitions with ease.
+              Hệ thống quản lý giải đấu thể thao giáo dục tối ưu. 
+              Tổ chức, quản lý và theo dõi các cuộc thi một cách dễ dàng.
             </p>
             <div className="flex space-x-4">
               <div className="flex items-center space-x-2 text-sm text-gray-300">
@@ -29,26 +29,26 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+            <h3 className="text-lg font-semibold mb-4">Liên kết nhanh</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/" className="text-gray-300 hover:text-white transition-colors">
-                  Home
+                  Trang chủ
                 </Link>
               </li>
               <li>
                 <Link to="/tournaments" className="text-gray-300 hover:text-white transition-colors">
-                  Tournaments
+                  Giải đấu
                 </Link>
               </li>
               <li>
                 <Link to="/news" className="text-gray-300 hover:text-white transition-colors">
-                  News
+                  Tin tức
                 </Link>
               </li>
               <li>
                 <Link to="/about" className="text-gray-300 hover:text-white transition-colors">
-                  About Us
+                  Về chúng tôi
                 </Link>
               </li>
             </ul>
@@ -56,26 +56,26 @@ const Footer = () => {
 
           {/* Support */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Support</h3>
+            <h3 className="text-lg font-semibold mb-4">Hỗ trợ</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/help-center" className="text-gray-300 hover:text-white transition-colors">
-                  Help Center
+                  Trung tâm trợ giúp
                 </Link>
               </li>
               <li>
                 <Link to="/contact-us" className="text-gray-300 hover:text-white transition-colors">
-                  Contact Us
+                  Liên hệ
                 </Link>
               </li>
               <li>
                 <Link to="/privacy-policy" className="text-gray-300 hover:text-white transition-colors">
-                  Privacy Policy
+                  Chính sách quyền riêng tư
                 </Link>
               </li>
               <li>
                 <Link to="/terms-of-service" className="text-gray-300 hover:text-white transition-colors">
-                  Terms of Service
+                  Điều khoản dịch vụ
                 </Link>
               </li>
             </ul>
@@ -85,11 +85,11 @@ const Footer = () => {
         <div className="border-t border-gray-800 mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
-              © 2024 EduSports. All rights reserved.
+              © 2024 EduSports. Bảo lưu mọi quyền.
             </p>
             <div className="flex items-center space-x-4 mt-4 md:mt-0">
               <span className="text-gray-400 text-sm">
-                Made with ❤️ for educational sports
+                Được tạo bằng ❤️ cho thể thao giáo dục
               </span>
             </div>
           </div>
