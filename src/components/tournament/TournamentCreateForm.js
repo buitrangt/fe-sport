@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQueryClient } from 'react-query';
-import { X, Calendar, Users, MapPin, Trophy, FileText, Upload } from 'lucide-react';
-import { tournamentService } from '../../services';
+import { X, Calendar, Users, MapPin, Trophy, FileText, Upload, Image as ImageIcon } from 'lucide-react';
+import { tournamentServiceFixed } from '../../services/tournamentServiceFixed';
 import { 
   SPORT_TYPES, 
   SPORT_TYPE_LABELS,
@@ -15,6 +15,9 @@ import toast from 'react-hot-toast';
 
 const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const fileInputRef = useRef(null);
   const queryClient = useQueryClient();
 
   const {
@@ -41,9 +44,9 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
   });
 
   const createTournamentMutation = useMutation(
-    (tournamentData) => {
-      console.log('🚀 Calling tournamentService.createTournament with:', tournamentData);
-      return tournamentService.createTournament(tournamentData);
+    ({ tournamentData, imageFile }) => {
+      console.log('🚀 Calling tournamentServiceFixed.createTournamentWithImage with:', { tournamentData, imageFile });
+      return tournamentServiceFixed.createTournamentWithImage(tournamentData, imageFile);
     },
     {
       onSuccess: (response) => {
@@ -74,9 +77,61 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
 
   const watchStartDate = watch('startDate');
 
+  // Handle image selection
+  const handleImageSelect = (event) => {
+    const file = event.target.files[0];
+    
+    if (!file) {
+      setSelectedImage(null);
+      setImagePreview(null);
+      return;
+    }
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Chỉ hỗ trợ file ảnh (JPG, PNG, GIF)');
+      event.target.value = '';
+      return;
+    }
+
+    // Validate file size (5MB limit)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      toast.error('Kích thước file không được vượt quá 5MB');
+      event.target.value = '';
+      return;
+    }
+
+    setSelectedImage(file);
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImagePreview(e.target.result);
+    };
+    reader.readAsDataURL(file);
+
+    console.log('📸 Image selected:', {
+      name: file.name,
+      size: file.size,
+      type: file.type
+    });
+  };
+
+  // Remove selected image
+  const removeImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const onSubmit = async (data) => {
     try {
       console.log('📝 Form submitted with data:', data);
+      console.log('🖼️ Selected image:', selectedImage);
       setIsSubmitting(true);
       
       // Validate required fields
@@ -132,7 +187,12 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
       };
       
       console.log('🎯 Final tournament data to send:', tournamentData);
-      await createTournamentMutation.mutateAsync(tournamentData);
+      console.log('📷 Image file to send:', selectedImage);
+      
+      await createTournamentMutation.mutateAsync({
+        tournamentData,
+        imageFile: selectedImage
+      });
     } catch (error) {
       console.error('💥 Tournament creation error in onSubmit:', error);
       setIsSubmitting(false);
@@ -142,6 +202,11 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
   const handleClose = () => {
     reset();
     setIsSubmitting(false);
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
     onClose();
   };
 
@@ -186,6 +251,62 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="overflow-y-auto max-h-[calc(90vh-140px)]">
           <div className="p-6 space-y-6">
+            {/* Image Upload Section */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tournament Image
+              </label>
+              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-gray-400 transition-colors">
+                <div className="space-y-1 text-center">
+                  {imagePreview ? (
+                    <div className="relative">
+                      <img
+                        src={imagePreview}
+                        alt="Tournament preview"
+                        className="mx-auto h-32 w-32 object-cover rounded-lg"
+                      />
+                      <button
+                        type="button"
+                        onClick={removeImage}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                        disabled={isSubmitting}
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                      <p className="mt-2 text-sm text-gray-600">{selectedImage?.name}</p>
+                      <p className="text-xs text-gray-500">
+                        {(selectedImage?.size / 1024 / 1024).toFixed(2)} MB
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
+                      <div className="flex text-sm text-gray-600">
+                        <label
+                          htmlFor="tournament-image"
+                          className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                        >
+                          <span>Upload an image</span>
+                          <input
+                            id="tournament-image"
+                            name="tournament-image"
+                            type="file"
+                            className="sr-only"
+                            accept="image/jpeg,image/jpg,image/png,image/gif"
+                            onChange={handleImageSelect}
+                            ref={fileInputRef}
+                            disabled={isSubmitting}
+                          />
+                        </label>
+                        <p className="pl-1">or drag and drop</p>
+                      </div>
+                      <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+
             {/* Basic Information */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Tournament Name */}
@@ -230,8 +351,8 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
                   <option value="VOLLEYBALL">Volleyball</option>
                   <option value="BADMINTON">Badminton</option>
                   <option value="TENNIS">Tennis</option>
-                  <option value="PING_PONG">League of Legends</option>
-                  <option value="PING_PONG">Bida</option>
+                  <option value="PING_PONG">Table Tennis</option>
+                  <option value="BILLIARDS">Billiards</option>
                   <option value="GENERAL">Other</option>
                 </select>
                 {errors.sportType && (
@@ -422,7 +543,7 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
               ) : (
                 <>
                   <Trophy className="h-4 w-4 mr-2" />
-                  Create a tournament
+                  Create Tournament {selectedImage && '(with Image)'}
                 </>
               )}
             </button>

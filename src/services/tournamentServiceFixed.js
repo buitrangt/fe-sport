@@ -127,6 +127,46 @@ export const tournamentServiceFixed = {
     }
   },
 
+  // Create tournament with image
+  createTournamentWithImage: async (tournamentData, imageFile) => {
+    console.log('🏟️ [TournamentServiceFixed] Creating tournament with image:', { tournamentData, imageFile });
+    try {
+      const formData = new FormData();
+      
+      // Add tournament data as JSON string
+      formData.append('tournament', JSON.stringify(tournamentData));
+      
+      // Add image file if provided
+      if (imageFile) {
+        formData.append('image', imageFile);
+      }
+      
+      console.log('📤 Sending formData with:', {
+        tournamentData: JSON.stringify(tournamentData),
+        hasImage: !!imageFile,
+        imageName: imageFile?.name,
+        imageSize: imageFile?.size
+      });
+      
+      const response = await apiClient.post('/api/tournaments/with-image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      console.log('✅ [TournamentServiceFixed] Create tournament with image success:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ [TournamentServiceFixed] Create tournament with image failed:', error);
+      console.error('Error details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
+      });
+      throw error;
+    }
+  },
+
   // Create tournament
   createTournament: async (tournamentData) => {
     console.log('🏟️ [TournamentServiceFixed] Creating tournament with data:', tournamentData);

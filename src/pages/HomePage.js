@@ -1,21 +1,28 @@
-import React, { useState, useEffect } from 'react'; // Import useEffect
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from 'react-query';
-import { Trophy, Users, Calendar, Target, ArrowRight, Play, Star } from 'lucide-react';
+import { Trophy, Users, Calendar, Target, ArrowRight, Play, Star, Clock, MapPin, User, Zap, Award, TrendingUp } from 'lucide-react';
 import { tournamentServiceFixed as tournamentService } from '../services/tournamentServiceFixed';
 import newsService from '../services/newsService';
 import { dashboardService } from '../services';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { formatDate, getStatusColor } from '../utils/helpers';
+import SportImage from '../components/SportImage';
+import StadiumHeroImage from '../components/StadiumHeroImage';
+import SportImageGallery from '../components/SportImageGallery';
 
 // Import NewsDetailModal
-import NewsDetailModal from '../components/admin/NewsDetailModal'; // Đảm bảo đường dẫn này đúng
+import NewsDetailModal from '../components/admin/NewsDetailModal';
+
+// Import sport images styles
+import '../styles/sport-images.css';
 
 const HomePage = () => {
   console.log('🏠 [HomePage] Component mounting at', new Date().toLocaleTimeString());
 
-  const [selectedNewsArticle, setSelectedNewsArticle] = useState(null); // State cho tin tức được chọn
-  const [isNewsDetailModalOpen, setIsNewsDetailModalOpen] = useState(false); // State để kiểm soát modal
+  const [selectedNewsArticle, setSelectedNewsArticle] = useState(null);
+  const [isNewsDetailModalOpen, setIsNewsDetailModalOpen] = useState(false);
+  const [showImageGallery, setShowImageGallery] = useState(false);
 
   useEffect(() => {
     console.log('🏠 [HomePage] useEffect running at', new Date().toLocaleTimeString());
@@ -46,8 +53,6 @@ const HomePage = () => {
         },
         select: (response) => {
           console.log('📊 [HomePage] Dashboard Stats Response:', response);
-          console.log('📊 [HomePage] Dashboard Stats Data:', response?.data);
-          console.log('📊 [HomePage] Full Response Structure:', JSON.stringify(response, null, 2));
           return response?.data || null;
         },
         onError: (error) => {
@@ -116,7 +121,7 @@ const HomePage = () => {
             }
           }
 
-          return newsArray.slice(0, 3); // Take only first 3 news items
+          return newsArray.slice(0, 3);
         },
         onError: (error) => {
           console.error('Error loading news:', error);
@@ -128,14 +133,14 @@ const HomePage = () => {
   const openNewsDetailModal = (article) => {
     setSelectedNewsArticle(article);
     setIsNewsDetailModalOpen(true);
-    document.body.style.overflow = 'hidden'; // Ngăn cuộn trang
+    document.body.style.overflow = 'hidden';
   };
 
   // Hàm đóng modal chi tiết tin tức
   const closeNewsDetailModal = () => {
     setIsNewsDetailModalOpen(false);
     setSelectedNewsArticle(null);
-    document.body.style.overflow = 'unset'; // Cho phép cuộn trang
+    document.body.style.overflow = 'unset';
   };
 
   // Xử lý Escape key cho News Detail Modal
@@ -155,25 +160,25 @@ const HomePage = () => {
       return [
         {
           icon: Trophy,
-          label: 'Active Tournaments',
+          label: 'Giải đang diễn ra',
           value: dashboardStats.activeTournaments?.toString() || '0',
           color: 'text-sports-orange'
         },
         {
           icon: Users,
-          label: 'Registered Teams',
+          label: 'Đội tham gia',
           value: dashboardStats.registeredTeams?.toString() || '0',
           color: 'text-sports-green'
         },
         {
           icon: Calendar,
-          label: 'Matches Played',
+          label: 'Trận đã thi đấu',
           value: dashboardStats.matchesPlayed?.toString() || '0',
           color: 'text-sports-purple'
         },
         {
           icon: Target,
-          label: 'Success Rate',
+          label: 'Tỷ lệ thành công',
           value: dashboardStats.successRate ? `${Math.round(dashboardStats.successRate)}%` : '0%',
           color: 'text-sports-pink'
         },
@@ -181,34 +186,96 @@ const HomePage = () => {
     }
 
     return [
-      { icon: Trophy, label: 'Active Tournaments', value: '-', color: 'text-sports-orange' },
-      { icon: Users, label: 'Registered Teams', value: '-', color: 'text-sports-green' },
-      { icon: Calendar, label: 'Matches Played', value: '-', color: 'text-sports-purple' },
-      { icon: Target, label: 'Success Rate', value: '-', color: 'text-sports-pink' },
+      { icon: Trophy, label: 'Giải đang diễn ra', value: '-', color: 'text-sports-orange' },
+      { icon: Users, label: 'Đội tham gia', value: '-', color: 'text-sports-green' },
+      { icon: Calendar, label: 'Trận đã thi đấu', value: '-', color: 'text-sports-purple' },
+      { icon: Target, label: 'Tỷ lệ thành công', value: '-', color: 'text-sports-pink' },
     ];
   }, [dashboardStats]);
 
   const features = [
     {
-      title: 'Tournament Management',
-      description: 'Create and manage tournaments with ease. Handle registrations, scheduling, and results.',
+      title: 'Quản lý đa môn thể thao',
+      description: 'Tạo và quản lý các hoạt động thể thao đa dạng. Từ bóng đá, bóng rổ đến cầu lông, bóng chuyền.',
       icon: Trophy,
     },
     {
-      title: 'Team Registration',
-      description: 'Simple team registration process with member management and documentation.',
+      title: 'Đăng ký vận động viên',
+      description: 'Quy trình đăng ký vận động viên và đội thi đấu đơn giản với quản lý thông tin chi tiết.',
       icon: Users,
     },
     {
-      title: 'Live Scoring',
-      description: 'Real-time match scoring and live updates for all tournament participants.',
+      title: 'Theo dõi kết quả',
+      description: 'Cập nhật kết quả thi đấu theo thời gian thực cho tất cả các môn thể thao.',
       icon: Play,
     },
     {
-      title: 'Analytics & Reports',
-      description: 'Comprehensive analytics and reporting for tournament insights and performance.',
+      title: 'Thống kê & Xếp hạng',
+      description: 'Thống kê toàn diện và bảng xếp hạng cho các môn thể thao và vận động viên.',
       icon: Target,
     },
+  ];
+
+  // Mock data cho các sự kiện thể thao sắp tới
+  const upcomingEvents = [
+    {
+      id: 1,
+      homeTeam: 'Đại học Bách Khoa',
+      awayTeam: 'Đại học Quốc Gia',
+      sport: 'Bóng đá',
+      date: '2025-06-01',
+      time: '14:00',
+      venue: 'Sân vận động Quốc Gia'
+    },
+    {
+      id: 2,
+      homeTeam: 'Đại học Kinh Tế',
+      awayTeam: 'Đại học Ngoại Thương',
+      sport: 'Bóng rổ',
+      date: '2025-06-02',
+      time: '16:00',
+      venue: 'Nhà thi đấu Thành phố'
+    },
+    {
+      id: 3,
+      homeTeam: 'Đại học Y',
+      awayTeam: 'Đại học Luật',
+      sport: 'Cầu lông',
+      date: '2025-06-03',
+      time: '09:00',
+      venue: 'Cung thể thao'
+    }
+  ];
+
+  // Mock data cho kết quả mới nhất
+  const recentResults = [
+    {
+      id: 1,
+      homeTeam: 'Đại học Y',
+      awayTeam: 'Đại học Luật',
+      homeScore: 2,
+      awayScore: 1,
+      sport: 'Bóng đá',
+      date: '2025-05-28'
+    },
+    {
+      id: 2,
+      homeTeam: 'Đại học Sư Phạm',
+      awayTeam: 'Đại học Công Nghệ',
+      homeScore: 78,
+      awayScore: 82,
+      sport: 'Bóng rổ',
+      date: '2025-05-27'
+    },
+    {
+      id: 3,
+      homeTeam: 'Đại học Ngoại Thương',
+      awayTeam: 'Đại học Kinh Tế',
+      homeScore: 21,
+      awayScore: 15,
+      sport: 'Cầu lông',
+      date: '2025-05-26'
+    }
   ];
 
   return (
@@ -220,35 +287,63 @@ const HomePage = () => {
             onClose={closeNewsDetailModal}
         />
 
-        {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-primary-900 via-primary-800 to-sports-purple min-h-screen flex items-center">
-          <div className="absolute inset-0 bg-black opacity-20"></div>
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        {/* Sport Image Gallery - Only show in development */}
+        {showImageGallery && (
+          <SportImageGallery onClose={() => setShowImageGallery(false)} />
+        )}
+
+        {/* Hero Section với ảnh sân thể thao tổng hợp */}
+        <section className="relative min-h-screen flex items-center overflow-hidden">
+          {/* Background Image - Multi-sport stadium */}
+          <div className="absolute inset-0">
+            <StadiumHeroImage className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 to-black/40"></div>
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/30"></div>
+          </div>
+          
+          {/* Floating particles */}
+          <div className="particles">
+            {[...Array(20)].map((_, i) => (
+              <div
+                key={i}
+                className="particle"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  width: `${Math.random() * 10 + 5}px`,
+                  height: `${Math.random() * 10 + 5}px`,
+                  animationDelay: `${Math.random() * 10}s`,
+                  animationDuration: `${Math.random() * 10 + 10}s`
+                }}
+              />
+            ))}
+          </div>
+          
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 z-10">
             <div className="text-center text-white">
               <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
-                Welcome to{' '}
-                <span className="bg-gradient-to-r from-sports-orange to-sports-pink bg-clip-text text-transparent">
-                EduSports
-              </span>
+                Hệ thống quản lý thể thao{' '}
+                <span className="bg-gradient-to-r from-red-400 via-purple-500 to-blue-400 bg-clip-text text-transparent animate-pulse">
+                  EduSports
+                </span>
               </h1>
               <p className="text-xl md:text-2xl mb-8 text-gray-200 max-w-3xl mx-auto animate-slide-up">
-                The ultimate tournament management system for educational sports.
-                Organize, compete, and celebrate athletic excellence.
+                Hệ thống quản lý các hoạt động thể thao tổng hợp cho các trường đại học.
+                Tổ chức, thi đấu và tôn vinh thành tích thể thao đa dạng.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up">
                 <Link
                     to="/tournaments"
-                    className="bg-sports-orange hover:bg-orange-600 text-white font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
+                    className="group bg-gradient-to-r from-red-600 via-purple-600 to-blue-600 hover:from-red-700 hover:via-purple-700 hover:to-blue-700 text-white font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl flex items-center justify-center space-x-2 animate-glow"
                 >
-                  <Trophy className="h-5 w-5" />
-                  <span>View Tournaments</span>
+                  <Trophy className="h-5 w-5 group-hover:animate-bounce-slow" />
+                  <span>Xem các môn thể thao</span>
                 </Link>
                 <Link
                     to="/register"
-                    className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-900 font-bold py-4 px-8 rounded-lg transition-all duration-300 flex items-center justify-center space-x-2"
+                    className="group glass-effect text-white hover:bg-white/20 font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl flex items-center justify-center space-x-2"
                 >
-                  <Users className="h-5 w-5" />
-                  <span>Join Now</span>
+                  <Users className="h-5 w-5 group-hover:animate-float" />
+                  <span>Tham gia ngay</span>
                 </Link>
               </div>
             </div>
@@ -256,24 +351,33 @@ const HomePage = () => {
         </section>
 
         {/* Stats Section */}
-        <section className="py-16 bg-white">
+        <section className="py-16 bg-gradient-to-br from-red-50 via-purple-50 to-blue-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {statsLoading ? (
                 <div className="text-center">
                   <LoadingSpinner />
-                  <p className="mt-4 text-gray-600">Loading statistics...</p>
+                  <p className="mt-4 text-gray-600">Đang tải thống kê...</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                   {stats.map((stat, index) => (
-                      <div key={index} className="text-center">
+                      <div key={index} className="text-center group animate-scale-hover">
                         <div className="flex justify-center mb-4">
-                          <div className="bg-gray-100 p-4 rounded-full">
-                            <stat.icon className={`h-8 w-8 ${stat.color}`} />
+                          <div className={`p-4 rounded-full transform transition-all duration-300 group-hover:scale-110 ${
+                            index === 0 ? 'bg-gradient-to-br from-red-500 to-red-700' :
+                            index === 1 ? 'bg-gradient-to-br from-purple-500 to-purple-700' :
+                            index === 2 ? 'bg-gradient-to-br from-blue-500 to-blue-700' :
+                            'bg-gradient-to-br from-red-600 via-purple-600 to-blue-600'
+                          }`}>
+                            <stat.icon className="h-8 w-8 text-white group-hover:animate-bounce-slow" />
                           </div>
                         </div>
-                        <div className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</div>
-                        <div className="text-gray-600">{stat.label}</div>
+                        <div className="text-3xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors duration-300">
+                          {stat.value}
+                        </div>
+                        <div className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
+                          {stat.label}
+                        </div>
                       </div>
                   ))}
                 </div>
@@ -281,28 +385,140 @@ const HomePage = () => {
           </div>
         </section>
 
+        {/* 3 Sections chính theo mẫu */}
+        <section className="py-12 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              
+              {/* SỰ KIỆN TIẾP THEO */}
+              <div className="bg-gradient-to-br from-red-600 via-purple-600 to-blue-600 text-white p-6 rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300 animate-glow">
+                <h3 className="text-2xl font-bold mb-4 text-center flex items-center justify-center space-x-2">
+                  <Zap className="h-6 w-6 animate-bounce-slow" />
+                  <span>SỰ KIỆN TIẾP THEO</span>
+                </h3>
+                {upcomingEvents.slice(0, 1).map((event) => (
+                  <div key={event.id} className="space-y-4">
+                    <div className="text-center">
+                      <div className="text-sm bg-white/20 rounded-full px-3 py-1 mb-2 inline-block">
+                        {event.sport}
+                      </div>
+                      <div className="text-lg font-semibold">{event.homeTeam}</div>
+                      <div className="text-4xl font-bold my-2">VS</div>
+                      <div className="text-lg font-semibold">{event.awayTeam}</div>
+                    </div>
+                    <div className="text-center space-y-2">
+                      <div className="flex items-center justify-center space-x-2">
+                        <Clock className="h-4 w-4" />
+                        <span>{event.time} - {formatDate(event.date)}</span>
+                      </div>
+                      <div className="flex items-center justify-center space-x-2">
+                        <MapPin className="h-4 w-4" />
+                        <span>{event.venue}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* LỊCH THỂ THAO SẮP TỚI */}
+              <div className="bg-white p-6 rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-2 border-purple-100">
+                <h3 className="text-2xl font-bold mb-4 text-center text-gray-800 flex items-center justify-center space-x-2">
+                  <Calendar className="h-6 w-6 text-purple-600 animate-float" />
+                  <span>LỊCH THỂ THAO SẮP TỚI</span>
+                </h3>
+                <div className="space-y-4">
+                  {upcomingEvents.map((event) => (
+                    <div key={event.id} className="border-b pb-4 last:border-b-0">
+                      <div className="flex justify-between items-center mb-1">
+                        <div className="text-sm font-medium">{event.homeTeam}</div>
+                        <div className="text-xs text-gray-500">vs</div>
+                        <div className="text-sm font-medium">{event.awayTeam}</div>
+                      </div>
+                      <div className="text-xs bg-purple-100 text-purple-800 rounded-full px-2 py-1 text-center mb-1 inline-block w-full">
+                        {event.sport}
+                      </div>
+                      <div className="text-xs text-gray-600 text-center">
+                        {event.time} - {formatDate(event.date)}
+                      </div>
+                      <div className="text-xs text-gray-500 text-center">{event.venue}</div>
+                    </div>
+                  ))}
+                </div>
+                <Link
+                  to="/tournaments"
+                  className="block text-center mt-4 text-purple-600 hover:text-purple-800 font-medium"
+                >
+                  Xem tất cả →
+                </Link>
+              </div>
+
+              {/* KẾT QUẢ MỚI NHẤT */}
+              <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-red-600 text-white p-6 rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300">
+                <h3 className="text-2xl font-bold mb-4 text-center flex items-center justify-center space-x-2">
+                  <Award className="h-6 w-6 animate-bounce-slow" />
+                  <span>KẾT QUẢ MỚI NHẤT</span>
+                </h3>
+                <div className="space-y-4">
+                  {recentResults.map((result) => (
+                    <div key={result.id} className="space-y-2">
+                      <div className="text-xs bg-white/20 rounded-full px-2 py-1 text-center mb-2">
+                        {result.sport}
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div className="text-sm">{result.homeTeam}</div>
+                        <div className="text-lg font-bold">
+                          {result.homeScore} - {result.awayScore}
+                        </div>
+                        <div className="text-sm">{result.awayTeam}</div>
+                      </div>
+                      <div className="text-xs text-center opacity-80">
+                        {formatDate(result.date)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <Link
+                  to="/tournaments"
+                  className="block text-center mt-4 text-white hover:text-gray-200 font-medium"
+                >
+                  Xem thêm kết quả →
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Features Section */}
-        <section className="py-20 bg-gray-50">
+        <section className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Everything You Need to Manage Sports Tournaments
+                Mọi thứ bạn cần để quản lý hoạt động thể thao
               </h2>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                From registration to final results, our comprehensive platform handles every aspect
-                of tournament management with professional-grade tools.
+                Từ đăng ký đến kết quả cuối cùng, nền tảng toàn diện của chúng tôi xử lý mọi khía cạnh
+                của quản lý các hoạt động thể thao đa dạng với các công cụ chuyên nghiệp.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {features.map((feature, index) => (
-                  <div key={index} className="card hover:shadow-lg transition-shadow duration-300">
+                  <div key={index} className="group card hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 hover:rotate-1 border-2 border-transparent hover:border-gradient-to-r hover:border-blue-300">
                     <div className="text-center">
-                      <div className="bg-gradient-to-r from-primary-500 to-sports-purple p-3 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                        <feature.icon className="h-8 w-8 text-white" />
+                      <div className={`p-4 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4 transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-12 ${
+                        index === 0 ? 'bg-gradient-to-br from-red-500 via-red-600 to-red-700' :
+                        index === 1 ? 'bg-gradient-to-br from-purple-500 via-purple-600 to-purple-700' :
+                        index === 2 ? 'bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700' :
+                        'bg-gradient-to-br from-red-600 via-purple-600 to-blue-600'
+                      } shadow-lg group-hover:shadow-2xl`}>
+                        <feature.icon className="h-10 w-10 text-white group-hover:animate-bounce-slow" />
                       </div>
-                      <h3 className="text-xl font-semibold text-gray-900 mb-3">{feature.title}</h3>
-                      <p className="text-gray-600">{feature.description}</p>
+                      <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors duration-300">
+                        {feature.title}
+                      </h3>
+                      <p className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300">
+                        {feature.description}
+                      </p>
                     </div>
                   </div>
               ))}
@@ -311,18 +527,18 @@ const HomePage = () => {
         </section>
 
         {/* Featured Tournaments */}
-        <section className="py-20 bg-white">
+        <section className="py-20 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center mb-12">
               <div>
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">Featured Tournaments</h2>
-                <p className="text-xl text-gray-600">Join exciting competitions happening now</p>
+                <h2 className="text-4xl font-bold text-gray-900 mb-4">Hoạt động thể thao nổi bật</h2>
+                <p className="text-xl text-gray-600">Tham gia các hoạt động thể thao thú vị đang diễn ra</p>
               </div>
               <Link
                   to="/tournaments"
-                  className="flex items-center space-x-2 text-primary-600 hover:text-primary-700 font-medium"
+                  className="flex items-center space-x-2 text-purple-600 hover:text-purple-700 font-medium"
               >
-                <span>View All</span>
+                <span>Xem tất cả</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
@@ -331,30 +547,51 @@ const HomePage = () => {
                 <LoadingSpinner />
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  {(tournaments || []).slice(0, 3).map((tournament) => (
-                      <div key={tournament.id} className="card hover:shadow-lg transition-shadow duration-300">
-                        <div className="relative mb-4">
-                          <div className="bg-gradient-to-r from-primary-500 to-sports-purple h-40 rounded-lg flex items-center justify-center">
-                            <Trophy className="h-16 w-16 text-white" />
+                  {(tournaments || []).slice(0, 3).map((tournament, index) => (
+                      <div key={tournament.id} className="group card hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 hover:rotate-1">
+                        <div className="relative mb-4 overflow-hidden rounded-xl">
+                          <div className="relative h-40 rounded-xl overflow-hidden">
+                            <SportImage
+                              src={
+                                index === 0 ? 
+                                'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80' :
+                                index === 1 ?
+                                'https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80' :
+                                'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80'
+                              }
+                              alt={`${tournament.name} - Giải thể thao`}
+                              fallbackType={
+                                index === 0 ? 'football' :
+                                index === 1 ? 'basketball' :
+                                'volleyball'
+                              }
+                              className="w-full h-40 object-cover transform transition-all duration-500 group-hover:scale-110"
+                              gradientClass={
+                                index === 0 ? 'bg-gradient-to-br from-red-500 via-red-600 to-red-700' :
+                                index === 1 ? 'bg-gradient-to-br from-purple-500 via-purple-600 to-purple-700' :
+                                'bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700'
+                              }
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
                           </div>
-                          <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(tournament.status)}`}>
+                          <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-medium glass-effect ${getStatusColor(tournament.status)}`}>
                             {tournament.status}
                           </div>
                         </div>
                         <h3 className="text-xl font-semibold text-gray-900 mb-2">{tournament.name}</h3>
                         <p className="text-gray-600 mb-4 line-clamp-2">{tournament.description}</p>
                         <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
-                          <span>Start: {formatDate(tournament.startDate)}</span>
+                          <span>Bắt đầu: {formatDate(tournament.startDate)}</span>
                           <span className="flex items-center space-x-1">
-                      <Users className="h-4 w-4" />
-                      <span>{tournament.maxTeams} teams</span>
-                    </span>
+                            <Users className="h-4 w-4" />
+                            <span>{tournament.maxTeams} đội</span>
+                          </span>
                         </div>
                         <Link
                             to={`/tournaments/${tournament.id}`}
-                            className="btn-primary w-full text-center"
+                            className="group bg-gradient-to-r from-red-600 via-purple-600 to-blue-600 hover:from-red-700 hover:via-purple-700 hover:to-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg w-full text-center block"
                         >
-                          View Details
+                          <span className="group-hover:animate-bounce-slow">Xem chi tiết</span>
                         </Link>
                       </div>
                   ))}
@@ -364,18 +601,18 @@ const HomePage = () => {
         </section>
 
         {/* Latest News */}
-        <section className="py-20 bg-gray-50">
+        <section className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center mb-12">
               <div>
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">Latest News</h2>
-                <p className="text-xl text-gray-600">Stay updated with the latest sports news</p>
+                <h2 className="text-4xl font-bold text-gray-900 mb-4">Tin tức mới nhất</h2>
+                <p className="text-xl text-gray-600">Cập nhật tin tức thể thao mới nhất</p>
               </div>
               <Link
                   to="/news"
-                  className="flex items-center space-x-2 text-primary-600 hover:text-primary-700 font-medium"
+                  className="flex items-center space-x-2 text-purple-600 hover:text-purple-700 font-medium"
               >
-                <span>View All</span>
+                <span>Xem tất cả</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
@@ -383,130 +620,87 @@ const HomePage = () => {
             {newsLoading ? (
                 <div className="text-center">
                   <LoadingSpinner />
-                  <p className="mt-4 text-gray-600">Loading news...</p>
+                  <p className="mt-4 text-gray-600">Đang tải tin tức...</p>
                 </div>
             ) : newsError ? (
                 <div className="text-center">
-                  <p className="text-red-600">Error loading news: {newsError.message}</p>
-                  <p className="text-gray-600 mt-2">Please check if backend is running.</p>
+                  <p className="text-red-600">Lỗi tải tin tức: {newsError.message}</p>
+                  <p className="text-gray-600 mt-2">Vui lòng kiểm tra backend có đang chạy không.</p>
                 </div>
             ) : !news || news.length === 0 ? (
                 <div className="text-center">
-                  <p className="text-gray-600">No news available at the moment.</p>
-                  <p className="text-sm text-gray-500 mt-2">Check console for API response details.</p>
-                  <button
-                      onClick={() => {
-                        console.log('🔄 [HomePage] Manual news refresh triggered');
-                        window.location.reload();
-                      }}
-                      className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                  >
-                    🔄 Refresh News
-                  </button>
-                  <br />
-                  <button
-                      onClick={async () => {
-                        console.log('🧪 [HomePage] Direct API test triggered');
-                        try {
-                          const directResult = await newsService.getAllNews();
-
-                          console.log('=== DIRECT API TEST RESULTS ===');
-                          console.log('Type of result:', typeof directResult);
-                          console.log('Is array:', Array.isArray(directResult));
-                          console.log('Result keys:', directResult ? Object.keys(directResult) : 'null');
-
-                          if (Array.isArray(directResult)) {
-                            console.log('✅ Direct array with', directResult.length, 'items');
-                            if (directResult.length > 0) {
-                              console.log('First item:', directResult[0]);
-                              console.log('First item keys:', Object.keys(directResult[0]));
-                              console.log('First item name:', directResult[0].name);
-                              console.log('First item content:', directResult[0].content);
-                            }
-                          } else {
-                            console.log('Not direct array, checking properties...');
-
-                            const possibleKeys = ['data', 'content', 'news', 'items', 'results'];
-                            for (const key of possibleKeys) {
-                              if (directResult && directResult[key]) {
-                                console.log(`Found ${key}:`, directResult[key]);
-                                if (Array.isArray(directResult[key])) {
-                                  console.log(`${key} is array with ${directResult[key].length} items`);
-                                  if (directResult[key].length > 0) {
-                                    console.log(`First ${key} item:`, directResult[key][0]);
-                                  }
-                                }
-                              }
-                            }
-                          }
-
-                          if (Array.isArray(directResult) && directResult.length > 0) {
-                            alert(`✅ Found ${directResult.length} news items! Check console for details.`);
-                          } else if (directResult?.data && Array.isArray(directResult.data) && directResult.data.length > 0) {
-                            alert(`✅ Found ${directResult.data.length} news items in data property! Check console.`);
-                          } else {
-                            alert('❌ No news items found in API response. Check console for details.');
-                          }
-
-                          console.log('=== END DIRECT API TEST ===');
-                        } catch (error) {
-                          console.error('🧪 [HomePage] Direct API error:', error);
-                          alert('❌ Direct API failed - check console for error details');
-                        }
-                      }}
-                      className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                  >
-                    🧪 Test API Direct
-                  </button>
+                  <p className="text-gray-600">Hiện tại chưa có tin tức nào.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   {news.map((article, index) => {
-                    console.log('📰 [HomePage] Rendering article:', article);
                     return (
                         <div
                             key={article.id || index}
-                            className="card hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-                            onClick={() => openNewsDetailModal(article)} // Thêm onClick vào đây
+                            className="group card hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-2 hover:rotate-1 overflow-hidden"
+                            onClick={() => openNewsDetailModal(article)}
                         >
-                          {/* Display image from attachments if available */}
-                          {article.attachments && article.attachments.length > 0 ? (
-                              <div className="h-40 rounded-lg mb-4 overflow-hidden bg-gray-200">
-                                <img
-                                    src={newsService.getImageUrl(article.attachments[0].url)}
-                                    alt={article.name || 'News image'}
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => {
-                                      e.target.onerror = null;
-                                      e.target.parentElement.innerHTML = '<div class="bg-gradient-to-r from-sports-green to-sports-pink h-40 rounded-lg mb-4 flex items-center justify-center"><svg class="h-16 w-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg></div>';
-                                    }}
+                          <div className="relative h-40 rounded-xl mb-4 overflow-hidden">
+                            {article.attachments && article.attachments.length > 0 ? (
+                                <SportImage
+                                  src={newsService.getImageUrl(article.attachments[0].url)}
+                                  alt={article.name || 'Hình ảnh tin tức'}
+                                  fallbackType={
+                                    index === 0 ? 'running' :
+                                    index === 1 ? 'tennis' :
+                                    'swimming'
+                                  }
+                                  className="w-full h-40 object-cover transform transition-all duration-500 group-hover:scale-110"
+                                  gradientClass={
+                                    index === 0 ? 'bg-gradient-to-br from-red-500 via-red-600 to-red-700' :
+                                    index === 1 ? 'bg-gradient-to-br from-purple-500 via-purple-600 to-purple-700' :
+                                    'bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700'
+                                  }
                                 />
-                              </div>
-                          ) : (
-                              <div className="bg-gradient-to-r from-sports-green to-sports-pink h-40 rounded-lg mb-4 flex items-center justify-center">
-                                <Star className="h-16 w-16 text-white" />
-                              </div>
-                          )}
+                            ) : (
+                                <SportImage
+                                  src={
+                                    index === 0 ? 
+                                    'https://images.unsplash.com/photo-1574629810360-7efbbe195018?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80' :
+                                    index === 1 ?
+                                    'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80' :
+                                    'https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80'
+                                  }
+                                  alt={`Tin tức thể thao ${index + 1}`}
+                                  fallbackType={
+                                    index === 0 ? 'running' :
+                                    index === 1 ? 'tennis' :
+                                    'swimming'
+                                  }
+                                  className="w-full h-40 object-cover transform transition-all duration-500 group-hover:scale-110"
+                                  gradientClass={
+                                    index === 0 ? 'bg-gradient-to-br from-red-500 via-red-600 to-red-700' :
+                                    index === 1 ? 'bg-gradient-to-br from-purple-500 via-purple-600 to-purple-700' :
+                                    'bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700'
+                                  }
+                                />
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                          </div>
                           <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                            {article.name || article.title || 'No Title'}
+                            {article.name || article.title || 'Không có tiêu đề'}
                           </h3>
                           <p className="text-gray-600 mb-4 line-clamp-3">
-                            {article.shortDescription || article.content || 'No Content'}
+                            {article.shortDescription || article.content || 'Không có nội dung'}
                           </p>
                           <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-500">
-                        {article.createdAt ? formatDate(article.createdAt) : 'Recent'}
-                      </span>
-                            {/* Thay Link bằng Button để mở modal */}
+                            <span className="text-sm text-gray-500">
+                              {article.createdAt ? formatDate(article.createdAt) : 'Gần đây'}
+                            </span>
                             <button
                                 onClick={(e) => {
-                                  e.stopPropagation(); // Ngăn chặn sự kiện click lan ra thẻ cha
+                                  e.stopPropagation();
                                   openNewsDetailModal(article);
                                 }}
-                                className="text-primary-600 hover:text-primary-700 font-medium text-sm flex items-center space-x-1"
+                                className="group/btn text-purple-600 hover:text-purple-700 font-medium text-sm flex items-center space-x-1 transform transition-all duration-300 hover:scale-110"
                             >
-                              <span>Read More</span>
-                              <ArrowRight className="h-3 w-3" />
+                              <span>Đọc thêm</span>
+                              <ArrowRight className="h-3 w-3 group-hover/btn:animate-bounce-slow" />
                             </button>
                           </div>
                         </div>
@@ -518,26 +712,35 @@ const HomePage = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 bg-gradient-to-r from-primary-600 to-sports-orange">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <section className="py-20 relative overflow-hidden">
+          <div className="absolute inset-0">
+            <SportImage
+              src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80"
+              alt="CTA Background - Thể thao"
+              fallbackType="stadium"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-red-900/90 via-purple-900/80 to-blue-900/90"></div>
+          </div>
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
             <h2 className="text-4xl font-bold text-white mb-4">
-              Ready to Start Your Sports Journey?
+              Sẵn sàng bắt đầu hành trình thể thao của bạn?
             </h2>
             <p className="text-xl text-white opacity-90 mb-8 max-w-2xl mx-auto">
-              Join thousands of athletes and organizers who trust EduSports for their tournament management needs.
+              Tham gia cùng hàng nghìn vận động viên và nhà tổ chức tin tưởng EduSports cho nhu cầu quản lý hoạt động thể thao.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                   to="/register"
-                  className="bg-white text-primary-600 hover:bg-gray-100 font-bold py-4 px-8 rounded-lg transition-colors duration-300"
+                  className="bg-white text-purple-700 hover:bg-gray-100 font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105"
               >
-                Get Started Today
+                Bắt đầu ngay hôm nay
               </Link>
               <Link
                   to="/tournaments"
-                  className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-600 font-bold py-4 px-8 rounded-lg transition-all duration-300"
+                  className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-purple-700 font-bold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105"
               >
-                Explore Tournaments
+                Khám phá các môn thể thao
               </Link>
             </div>
           </div>

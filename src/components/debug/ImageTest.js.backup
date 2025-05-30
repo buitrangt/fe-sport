@@ -1,0 +1,89 @@
+import React, { useState } from 'react';
+import SportImage from '../components/SportImage';
+
+const ImageTest = () => {
+  const [testType, setTestType] = useState('hero');
+
+  return (
+    <div style={{ padding: '20px', backgroundColor: '#f3f4f6' }}>
+      <h2>Test Ảnh Thể Thao</h2>
+      
+      <div style={{ marginBottom: '20px' }}>
+        <label>Chọn loại test: </label>
+        <select 
+          value={testType} 
+          onChange={(e) => setTestType(e.target.value)}
+          style={{ padding: '8px', marginLeft: '10px' }}
+        >
+          <option value="hero">Hero Stadium</option>
+          <option value="football">Football</option>
+          <option value="basketball">Basketball</option>
+          <option value="tennis">Tennis</option>
+          <option value="running">Running</option>
+          <option value="stadium">Stadium</option>
+        </select>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '20px' }}>
+        {/* Test ảnh online */}
+        <div>
+          <h3>Ảnh Online (có thể lỗi)</h3>
+          <SportImage
+            src="https://images.unsplash.com/photo-1579952363873-27d3bfad9c0d?w=800&q=80"
+            alt="Test online"
+            fallbackType={testType}
+            className="w-full h-48 object-cover rounded-lg border"
+          />
+        </div>
+
+        {/* Test ảnh lỗi */}
+        <div>
+          <h3>Ảnh Lỗi (test fallback)</h3>
+          <SportImage
+            src="https://invalid-url-404.jpg"
+            alt="Test fallback"
+            fallbackType={testType}
+            className="w-full h-48 object-cover rounded-lg border"
+          />
+        </div>
+
+        {/* Test ảnh local */}
+        <div>
+          <h3>Ảnh Local Trực Tiếp</h3>
+          <img
+            src={`/images/sports/${testType === 'hero' ? 'hero-stadium' : testType + '-fallback'}.svg`}
+            alt="Test local"
+            className="w-full h-48 object-cover rounded-lg border"
+            onError={(e) => {
+              e.target.style.display = 'none';
+              e.target.nextSibling.style.display = 'block';
+            }}
+          />
+          <div 
+            style={{ 
+              display: 'none', 
+              padding: '20px', 
+              backgroundColor: '#ef4444', 
+              color: 'white', 
+              borderRadius: '8px',
+              height: '192px',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            File không tồn tại
+          </div>
+        </div>
+      </div>
+
+      <div style={{ marginTop: '20px', padding: '15px', backgroundColor: 'white', borderRadius: '8px' }}>
+        <h3>Debug Info:</h3>
+        <p><strong>Loại test:</strong> {testType}</p>
+        <p><strong>File SVG:</strong> /images/sports/{testType === 'hero' ? 'hero-stadium' : testType + '-fallback'}.svg</p>
+        <p><strong>Fallback type:</strong> {testType}</p>
+      </div>
+    </div>
+  );
+};
+
+export default ImageTest;
