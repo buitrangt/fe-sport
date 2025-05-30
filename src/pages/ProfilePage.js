@@ -8,12 +8,12 @@ const ProfilePage = () => {
 
   const profileSections = [
     {
-      title: 'Personal Information',
+      title: 'Thông tin cá nhân', // Translated
       fields: [
-        { label: 'Full Name', value: user?.name || 'Not provided', icon: User },
-        { label: 'Email Address', value: user?.email || 'Not provided', icon: Mail },
-        { label: 'Role', value: user?.role || 'USER', icon: Shield },
-        { label: 'Member Since', value: formatDate(user?.createdAt) || 'Unknown', icon: Calendar },
+        { label: 'Họ và tên', value: user?.name || 'Chưa cung cấp', icon: User }, // Translated
+        { label: 'Địa chỉ Email', value: user?.email || 'Chưa cung cấp', icon: Mail }, // Translated
+        { label: 'Vai trò', value: user?.role || 'NGƯỜI DÙNG', icon: Shield }, // Translated
+        { label: 'Thành viên từ', value: formatDate(user?.createdAt) || 'Không rõ', icon: Calendar }, // Translated
       ]
     }
   ];
@@ -23,9 +23,9 @@ const ProfilePage = () => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Profile Settings</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Cài đặt hồ sơ</h1> {/* Translated */}
           <p className="text-lg text-gray-600">
-            Manage your account information and preferences.
+            Quản lý thông tin và tùy chọn tài khoản của bạn. {/* Translated */}
           </p>
         </div>
 
@@ -36,7 +36,7 @@ const ProfilePage = () => {
               <User className="h-12 w-12 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">{user?.name || 'User'}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{user?.name || 'Người dùng'}</h2> {/* Translated */}
               <p className="text-gray-600">{user?.email}</p>
               <div className="mt-2">
                 <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${
@@ -44,7 +44,7 @@ const ProfilePage = () => {
                   user?.role === 'ORGANIZER' ? 'bg-blue-100 text-blue-800' :
                   'bg-green-100 text-green-800'
                 }`}>
-                  {user?.role || 'USER'}
+                  {user?.role || 'NGƯỜI DÙNG'} {/* Translated */}
                 </span>
               </div>
             </div>
@@ -77,13 +77,13 @@ const ProfilePage = () => {
 
         {/* Actions */}
         <div className="card">
-          <h3 className="text-xl font-bold text-gray-900 mb-6">Account Actions</h3>
+          <h3 className="text-xl font-bold text-gray-900 mb-6">Hành động tài khoản</h3> {/* Translated */}
           <div className="space-y-4">
             <button className="w-full md:w-auto btn-primary">
-              Edit Profile
+              Chỉnh sửa hồ sơ {/* Translated */}
             </button>
             <button className="w-full md:w-auto btn-secondary ml-0 md:ml-3 mt-3 md:mt-0">
-              Change Password
+              Đổi mật khẩu {/* Translated */}
             </button>
           </div>
         </div>

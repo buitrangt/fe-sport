@@ -1,12 +1,13 @@
+// src/App.js
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useAuth } from './context/AuthContext';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 // Layout Components
 import Layout from './components/Layout';
 import LoadingSpinner from './components/LoadingSpinner';
-
 
 // Public Pages
 import HomePage from './pages/HomePage';
@@ -23,20 +24,12 @@ import ProfilePage from './pages/ProfilePage';
 import AdminPanel from './pages/AdminPanel';
 import TournamentAdminDetailPage from './pages/TournamentAdminDetailPage';
 
-// New Management Pages
-import TournamentResultsPage from './pages/TournamentResultsPage';
-import RoundManagementPage from './pages/RoundManagementPage';
-import TeamManagementPage from './pages/TeamManagementPage';
-import TournamentViewerPage from './pages/TournamentViewerPage';
-import DebugPage from './pages/DebugPage';
-import SimpleDebugPage from './pages/SimpleDebugPage';
-
+// Static Pages
 import HelpCenter from './pages/HelpCenter';
 import ContactUs from './pages/ContactUs';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
-import AboutUs from './pages/AboutUs'; // Đảm bảo đã import
-
+import AboutUs from './pages/AboutUs';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -93,74 +86,68 @@ function App() {
 
   return (
     <>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Layout />}>
-          <Route index element={<HomePage />} />
-          <Route path="tournaments" element={<TournamentsPage />} />
-          <Route path="tournaments/:id" element={<TournamentDetailPage />} />
-          <Route path="news" element={<NewsPage />} />
-          <Route path="news/:id" element={<NewsDetailPage />} />
-          
-          {/* Các route cho trang tĩnh */}
-          <Route path="help-center" element={<HelpCenter />} />
-          <Route path="contact-us" element={<ContactUs />} />
-          <Route path="privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="terms-of-service" element={<TermsOfService />} />
-          <Route path="about" element={<AboutUs />} />
-        </Route>
+      <GoogleOAuthProvider clientId="734958052700-6ogs88f5n1hgppod4ub0qndattk9un44.apps.googleusercontent.com">
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Layout />}>
+            <Route index element={<HomePage />} />
+            <Route path="tournaments" element={<TournamentsPage />} />
+            <Route path="tournaments/:id" element={<TournamentDetailPage />} />
+            <Route path="news" element={<NewsPage />} />
+            <Route path="news/:id" element={<NewsDetailPage />} />
+            
+            {/* Static pages */}
+            <Route path="help-center" element={<HelpCenter />} />
+            <Route path="contact-us" element={<ContactUs />} />
+            <Route path="privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="terms-of-service" element={<TermsOfService />} />
+            <Route path="about" element={<AboutUs />} />
+          </Route>
 
-        {/* Auth Routes - Simple without any wrappers */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+          {/* Auth Routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
 
-        {/* Protected Routes */}
-        <Route 
-          path="/dashboard" 
-          element={
-            <ProtectedRoute>
-              <Layout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<DashboardPage />} />
-          <Route path="profile" element={<ProfilePage />} />
-        </Route>
+          {/* Protected Routes */}
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <Layout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<DashboardPage />} />
+            <Route path="profile" element={<ProfilePage />} />
+          </Route>
 
-        {/* Admin Routes */}
-        <Route 
-          path="/admin" 
-          element={
-            <AdminRoute>
-              <Layout />
-            </AdminRoute>
-          }
-        >
-          <Route index element={<AdminPanel />} />
-          <Route path="tournaments" element={<AdminPanel />} />
-          <Route path="results" element={<TournamentResultsPage />} />
-          <Route path="rounds" element={<RoundManagementPage />} />
-          <Route path="teams" element={<TeamManagementPage />} />
-          <Route path="viewer" element={<TournamentViewerPage />} />
-        </Route>
+          {/* Admin Routes */}
+          <Route 
+            path="/admin" 
+            element={
+              <AdminRoute>
+                <Layout />
+              </AdminRoute>
+            }
+          >
+            <Route index element={<AdminPanel />} />
+            <Route path="tournaments" element={<AdminPanel />} />
+          </Route>
 
-        {/* Admin Tournament Detail - Separate Layout */}
-        <Route 
-          path="/admin/tournaments/:id" 
-          element={
-            <AdminRoute>
-              <TournamentAdminDetailPage />
-            </AdminRoute>
-          }
-        />
+          {/* Admin Tournament Detail - Separate Layout */}
+          <Route 
+            path="/admin/tournaments/:id" 
+            element={
+              <AdminRoute>
+                <TournamentAdminDetailPage />
+              </AdminRoute>
+            }
+          />
 
-        {/* Debug route - always available in development build */}
-        <Route path="/debug" element={<SimpleDebugPage />} />
-        <Route path="/debug-full" element={<DebugPage />} />
-
-        {/* Catch all route */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+          {/* Catch all route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </GoogleOAuthProvider>
       
       {/* Toast Notifications */}
       <Toaster

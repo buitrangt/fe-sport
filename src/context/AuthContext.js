@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { authService } from '../services';
+import { authService } from '../services'; // Giả sử authService có phương thức googleLogin
 
 const AuthContext = createContext();
 
@@ -49,8 +49,6 @@ export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   useEffect(() => {
-    // Just check auth state without any force clearing
-    // localStorage is already cleared by localStorageManager
     checkAuth();
   }, []);
 
@@ -65,7 +63,6 @@ export const AuthProvider = ({ children }) => {
     }
 
     try {
-      // Validate token format first
       if (typeof token !== 'string' || token.length < 10) {
         console.log('❌ Invalid token format, removing');
         localStorage.removeItem('accessToken');
@@ -76,15 +73,12 @@ export const AuthProvider = ({ children }) => {
       const response = await authService.getAccount();
       console.log('Account response:', response);
       
-      // Handle both wrapped and unwrapped response formats
       let userData = null;
       
       if (response && response.success && response.data) {
-        // Wrapped format: { success: true, data: { id, email, name, role } }
         userData = response.data;
         console.log('✅ Wrapped format detected, user data:', userData);
       } else if (response && response.id && response.email) {
-        // Direct format: { id, email, name, role } (already unwrapped by API client)
         userData = response;
         console.log('✅ Direct format detected, user data:', userData);
       } else {
@@ -94,7 +88,6 @@ export const AuthProvider = ({ children }) => {
         return;
       }
       
-      // Additional validation for user data
       if (!userData.id || !userData.email) {
         console.log('❌ Incomplete user data, removing token');
         localStorage.removeItem('accessToken');
@@ -110,7 +103,6 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.log('❌ Auth check failed:', error);
       
-      // Clear token for any authentication errors
       if (error.response?.status === 401 || 
           error.response?.status === 403 ||
           error.message?.includes('token') ||
@@ -119,7 +111,9 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('accessToken');
       }
       
-      dispatch({ type: 'AUTH_FAILURE', payload: error.message });
+      dispatch({ type: 'AUTH_FAILURE', payload: error.response?.data?.message || error.message }); // Sử dụng error.response?.data?.message nếu có
+    } finally {
+        dispatch({ type: 'SET_LOADING', payload: false }); // Đảm bảo isLoading được đặt về false
     }
   };
 
@@ -129,37 +123,15 @@ export const AuthProvider = ({ children }) => {
       const response = await authService.login(credentials);
       console.log('=== LOGIN RESPONSE DEBUG ===');
       console.log('Full response:', response);
-      console.log('response.success:', response?.success);
-      console.log('response.data:', response?.data);
-      console.log('response.data.accessToken:', response?.data?.accessToken);
-      console.log('response.data.user:', response?.data?.user);
-      console.log('Response keys:', Object.keys(response || {}));
-      if (response?.data) {
-        console.log('Data keys:', Object.keys(response.data || {}));
-      }
       
-      // Backend returns: { success: true, message: "...", data: { access_token: "...", user: {...} } }
       let accessToken, user;
       
-      if (response && response.success && response.data) {
-        // Standard backend format - try both field names
+      if (response?.data) { // Check if response.data exists first
         accessToken = response.data.accessToken || response.data.access_token;
         user = response.data.user;
-        console.log('Method 1 - Extracted accessToken:', accessToken ? 'Token received' : 'No token');
-        console.log('Method 1 - Extracted user:', user);
-      } else if (response && response.data && (response.data.accessToken || response.data.access_token)) {
-        // Alternative format: { data: { accessToken/access_token, user } }
-        accessToken = response.data.accessToken || response.data.access_token;
-        user = response.data.user;
-        console.log('Method 2 - Extracted accessToken:', accessToken ? 'Token received' : 'No token');
-      } else if (response && (response.accessToken || response.access_token)) {
-        // Direct format: { accessToken/access_token, user }
-        accessToken = response.accessToken || response.access_token;
-        user = response.user;
-        console.log('Method 3 - Extracted accessToken:', accessToken ? 'Token received' : 'No token');
       } else {
-        console.error('Invalid login response format:', response);
-        throw new Error('Invalid login response format');
+          accessToken = response.accessToken || response.access_token; // Direct access if no data wrapper
+          user = response.user;
       }
       
       if (!accessToken) {
@@ -191,6 +163,56 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // === THÊM HÀM loginWithGoogle NÀY VÀO ===
+  const loginWithGoogle = async (accessTokenFromGoogle) => {
+    dispatch({ type: 'AUTH_START' });
+    try {
+      // Gọi service để gửi access token của Google đến backend của bạn
+      // Giả định authService.googleLogin có endpoint để xử lý
+      const response = await authService.googleLogin(accessTokenFromGoogle); // <-- Cần tạo hàm này trong authService.js
+      
+      console.log('=== GOOGLE LOGIN RESPONSE DEBUG ===');
+      console.log('Full response:', response);
+
+      let accessToken, user;
+
+      if (response?.data) {
+        accessToken = response.data.accessToken || response.data.access_token;
+        user = response.data.user;
+      } else {
+        accessToken = response.accessToken || response.access_token;
+        user = response.user;
+      }
+      
+      if (!accessToken) {
+        console.error('❌ No access token (from your backend) found in Google login response');
+        throw new Error('No access token received from backend after Google login');
+      }
+      
+      if (!user) {
+        console.error('No user data found in Google login response');
+        throw new Error('No user data received from backend after Google login');
+      }
+
+      localStorage.setItem('accessToken', accessToken);
+      
+      dispatch({
+        type: 'AUTH_SUCCESS',
+        payload: { user },
+      });
+      
+      console.log('✅ Google login successful, user authenticated');
+      return response;
+
+    } catch (error) {
+      console.error('❌ Google login error:', error);
+      dispatch({ type: 'AUTH_FAILURE', payload: error.response?.data?.message || error.message });
+      throw error;
+    }
+  };
+  // === KẾT THÚC HÀM loginWithGoogle ===
+
+
   const register = async (userData) => {
     dispatch({ type: 'AUTH_START' });
     try {
@@ -209,15 +231,12 @@ export const AuthProvider = ({ children }) => {
     try {
       await authService.logout();
     } catch (error) {
-      // Continue with logout even if API call fails
       console.error('Logout error:', error);
     } finally {
-      // Complete cleanup
       localStorage.removeItem('accessToken');
       localStorage.removeItem('user');
       localStorage.removeItem('refreshToken');
       
-      // Clear any other auth-related data
       const authKeys = ['token', 'auth', 'session', 'login'];
       Object.keys(localStorage).forEach(key => {
         if (authKeys.some(authKey => key.toLowerCase().includes(authKey))) {
@@ -236,6 +255,7 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     checkAuth,
+    loginWithGoogle, // === ĐẢM BẢO THÊM NÓ VÀO ĐÂY ===
   };
 
   return (

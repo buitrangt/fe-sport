@@ -72,16 +72,16 @@ const TournamentsPage = () => {
   );
 
   const statusOptions = [
-    { value: '', label: 'All Status' },
-    { value: 'UPCOMING', label: 'Upcoming' },
-    { value: 'ONGOING', label: 'Ongoing' },
-    { value: 'COMPLETED', label: 'Completed' },
+    { value: '', label: 'Tất cả trạng thái' }, // Translated
+    { value: 'UPCOMING', label: 'Sắp diễn ra' }, // Translated
+    { value: 'ONGOING', label: 'Đang diễn ra' }, // Translated
+    { value: 'COMPLETED', label: 'Đã hoàn thành' }, // Translated
   ];
 
   const sortOptions = [
-    { value: 'startDate', label: 'Start Date' },
-    { value: 'name', label: 'Name' },
-    { value: 'createdAt', label: 'Created Date' },
+    { value: 'startDate', label: 'Ngày bắt đầu' }, // Translated
+    { value: 'name', label: 'Tên' }, // Translated
+    { value: 'createdAt', label: 'Ngày tạo' }, // Translated
   ];
 
   const handleSearch = (e) => {
@@ -93,7 +93,7 @@ const TournamentsPage = () => {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center text-red-600">
-          <p>Error loading tournaments. Please try again later.</p>
+          <p>Lỗi khi tải giải đấu. Vui lòng thử lại sau.</p> {/* Translated */}
         </div>
       </div>
     );
@@ -105,9 +105,9 @@ const TournamentsPage = () => {
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Tournaments</h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Các giải đấu</h1> {/* Translated */}
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Discover exciting sports competitions and join the action
+              Khám phá các cuộc thi thể thao hấp dẫn và tham gia ngay {/* Translated */}
             </p>
           </div>
         </div>
@@ -122,7 +122,7 @@ const TournamentsPage = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <input
                   type="text"
-                  placeholder="Search tournaments..."
+                  placeholder="Tìm kiếm giải đấu..." // Translated
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 input-field"
@@ -150,7 +150,7 @@ const TournamentsPage = () => {
               >
                 {sortOptions.map((option) => (
                   <option key={option.value} value={option.value}>
-                    Sort by {option.label}
+                    Sắp xếp theo {option.label} {/* Translated */}
                   </option>
                 ))}
               </select>
@@ -160,7 +160,7 @@ const TournamentsPage = () => {
                 className="btn-primary whitespace-nowrap"
               >
                 <Filter className="h-4 w-4 mr-2" />
-                Apply
+                Áp dụng {/* Translated */}
               </button>
               
               <button
@@ -168,7 +168,7 @@ const TournamentsPage = () => {
                 onClick={() => refetch()}
                 className="btn-secondary whitespace-nowrap"
               >
-                Refresh
+                Làm mới {/* Translated */}
               </button>
             </div>
           </form>
@@ -180,8 +180,8 @@ const TournamentsPage = () => {
         ) : tournaments?.data?.length === 0 ? (
           <div className="text-center py-12">
             <Trophy className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-medium text-gray-900 mb-2">No tournaments found</h3>
-            <p className="text-gray-600">Try adjusting your search criteria</p>
+            <h3 className="text-xl font-medium text-gray-900 mb-2">Không tìm thấy giải đấu nào</h3> {/* Translated */}
+            <p className="text-gray-600">Hãy thử điều chỉnh tiêu chí tìm kiếm của bạn</p> {/* Translated */}
           </div>
         ) : (
           <>
@@ -204,7 +204,13 @@ const TournamentsPage = () => {
                     </div>
                     
                     <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(tournament.status)}`}>
-                      {tournament.status}
+                      {
+                      // Dịch trạng thái hiển thị
+                      tournament.status === 'UPCOMING' ? 'Sắp diễn ra' :
+                      tournament.status === 'ONGOING' ? 'Đang diễn ra' :
+                      tournament.status === 'COMPLETED' ? 'Đã hoàn thành' :
+                      tournament.status
+                      }
                     </div>
                   </div>
 
@@ -219,11 +225,11 @@ const TournamentsPage = () => {
                   <div className="space-y-2 text-sm text-gray-500 mb-4">
                     <div className="flex items-center space-x-2">
                       <Calendar className="h-4 w-4" />
-                      <span>Start: {formatDate(tournament.startDate)}</span>
+                      <span>Bắt đầu: {formatDate(tournament.startDate)}</span> {/* Translated */}
                     </div>
                     <div className="flex items-center space-x-2">
                       <Users className="h-4 w-4" />
-                      <span>Max {tournament.maxTeams} teams</span>
+                      <span>Tối đa {tournament.maxTeams} đội</span> {/* Translated */}
                     </div>
                     {tournament.location && (
                       <div className="flex items-center space-x-2">
@@ -238,14 +244,14 @@ const TournamentsPage = () => {
                       to={`/tournaments/${tournament.id}`}
                       className="btn-primary flex-1 text-center"
                     >
-                      View Details
+                      Xem chi tiết {/* Translated */}
                     </Link>
                     {tournament.status === 'UPCOMING' && (
                       <Link
                         to={`/tournaments/${tournament.id}/register`}
                         className="btn-secondary"
                       >
-                        Register
+                        Đăng ký {/* Translated */}
                       </Link>
                     )}
                   </div>
@@ -262,11 +268,11 @@ const TournamentsPage = () => {
                   disabled={page === 1}
                   className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Previous
+                  Trước {/* Translated */}
                 </button>
                 
                 <span className="text-gray-600">
-                  Page {page} of {tournaments.pagination.totalPages}
+                  Trang {page} trên tổng số {tournaments.pagination.totalPages} {/* Translated */}
                 </span>
                 
                 <button
@@ -274,7 +280,7 @@ const TournamentsPage = () => {
                   disabled={page >= tournaments.pagination.totalPages}
                   className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Next
+                  Tiếp theo {/* Translated */}
                 </button>
               </div>
             )}

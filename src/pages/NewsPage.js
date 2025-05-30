@@ -44,7 +44,7 @@ const NewsPage = () => {
   const { data: newsData, isLoading, error, refetch } = useQuery( // Đổi tên biến data thành newsData để tránh trùng với biến 'news' trong JSX
       ['news', searchTerm, page], // Thêm 'page' vào dependency array của useQuery
       async () => {
-        console.log('NewsPage: Fetching news...');
+        console.log('NewsPage: Đang tìm nạp tin tức...'); // Translated
         const result = await newsService.getAllNews(); // Lấy tất cả tin tức
 
         let newsList;
@@ -59,7 +59,7 @@ const NewsPage = () => {
           newsList = [];
         }
 
-        console.log('NewsPage: Raw news list after processing:', newsList);
+        console.log('NewsPage: Danh sách tin tức thô sau khi xử lý:', newsList); // Translated
 
         // Lọc theo search term
         let filteredNews = newsList;
@@ -85,7 +85,7 @@ const NewsPage = () => {
         const paginatedNews = filteredNews.slice(startIndex, endIndex);
 
         return {
-          articles: paginatedNews, // Tin tức của trang hiện tại
+          articles: paginatedNews, // Tin tức của trang hiện tại // Translated
           pagination: {
             currentPage: page,
             totalPages: totalPages,
@@ -103,10 +103,10 @@ const NewsPage = () => {
         retry: 3,
         retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
         onError: (error) => {
-          console.error('NewsPage: Query error:', error);
+          console.error('NewsPage: Lỗi truy vấn:', error); // Translated
         },
         onSuccess: (data) => {
-          console.log('NewsPage: Query success, data length:', data?.articles?.length || 0);
+          console.log('NewsPage: Truy vấn thành công, độ dài dữ liệu:', data?.articles?.length || 0); // Translated
           // Nếu số lượng tin tức trên trang hiện tại là 0 nhưng không phải trang 1,
           // và tổng số trang lớn hơn 0, thì chuyển về trang cuối cùng có dữ liệu
           if (data.articles.length === 0 && data.totalPages > 0 && page > data.totalPages) {
@@ -127,7 +127,7 @@ const NewsPage = () => {
   };
 
   // Debug: Log current state
-  console.log('NewsPage render state:', {
+  console.log('Trạng thái render NewsPage:', { // Translated
     isLoading,
     error: error?.message,
     newsLength: newsData?.articles?.length, // Sử dụng newsData.articles
@@ -137,27 +137,27 @@ const NewsPage = () => {
   });
 
   if (error) {
-    console.error('NewsPage error:', error);
+    console.error('Lỗi NewsPage:', error); // Translated
     return (
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-red-800 mb-2">Error Loading News</h3>
-              <p className="text-red-600 mb-4">Unable to load news articles. Please try again.</p>
-              <p className="text-sm text-red-500 mb-4">Error: {error.message}</p>
+              <h3 className="text-lg font-semibold text-red-800 mb-2">Lỗi tải tin tức</h3> {/* Translated */}
+              <p className="text-red-600 mb-4">Không thể tải các bài viết tin tức. Vui lòng thử lại.</p> {/* Translated */}
+              <p className="text-sm text-red-500 mb-4">Lỗi: {error.message}</p> {/* Translated */}
               <div className="space-x-4">
                 <button
                     onClick={handleForceRefresh}
                     className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
                 >
-                  Retry
+                  Thử lại {/* Translated */}
                 </button>
                 {isAdmin && (
                     <Link
                         to="/admin"
                         className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                     >
-                      Go to Admin
+                      Đi đến trang quản trị {/* Translated */}
                     </Link>
                 )}
               </div>
@@ -186,9 +186,9 @@ const NewsPage = () => {
         <div className="bg-white shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="text-center flex-1">
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">News</h1>
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">Tin tức</h1> {/* Translated */}
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Get the latest sports news, tournament information and community highlights
+                Nhận tin tức thể thao mới nhất, thông tin giải đấu và điểm nhấn cộng đồng {/* Translated */}
               </p>
             </div>
           </div>
@@ -202,7 +202,7 @@ const NewsPage = () => {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                   <input
                       type="text"
-                      placeholder="Search news..."
+                      placeholder="Tìm kiếm tin tức..." // Translated
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10 input-field"
@@ -210,7 +210,7 @@ const NewsPage = () => {
                 </div>
               </div>
               <button type="submit" className="btn-primary">
-                Search
+                Tìm kiếm {/* Translated */}
               </button>
               <button
                   type="button"
@@ -218,7 +218,7 @@ const NewsPage = () => {
                   className="btn-secondary"
                   disabled={isLoading}
               >
-                {isLoading ? 'Loading...' : 'Refresh'}
+                {isLoading ? 'Đang tải...' : 'Làm mới'} {/* Translated */}
               </button>
             </form>
           </div>
@@ -226,19 +226,19 @@ const NewsPage = () => {
           {isLoading ? (
               <div className="text-center py-12">
                 <LoadingSpinner />
-                <p className="text-gray-500 mt-4">Loading latest news...</p>
+                <p className="text-gray-500 mt-4">Đang tải tin tức mới nhất...</p> {/* Translated */}
               </div>
           ) : !newsArticles || newsArticles.length === 0 ? (
               <div className="text-center py-12">
                 <div className="bg-white rounded-lg shadow-sm p-8">
                   <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-xl font-medium text-gray-900 mb-2">
-                    {searchTerm ? 'No news found matching your search' : 'No news available'}
+                    {searchTerm ? 'Không tìm thấy tin tức phù hợp với tìm kiếm của bạn' : 'Không có tin tức nào'} {/* Translated */}
                   </h3>
                   <p className="text-gray-600 mb-6">
                     {searchTerm
-                        ? `No articles found for "${searchTerm}". Try different keywords.`
-                        : 'Check back later for the latest sports updates or contact admin.'
+                        ? `Không tìm thấy bài viết nào cho "${searchTerm}". Hãy thử các từ khóa khác.` // Translated
+                        : 'Hãy kiểm tra lại sau để biết các cập nhật thể thao mới nhất hoặc liên hệ quản trị viên.' // Translated
                     }
                   </p>
 
@@ -248,7 +248,7 @@ const NewsPage = () => {
                             onClick={() => setSearchTerm('')}
                             className="text-primary-600 hover:text-primary-700 font-medium"
                         >
-                          Clear search
+                          Xóa tìm kiếm {/* Translated */}
                         </button>
                     )}
 
@@ -256,7 +256,7 @@ const NewsPage = () => {
                         onClick={handleForceRefresh}
                         className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
                     >
-                      Refresh
+                      Làm mới {/* Translated */}
                     </button>
 
                     {isAdmin && (
@@ -265,7 +265,7 @@ const NewsPage = () => {
                             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700"
                         >
                           <Plus className="h-4 w-4 mr-2" />
-                          Create News
+                          Tạo tin tức {/* Translated */}
                         </Link>
                     )}
                   </div>
@@ -303,12 +303,12 @@ const NewsPage = () => {
                         <div className="p-8 flex-1">
                           <div className="flex items-center text-sm text-gray-500 mb-2">
                       <span className="bg-primary-100 text-primary-800 px-2 py-1 rounded-full text-xs font-medium mr-3">
-                        Featured
+                        Nổi bật {/* Translated */}
                       </span>
                             <Calendar className="h-4 w-4 mr-1" />
                             <span>{formatDate(featuredNews.createdAt)}</span>
                             <User className="h-4 w-4 ml-4 mr-1" />
-                            <span>{featuredNews.author || 'EduSports Team'}</span>
+                            <span>{featuredNews.author || 'Đội ngũ EduSports'}</span> {/* Translated */}
                           </div>
                           <h2 className="text-2xl font-bold text-gray-900 mb-3">
                             <button
@@ -331,7 +331,7 @@ const NewsPage = () => {
                               }}
                               className="inline-flex items-center text-primary-600 hover:text-primary-700 font-medium"
                           >
-                            Read full article
+                            Đọc bài viết đầy đủ {/* Translated */}
                             <ArrowRight className="h-4 w-4 ml-1" />
                           </button>
                         </div>
@@ -343,8 +343,8 @@ const NewsPage = () => {
                 {otherNews.length > 0 && (
                     <div>
                       <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-2xl font-bold text-gray-900">More Articles</h2>
-                        <span className="text-sm text-gray-500">{otherNews.length} articles</span>
+                        <h2 className="text-2xl font-bold text-gray-900">Các bài viết khác</h2> {/* Translated */}
+                        <span className="text-sm text-gray-500">{otherNews.length} bài viết</span> {/* Translated */}
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {otherNews.map((article) => (
@@ -376,7 +376,7 @@ const NewsPage = () => {
                                 <Calendar className="h-4 w-4 mr-1" />
                                 <span>{formatDate(article.createdAt)}</span>
                                 <User className="h-4 w-4 ml-4 mr-1" />
-                                <span>{article.author || 'EduSports Team'}</span>
+                                <span>{article.author || 'Đội ngũ EduSports'}</span> {/* Translated */}
                               </div>
 
                               <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
@@ -403,7 +403,7 @@ const NewsPage = () => {
                                     }}
                                     className="text-primary-600 hover:text-primary-700 font-medium text-sm inline-flex items-center"
                                 >
-                                  Read more
+                                  Đọc thêm {/* Translated */}
                                   <ArrowRight className="h-3 w-3 ml-1" />
                                 </button>
                                 <div className="flex items-center text-sm text-gray-500">
@@ -423,7 +423,7 @@ const NewsPage = () => {
           {pagination && pagination.totalPages > 1 && (
               <div className="bg-white px-4 py-3 border-t border-gray-200 sm:px-6 flex items-center justify-between mt-8 rounded-lg shadow-sm">
                 <div className="text-sm text-gray-700">
-                  Showing page <span className="font-medium">{pagination.currentPage}</span> of <span className="font-medium">{pagination.totalPages}</span> ({pagination.totalItems} articles)
+                  Hiển thị trang <span className="font-medium">{pagination.currentPage}</span> trên tổng số <span className="font-medium">{pagination.totalPages}</span> ({pagination.totalItems} bài viết) {/* Translated */}
                 </div>
                 <div className="flex space-x-2">
                   <button
@@ -431,14 +431,14 @@ const NewsPage = () => {
                       disabled={!pagination.hasPrev || isLoading}
                       className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Previous
+                    Trước {/* Translated */}
                   </button>
                   <button
                       onClick={() => setPage(prev => Math.min(pagination.totalPages, prev + 1))}
                       disabled={!pagination.hasNext || isLoading}
                       className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Next
+                    Tiếp theo {/* Translated */}
                   </button>
                 </div>
               </div>
@@ -448,8 +448,8 @@ const NewsPage = () => {
           {newsArticles.length > 0 && (
               <div className="mt-12 text-center">
                 <p className="text-gray-500">
-                  Total {pagination.totalItems} article{pagination.totalItems !== 1 ? 's' : ''}
-                  {searchTerm && ` matching "${searchTerm}"`}
+                  Tổng cộng {pagination.totalItems} bài viết{pagination.totalItems !== 1 ? '' : ''} {/* Translated */}
+                  {searchTerm && ` khớp với "${searchTerm}"`} {/* Translated */}
                 </p>
               </div>
           )}

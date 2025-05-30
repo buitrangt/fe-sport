@@ -1,3 +1,5 @@
+// index.js (File dịch vụ API frontend của bạn)
+
 import apiClient from './api';
 import { 
   userManagementService, 
@@ -39,6 +41,22 @@ export const authService = {
     const response = await apiClient.post('/api/v1/auth/refresh');
     return response.data;
   },
+
+  // === THÊM HÀM googleLogin NÀY VÀO AUTH SERVICE ===
+  googleLogin: async (idToken) => { // Thay đổi tham số từ accessToken thành idToken nếu GoogleIdToken được gửi
+    console.log('Sending Google ID token to backend for verification:', idToken);
+    try {
+      // Endpoint này cần khớp với endpoint trong RestAuthController.java
+      // Bạn đã đặt nó là @PostMapping("/google-login") trong RestAuthController
+      const response = await apiClient.post('/api/v1/auth/google-login', { idToken }); 
+      console.log('Backend response for Google login:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Error in authService.googleLogin:', error.response?.data || error.message);
+      throw error;
+    }
+  },
+  // ====================================================
 };
 
 // ==================== TOURNAMENT SERVICE ====================
@@ -460,13 +478,13 @@ export const newsService = {
 
   // Update news
   updateNews: async (id, newsData) => {
-    const response = await apiClient.put(`/api/v1/news/${id}`, newsData);
+    const response = await apiClient.put('/api/v1/news/${id}', newsData);
     return response.data;
   },
 
   // Delete news
   deleteNews: async (id) => {
-    const response = await apiClient.delete(`/api/v1/news/${id}`);
+    const response = await apiClient.delete('/api/v1/news/${id}');
     return response.data;
   },
 
