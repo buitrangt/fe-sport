@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from 'react-query';
 import { 
   Calendar, 
@@ -29,6 +29,7 @@ import { formatDate, formatDateTime, getStatusColor } from '../utils/helpers';
 const TournamentDetailPage = () => {
   const { id } = useParams();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('overview');
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
@@ -305,7 +306,14 @@ const TournamentDetailPage = () => {
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => {
+                      if (tab.id === 'management' && isAdmin) {
+                        // Chuyển hướng đến trang admin mới
+                        navigate(`/admin/tournaments/${id}`);
+                      } else {
+                        setActiveTab(tab.id);
+                      }
+                    }}
                     className={`py-2 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
                       activeTab === tab.id
                         ? 'border-primary-500 text-primary-600'

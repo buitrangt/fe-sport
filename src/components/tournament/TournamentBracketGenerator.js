@@ -28,7 +28,14 @@ const TournamentBracketGenerator = ({ tournament, onBracketGenerated }) => {
         console.error('⚠️ Failed to fetch teams for debugging:', teamError);
       }
       
-      const response = await tournamentKnockoutService.generateBracket(tournament.id, bracketData);
+      // FIXED: Send correct request format
+      const requestData = {
+        shuffleTeams: bracketData.randomize,
+        bracketType: bracketData.type
+      };
+      
+      console.log('📤 [Generate] Sending request:', requestData);
+      const response = await tournamentKnockoutService.generateBracket(tournament.id, requestData);
       console.log('✅ Generate bracket success:', response);
       
       toast.success('Tournament bracket generated successfully!');

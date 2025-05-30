@@ -3,7 +3,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useAuth } from './context/AuthContext';
-import { GoogleOAuthProvider } from '@react-oauth/google'; // THÊM DÒNG NÀY
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 // Layout Components
 import Layout from './components/Layout';
@@ -18,13 +18,13 @@ import TournamentDetailPage from './pages/TournamentDetailPage';
 import NewsPage from './pages/NewsPage';
 import NewsDetailPage from './pages/NewsDetailPage';
 
+// Protected Pages
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminPanel from './pages/AdminPanel';
+import TournamentAdminDetailPage from './pages/TournamentAdminDetailPage';
 
-import TournamentManagement from './components/admin/TournamentManagement';
-import AdminTournamentDetailPage from './components/admin/AdminTournamentDetailPage';
-
+// Static Pages
 import HelpCenter from './pages/HelpCenter';
 import ContactUs from './pages/ContactUs';
 import PrivacyPolicy from './pages/PrivacyPolicy';
@@ -34,37 +34,34 @@ import AboutUs from './pages/AboutUs';
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
-
+  
   if (isLoading) {
     return <LoadingSpinner />;
   }
-
+  
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
-
+  
   return children;
 };
 
 // Admin Route Component
 const AdminRoute = ({ children }) => {
   const { user, isAuthenticated, isLoading } = useAuth();
-
+  
   if (isLoading) {
     return <LoadingSpinner />;
   }
-
+  
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
-
-  // Debug log để kiểm tra vai trò
-  console.log('🔒 [AdminRoute] User role:', user?.role);
+  
   if (user?.role !== 'ADMIN' && user?.role !== 'ORGANIZER') {
-    console.log('❌ [AdminRoute] User not authorized. Redirecting to /dashboard');
     return <Navigate to="/dashboard" replace />;
   }
-
+  
   return children;
 };
 
@@ -89,7 +86,6 @@ function App() {
 
   return (
     <>
-      {/* THÊM GOOGLEOAUTHPROVIDER Ở ĐÂY, BỌC QUANH ROUTES */}
       <GoogleOAuthProvider clientId="734958052700-6ogs88f5n1hgppod4ub0qndattk9un44.apps.googleusercontent.com">
         <Routes>
           {/* Public Routes */}
@@ -99,8 +95,8 @@ function App() {
             <Route path="tournaments/:id" element={<TournamentDetailPage />} />
             <Route path="news" element={<NewsPage />} />
             <Route path="news/:id" element={<NewsDetailPage />} />
-
-            {/* Các route cho trang tĩnh */}
+            
+            {/* Static pages */}
             <Route path="help-center" element={<HelpCenter />} />
             <Route path="contact-us" element={<ContactUs />} />
             <Route path="privacy-policy" element={<PrivacyPolicy />} />
@@ -108,11 +104,13 @@ function App() {
             <Route path="about" element={<AboutUs />} />
           </Route>
 
+          {/* Auth Routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
 
-          <Route
-            path="/dashboard"
+          {/* Protected Routes */}
+          <Route 
+            path="/dashboard" 
             element={
               <ProtectedRoute>
                 <Layout />
@@ -123,25 +121,34 @@ function App() {
             <Route path="profile" element={<ProfilePage />} />
           </Route>
 
-          <Route
-            path="/admin"
+          {/* Admin Routes */}
+          <Route 
+            path="/admin" 
             element={
               <AdminRoute>
-                <Layout /> {/* Layout của admin */}
+                <Layout />
               </AdminRoute>
             }
           >
-            <Route index element={<AdminPanel />} /> {/* Route gốc /admin */}
-            <Route path="tournaments" element={<TournamentManagement />} /> {/* /admin/tournaments */}
-            <Route path="tournaments/:id" element={<AdminTournamentDetailPage />} /> {/* /admin/tournaments/:id */}
-
+            <Route index element={<AdminPanel />} />
+            <Route path="tournaments" element={<AdminPanel />} />
           </Route>
+
+          {/* Admin Tournament Detail - Separate Layout */}
+          <Route 
+            path="/admin/tournaments/:id" 
+            element={
+              <AdminRoute>
+                <TournamentAdminDetailPage />
+              </AdminRoute>
+            }
+          />
 
           {/* Catch all route */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </GoogleOAuthProvider> {/* ĐÓNG GOOGLEOAUTHPROVIDER */}
-
+      </GoogleOAuthProvider>
+      
       {/* Toast Notifications */}
       <Toaster
         position="top-right"
