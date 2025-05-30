@@ -5,6 +5,7 @@ import { Search, Filter, Trophy, Users, Calendar, MapPin } from 'lucide-react';
 import { tournamentServiceFixed as tournamentService } from '../services/tournamentServiceFixed';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { formatDate, getStatusColor } from '../utils/helpers';
+import { getTournamentImageUrl } from '../utils/imageUtils';
 
 const TournamentsPage = () => {
   const [page, setPage] = useState(1);
@@ -12,7 +13,7 @@ const TournamentsPage = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [sortBy, setSortBy] = useState('startDate');
 
-  const { data: tournaments, isLoading, error } = useQuery(
+  const { data: tournaments, isLoading, error, refetch } = useQuery(
     ['tournaments', { page, searchTerm, status: statusFilter, sortBy }],
     () => tournamentService.getAllTournaments({
       page,
@@ -22,14 +23,11 @@ const TournamentsPage = () => {
       sortBy,
     }),
     {
-      staleTime: 5 * 60 * 1000,
+      staleTime: 5 * 60 * 1000, // 5 minutes
       keepPreviousData: true,
       select: (response) => {
-        console.log('🏆 [TournamentsPage] Tournament API Response:', response);
-        
         // tournamentServiceFixed already handles the response format and returns { data: [...], pagination: {...} }
         if (response && response.data && Array.isArray(response.data)) {
-          console.log('🏆 [TournamentsPage] Found tournaments:', response.data.length);
           return {
             data: response.data,
             pagination: response.pagination || {
@@ -65,8 +63,6 @@ const TournamentsPage = () => {
           pagination = response.data.pagination || pagination;
         }
 
-        console.log('🏆 [TournamentsPage] Processed data:', { data: data.length, pagination });
-        
         return {
           data,
           pagination
@@ -166,6 +162,14 @@ const TournamentsPage = () => {
                 <Filter className="h-4 w-4 mr-2" />
                 Apply
               </button>
+              
+              <button
+                type="button"
+                onClick={() => refetch()}
+                className="btn-secondary whitespace-nowrap"
+              >
+                Refresh
+              </button>
             </div>
           </form>
         </div>
@@ -182,12 +186,23 @@ const TournamentsPage = () => {
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {tournaments?.data?.map((tournament) => (
+              {tournaments?.data?.map((tournament) => {
+                return (
                 <div key={tournament.id} className="card hover:shadow-lg transition-shadow duration-300">
                   <div className="relative mb-4">
-                    <div className="bg-gradient-to-r from-primary-500 to-sports-purple h-48 rounded-lg flex items-center justify-center">
-                      <Trophy className="h-20 w-20 text-white" />
+                    <div className="h-48 rounded-lg overflow-hidden bg-gradient-to-r from-primary-500 to-sports-purple flex items-center justify-center">
+                      {tournament.imageUrl ? (
+                        <img
+                          src={getTournamentImageUrl(tournament.imageUrl)}
+                          alt={tournament.name}
+                          className="w-full h-full object-cover absolute inset-0"
+                          style={{ opacity: 1 }}
+                        />
+                      ) : (
+                        <Trophy className="h-20 w-20 text-white" />
+                      )}
                     </div>
+                    
                     <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(tournament.status)}`}>
                       {tournament.status}
                     </div>
@@ -235,7 +250,8 @@ const TournamentsPage = () => {
                     )}
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Pagination */}
