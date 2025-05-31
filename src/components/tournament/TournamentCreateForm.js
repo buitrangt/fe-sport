@@ -45,20 +45,20 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
 
   const createTournamentMutation = useMutation(
     ({ tournamentData, imageFile }) => {
-      console.log('🚀 Calling tournamentServiceFixed.createTournamentWithImage with:', { tournamentData, imageFile });
+      console.log('🚀 Đang gọi tournamentServiceFixed.createTournamentWithImage với:', { tournamentData, imageFile });
       return tournamentServiceFixed.createTournamentWithImage(tournamentData, imageFile);
     },
     {
       onSuccess: (response) => {
-        console.log('✅ Tournament created successfully:', response);
+        console.log('✅ Tạo giải đấu thành công:', response);
         toast.success('Tạo giải đấu thành công!');
         queryClient.invalidateQueries(QUERY_KEYS.TOURNAMENTS);
         onSuccess?.(response?.data || response);
         handleClose();
       },
       onError: (error) => {
-        console.error('❌ Tournament creation failed:', error);
-        console.error('Error details:', {
+        console.error('❌ Tạo giải đấu thất bại:', error);
+        console.error('Chi tiết lỗi:', {
           message: error.message,
           response: error.response?.data,
           status: error.response?.status
@@ -67,7 +67,7 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
         const errorMessage = error.response?.data?.message || 
                            error.response?.data?.error || 
                            error.message || 
-                           'An error occurred while creating the tournament.';
+                           'Đã xảy ra lỗi khi tạo giải đấu.';
         
         toast.error(errorMessage);
         setIsSubmitting(false);
@@ -90,7 +90,7 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
     if (!allowedTypes.includes(file.type)) {
-      toast.error('Chỉ hỗ trợ file ảnh (JPG, PNG, GIF)');
+      toast.error('Chỉ hỗ trợ tệp ảnh (JPG, PNG, GIF)');
       event.target.value = '';
       return;
     }
@@ -98,7 +98,7 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
     // Validate file size (5MB limit)
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
-      toast.error('Kích thước file không được vượt quá 5MB');
+      toast.error('Kích thước tệp không được vượt quá 5MB');
       event.target.value = '';
       return;
     }
@@ -112,7 +112,7 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
     };
     reader.readAsDataURL(file);
 
-    console.log('📸 Image selected:', {
+    console.log('📸 Đã chọn ảnh:', {
       name: file.name,
       size: file.size,
       type: file.type
@@ -130,20 +130,20 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
 
   const onSubmit = async (data) => {
     try {
-      console.log('📝 Form submitted with data:', data);
-      console.log('🖼️ Selected image:', selectedImage);
+      console.log('📝 Dữ liệu form đã gửi:', data);
+      console.log('🖼️ Ảnh đã chọn:', selectedImage);
       setIsSubmitting(true);
       
       // Validate required fields
       if (!data.name || !data.description || !data.location || !data.contactInfo) {
-        toast.error('Please fill in all required information');
+        toast.error('Vui lòng điền đầy đủ thông tin bắt buộc');
         setIsSubmitting(false);
         return;
       }
 
       // Validate dates
       if (!data.startDate || !data.endDate || !data.registrationDeadline) {
-        toast.error('Please select full date');
+        toast.error('Vui lòng chọn đầy đủ ngày');
         setIsSubmitting(false);
         return;
       }
@@ -186,15 +186,15 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
         contactInfo: data.contactInfo.trim()
       };
       
-      console.log('🎯 Final tournament data to send:', tournamentData);
-      console.log('📷 Image file to send:', selectedImage);
+      console.log('🎯 Dữ liệu giải đấu cuối cùng để gửi:', tournamentData);
+      console.log('📷 Tệp ảnh để gửi:', selectedImage);
       
       await createTournamentMutation.mutateAsync({
         tournamentData,
         imageFile: selectedImage
       });
     } catch (error) {
-      console.error('💥 Tournament creation error in onSubmit:', error);
+      console.error('💥 Lỗi tạo giải đấu trong onSubmit:', error);
       setIsSubmitting(false);
     }
   };
@@ -235,8 +235,8 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
               <Trophy className="h-6 w-6 text-orange-600" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Create New Tournament</h2>
-              <p className="text-sm text-gray-600">Fill in the information to create a tournament</p>
+              <h2 className="text-xl font-bold text-gray-900">Tạo giải đấu mới</h2>
+              <p className="text-sm text-gray-600">Điền thông tin để tạo giải đấu</p>
             </div>
           </div>
           <button
@@ -254,7 +254,7 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
             {/* Image Upload Section */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tournament Image
+                Ảnh giải đấu
               </label>
               <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-gray-400 transition-colors">
                 <div className="space-y-1 text-center">
@@ -262,7 +262,7 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
                     <div className="relative">
                       <img
                         src={imagePreview}
-                        alt="Tournament preview"
+                        alt="Xem trước giải đấu"
                         className="mx-auto h-32 w-32 object-cover rounded-lg"
                       />
                       <button
@@ -286,7 +286,7 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
                           htmlFor="tournament-image"
                           className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
                         >
-                          <span>Upload an image</span>
+                          <span>Tải ảnh lên</span>
                           <input
                             id="tournament-image"
                             name="tournament-image"
@@ -298,9 +298,9 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
                             disabled={isSubmitting}
                           />
                         </label>
-                        <p className="pl-1">or drag and drop</p>
+                        <p className="pl-1">hoặc kéo và thả</p>
                       </div>
-                      <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
+                      <p className="text-xs text-gray-500">PNG, JPG, GIF tối đa 5MB</p>
                     </>
                   )}
                 </div>
@@ -312,23 +312,23 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
               {/* Tournament Name */}
               <div className="lg:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tournament Name *
+                  Tên giải đấu *
                 </label>
                 <input
                   type="text"
                   {...register('name', {
-                    required: 'Tournament name is required',
+                    required: 'Tên giải đấu là bắt buộc',
                     minLength: {
                       value: 3,
-                      message: 'Tournament name must be at least 3 characters'
+                      message: 'Tên giải đấu phải có ít nhất 3 ký tự'
                     },
                     maxLength: {
                       value: 100,
-                      message: 'Tournament name cannot exceed 100 characters'
+                      message: 'Tên giải đấu không được vượt quá 100 ký tự'
                     }
                   })}
                   className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.name ? 'border-red-500' : ''}`}
-                  placeholder="Enter tournament name"
+                  placeholder="Nhập tên giải đấu"
                   disabled={isSubmitting}
                 />
                 {errors.name && (
@@ -339,21 +339,23 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
               {/* Sport Type */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Sport *
+                  Môn thể thao *
                 </label>
                 <select
-                  {...register('sportType', { required: 'Please select a sport' })}
+                  {...register('sportType', { required: 'Vui lòng chọn một môn thể thao' })}
                   className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.sportType ? 'border-red-500' : ''}`}
                   disabled={isSubmitting}
                 >
-                  <option value="FOOTBALL">Football</option>
-                  <option value="BASKETBALL">Basketball</option>
-                  <option value="VOLLEYBALL">Volleyball</option>
-                  <option value="BADMINTON">Badminton</option>
+                  <option value="FOOTBALL">Bóng đá</option>
+                  <option value="LMHT">LMHT</option>
+                  <option value="BILLIARDS">Bida</option>
+                  <option value="Pickleball">Pickleball</option>
+                  <option value="BASKETBALL">Bóng rổ</option>
+                  <option value="VOLLEYBALL">Bóng chuyền</option>
+                  <option value="BADMINTON">Cầu lông</option>
                   <option value="TENNIS">Tennis</option>
-                  <option value="PING_PONG">Table Tennis</option>
-                  <option value="BILLIARDS">Billiards</option>
-                  <option value="GENERAL">Other</option>
+                  <option value="PING_PONG">Bóng bàn</option>
+                  <option value="GENERAL">Khác</option>
                 </select>
                 {errors.sportType && (
                   <p className="mt-1 text-sm text-red-600">{errors.sportType.message}</p>
@@ -363,20 +365,20 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
               {/* Max Teams */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Maximum number of teams *
+                  Số lượng đội tối đa *
                 </label>
                 <select
                   {...register('maxTeams', { 
-                    required: 'Please select maximum number of teams'
+                    required: 'Vui lòng chọn số lượng đội tối đa'
                   })}
                   className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.maxTeams ? 'border-red-500' : ''}`}
                   disabled={isSubmitting}
                 >
-                  <option value={4}>4 teams</option>
-                  <option value={8}>8 teams</option>
-                  <option value={16}>16 teams</option>
-                  <option value={32}>32 teams</option>
-                  <option value={64}>64 teams</option>
+                  <option value={4}>4 đội</option>
+                  <option value={8}>8 đội</option>
+                  <option value={16}>16 đội</option>
+                  <option value={32}>32 đội</option>
+                  <option value={64}>64 đội</option>
                 </select>
                 {errors.maxTeams && (
                   <p className="mt-1 text-sm text-red-600">{errors.maxTeams.message}</p>
@@ -387,16 +389,16 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
             {/* Description */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tournament Description *
+                Mô tả giải đấu *
               </label>
               <textarea
                 {...register('description', {
-                  required: 'Tournament description is required',
+                  required: 'Mô tả giải đấu là bắt buộc',
                   minLength: { value: 10, message: 'Mô tả phải có ít nhất 10 ký tự' }
                 })}
                 rows={3}
                 className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none ${errors.description ? 'border-red-500' : ''}`}
-                placeholder="Detailed description of the tournament"
+                placeholder="Mô tả chi tiết về giải đấu"
                 disabled={isSubmitting}
               />
               {errors.description && (
@@ -408,11 +410,11 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Start Date *
+                  Ngày bắt đầu *
                 </label>
                 <input
                   type="datetime-local"
-                  {...register('startDate', { required: 'Start date is required' })}
+                  {...register('startDate', { required: 'Ngày bắt đầu là bắt buộc' })}
                   min={minStartDate}
                   className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.startDate ? 'border-red-500' : ''}`}
                   disabled={isSubmitting}
@@ -424,11 +426,11 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  End Date *
+                  Ngày kết thúc *
                 </label>
                 <input
                   type="datetime-local"
-                  {...register('endDate', { required: 'End date is required' })}
+                  {...register('endDate', { required: 'Ngày kết thúc là bắt buộc' })}
                   min={minEndDate}
                   className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.endDate ? 'border-red-500' : ''}`}
                   disabled={isSubmitting}
@@ -440,11 +442,11 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Registration deadline *
+                  Hạn chót đăng ký *
                 </label>
                 <input
                   type="datetime-local"
-                  {...register('registrationDeadline', { required: 'Registration deadline is mandatory' })}
+                  {...register('registrationDeadline', { required: 'Hạn chót đăng ký là bắt buộc' })}
                   min={formatDateTimeForInput(today)}
                   max={maxRegDeadline}
                   className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.registrationDeadline ? 'border-red-500' : ''}`}
@@ -459,13 +461,13 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
             {/* Location */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Location *
+                Địa điểm *
               </label>
               <input
                 type="text"
-                {...register('location', { required: 'Location is required' })}
+                {...register('location', { required: 'Địa điểm là bắt buộc' })}
                 className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.location ? 'border-red-500' : ''}`}
-                placeholder="Enter the venue"
+                placeholder="Nhập địa điểm tổ chức"
                 disabled={isSubmitting}
               />
               {errors.location && (
@@ -476,13 +478,13 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
             {/* Contact Info */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Contact information *
+                Thông tin liên hệ *
               </label>
               <input
                 type="text"
-                {...register('contactInfo', { required: 'Contact information is required' })}
+                {...register('contactInfo', { required: 'Thông tin liên hệ là bắt buộc' })}
                 className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.contactInfo ? 'border-red-500' : ''}`}
-                placeholder="Contact email or phone number"
+                placeholder="Email hoặc số điện thoại liên hệ"
                 disabled={isSubmitting}
               />
               {errors.contactInfo && (
@@ -494,26 +496,26 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Competition rules
+                  Luật thi đấu
                 </label>
                 <textarea
                   {...register('rules')}
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                  placeholder="Description of competition rules and regulations"
+                  placeholder="Mô tả các quy tắc và quy định của giải đấu"
                   disabled={isSubmitting}
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Award Information
+                  Thông tin giải thưởng
                 </label>
                 <textarea
                   {...register('prizeInfo')}
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                  placeholder="Prize and reward descriptions"
+                  placeholder="Mô tả giải thưởng và phần thưởng"
                   disabled={isSubmitting}
                 />
               </div>
@@ -528,7 +530,7 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSubmitting}
             >
-              Cancel
+              Hủy
             </button>
             <button
               type="submit"
@@ -538,12 +540,12 @@ const TournamentCreateForm = ({ isOpen, onClose, onSuccess }) => {
               {isSubmitting ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Creating...
+                  Đang tạo...
                 </>
               ) : (
                 <>
                   <Trophy className="h-4 w-4 mr-2" />
-                  Create Tournament {selectedImage && '(with Image)'}
+                  Tạo giải đấu {selectedImage && '(có ảnh)'}
                 </>
               )}
             </button>

@@ -65,12 +65,12 @@ const TournamentEditForm = ({ tournament, isOpen, onClose, onSuccess }) => {
     (tournamentData) => tournamentService.updateTournament(tournament.id, tournamentData),
     {
       onSuccess: (response) => {
-        toast.success('Tournament updated successfully!');
+        toast.success('Giải đấu đã được cập nhật thành công!');
         onSuccess?.(response.data);
         handleClose();
       },
       onError: (error) => {
-        toast.error(error.response?.data?.message || 'Failed to update tournament');
+        toast.error(error.response?.data?.message || 'Cập nhật giải đấu thất bại');
         setIsSubmitting(false);
       }
     }
@@ -89,20 +89,20 @@ const TournamentEditForm = ({ tournament, isOpen, onClose, onSuccess }) => {
       const regDeadline = new Date(data.registrationDeadline);
       
       if (regDeadline >= startDate) {
-        toast.error('Registration deadline must be before tournament start date');
+        toast.error('Hạn đăng ký phải trước ngày bắt đầu giải đấu');
         setIsSubmitting(false);
         return;
       }
       
       if (startDate >= endDate) {
-        toast.error('End date must be after start date');
+        toast.error('Ngày kết thúc phải sau ngày bắt đầu');
         setIsSubmitting(false);
         return;
       }
 
       // Check if max teams is being reduced below current teams
       if (data.maxTeams < tournament.currentTeams) {
-        if (!window.confirm(`Reducing max teams to ${data.maxTeams} will not affect already registered teams (${tournament.currentTeams}). Continue?`)) {
+        if (!window.confirm(`Việc giảm số đội tối đa xuống ${data.maxTeams} sẽ không ảnh hưởng đến các đội đã đăng ký (${tournament.currentTeams}). Bạn có muốn tiếp tục?`)) {
           setIsSubmitting(false);
           return;
         }
@@ -120,13 +120,13 @@ const TournamentEditForm = ({ tournament, isOpen, onClose, onSuccess }) => {
       console.log('Updating tournament with data:', tournamentData);
       await updateTournamentMutation.mutateAsync(tournamentData);
     } catch (error) {
-      console.error('Tournament update error:', error);
+      console.error('Lỗi khi cập nhật giải đấu:', error);
       setIsSubmitting(false);
     }
   };
 
   const handleClose = () => {
-    if (isDirty && !window.confirm('You have unsaved changes. Are you sure you want to close?')) {
+    if (isDirty && !window.confirm('Bạn có thay đổi chưa lưu. Bạn có chắc chắn muốn đóng?')) {
       return;
     }
     reset();
@@ -160,8 +160,8 @@ const TournamentEditForm = ({ tournament, isOpen, onClose, onSuccess }) => {
               <Trophy className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Edit Tournament</h2>
-              <p className="text-sm text-gray-600">Update tournament information and settings</p>
+              <h2 className="text-xl font-bold text-gray-900">Chỉnh Sửa Giải Đấu</h2>
+              <p className="text-sm text-gray-600">Cập nhật thông tin và cài đặt giải đấu</p>
             </div>
           </div>
           <button
@@ -182,9 +182,9 @@ const TournamentEditForm = ({ tournament, isOpen, onClose, onSuccess }) => {
                 <div className="flex items-start space-x-3">
                   <Calendar className="h-5 w-5 text-yellow-600 mt-0.5" />
                   <div>
-                    <h4 className="text-sm font-medium text-yellow-900">Tournament Status Notice</h4>
+                    <h4 className="text-sm font-medium text-yellow-900">Thông Báo Trạng Thái Giải Đấu</h4>
                     <p className="text-sm text-yellow-700 mt-1">
-                      This tournament is {tournament.status.toLowerCase()}. Some fields may be restricted from editing.
+                      Giải đấu này đang {tournament.status === 'ONGOING' ? 'diễn ra' : 'hoàn thành'}. Một số trường có thể bị hạn chế chỉnh sửa.
                     </p>
                   </div>
                 </div>
@@ -196,23 +196,23 @@ const TournamentEditForm = ({ tournament, isOpen, onClose, onSuccess }) => {
               {/* Tournament Name */}
               <div className="lg:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tournament Name *
+                  Tên Giải Đấu *
                 </label>
                 <input
                   type="text"
                   {...register('name', {
-                    required: 'Tournament name is required',
+                    required: 'Tên giải đấu là bắt buộc',
                     minLength: {
                       value: VALIDATION_RULES?.TOURNAMENT_NAME?.MIN_LENGTH || 3,
-                      message: `Tournament name must be at least ${VALIDATION_RULES?.TOURNAMENT_NAME?.MIN_LENGTH || 3} characters`
+                      message: `Tên giải đấu phải có ít nhất ${VALIDATION_RULES?.TOURNAMENT_NAME?.MIN_LENGTH || 3} ký tự`
                     },
                     maxLength: {
                       value: VALIDATION_RULES?.TOURNAMENT_NAME?.MAX_LENGTH || 100,
-                      message: `Tournament name cannot exceed ${VALIDATION_RULES?.TOURNAMENT_NAME?.MAX_LENGTH || 100} characters`
+                      message: `Tên giải đấu không được vượt quá ${VALIDATION_RULES?.TOURNAMENT_NAME?.MAX_LENGTH || 100} ký tự`
                     }
                   })}
                   className={`input-field ${errors.name ? 'border-red-500' : ''}`}
-                  placeholder="Enter tournament name"
+                  placeholder="Nhập tên giải đấu"
                   disabled={isSubmitting}
                 />
                 {errors.name && (
@@ -223,25 +223,25 @@ const TournamentEditForm = ({ tournament, isOpen, onClose, onSuccess }) => {
               {/* Sport Type */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Sport Type *
+                  Loại Hình Thể Thao *
                 </label>
                 <select
-                  {...register('sportType', { required: 'Please select a sport type' })}
+                  {...register('sportType', { required: 'Vui lòng chọn loại hình thể thao' })}
                   className={`input-field ${errors.sportType ? 'border-red-500' : ''}`}
                   disabled={isSubmitting || hasRegisteredTeams}
                 >
-                  <option value="FOOTBALL">Football</option>
-                  <option value="BASKETBALL">Basketball</option>
-                  <option value="VOLLEYBALL">Volleyball</option>
-                  <option value="BADMINTON">Badminton</option>
-                  <option value="TENNIS">Tennis</option>
+                  <option value="FOOTBALL">Bóng đá</option>
+                  <option value="BASKETBALL">Bóng rổ</option>
+                  <option value="VOLLEYBALL">Bóng chuyền</option>
+                  <option value="BADMINTON">Cầu lông</option>
+                  <option value="TENNIS">Quần vợt</option>
                 </select>
                 {errors.sportType && (
                   <p className="mt-1 text-sm text-red-600">{errors.sportType.message}</p>
                 )}
                 {hasRegisteredTeams && (
                   <p className="mt-1 text-sm text-gray-500">
-                    Cannot change sport type when teams are registered
+                    Không thể thay đổi loại hình thể thao khi đã có đội đăng ký
                   </p>
                 )}
               </div>
@@ -249,12 +249,12 @@ const TournamentEditForm = ({ tournament, isOpen, onClose, onSuccess }) => {
               {/* Max Teams */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Maximum Teams *
+                  Số Đội Tối Đa *
                 </label>
                 <select
                   {...register('maxTeams', { 
-                    required: 'Please select maximum teams',
-                    min: { value: tournament?.currentTeams || 4, message: `Must be at least ${tournament?.currentTeams || 4} teams` }
+                    required: 'Vui lòng chọn số đội tối đa',
+                    min: { value: tournament?.currentTeams || 4, message: `Phải có ít nhất ${tournament?.currentTeams || 4} đội` }
                   })}
                   className={`input-field ${errors.maxTeams ? 'border-red-500' : ''}`}
                   disabled={isSubmitting || isOngoing}
@@ -265,7 +265,7 @@ const TournamentEditForm = ({ tournament, isOpen, onClose, onSuccess }) => {
                       value={num} 
                       disabled={num < (tournament?.currentTeams || 0)}
                     >
-                      {num} teams {num < (tournament?.currentTeams || 0) ? '(too few)' : ''}
+                      {num} đội {num < (tournament?.currentTeams || 0) ? '(quá ít)' : ''}
                     </option>
                   ))}
                 </select>
@@ -274,7 +274,7 @@ const TournamentEditForm = ({ tournament, isOpen, onClose, onSuccess }) => {
                 )}
                 {tournament?.currentTeams > 0 && (
                   <p className="mt-1 text-sm text-gray-500">
-                    Currently {tournament.currentTeams} teams registered
+                    Hiện có {tournament.currentTeams} đội đã đăng ký
                   </p>
                 )}
               </div>
@@ -283,16 +283,16 @@ const TournamentEditForm = ({ tournament, isOpen, onClose, onSuccess }) => {
             {/* Description */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tournament Description *
+                Mô Tả Giải Đấu *
               </label>
               <textarea
                 {...register('description', {
-                  required: 'Tournament description is required',
-                  minLength: { value: 10, message: 'Description must be at least 10 characters' }
+                  required: 'Mô tả giải đấu là bắt buộc',
+                  minLength: { value: 10, message: 'Mô tả phải có ít nhất 10 ký tự' }
                 })}
                 rows={3}
                 className={`input-field resize-none ${errors.description ? 'border-red-500' : ''}`}
-                placeholder="Describe the tournament details"
+                placeholder="Mô tả chi tiết giải đấu"
                 disabled={isSubmitting}
               />
               {errors.description && (
@@ -304,11 +304,11 @@ const TournamentEditForm = ({ tournament, isOpen, onClose, onSuccess }) => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Start Date *
+                  Ngày Bắt Đầu *
                 </label>
                 <input
                   type="datetime-local"
-                  {...register('startDate', { required: 'Start date is required' })}
+                  {...register('startDate', { required: 'Ngày bắt đầu là bắt buộc' })}
                   min={minStartDate}
                   className={`input-field ${errors.startDate ? 'border-red-500' : ''}`}
                   disabled={isSubmitting || isOngoing}
@@ -317,17 +317,17 @@ const TournamentEditForm = ({ tournament, isOpen, onClose, onSuccess }) => {
                   <p className="mt-1 text-sm text-red-600">{errors.startDate.message}</p>
                 )}
                 {isOngoing && (
-                  <p className="mt-1 text-sm text-gray-500">Cannot change dates for ongoing tournaments</p>
+                  <p className="mt-1 text-sm text-gray-500">Không thể thay đổi ngày cho các giải đấu đang diễn ra</p>
                 )}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  End Date *
+                  Ngày Kết Thúc *
                 </label>
                 <input
                   type="datetime-local"
-                  {...register('endDate', { required: 'End date is required' })}
+                  {...register('endDate', { required: 'Ngày kết thúc là bắt buộc' })}
                   min={minEndDate}
                   className={`input-field ${errors.endDate ? 'border-red-500' : ''}`}
                   disabled={isSubmitting}
@@ -339,11 +339,11 @@ const TournamentEditForm = ({ tournament, isOpen, onClose, onSuccess }) => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Registration Deadline *
+                  Hạn Đăng Ký *
                 </label>
                 <input
                   type="datetime-local"
-                  {...register('registrationDeadline', { required: 'Registration deadline is required' })}
+                  {...register('registrationDeadline', { required: 'Hạn đăng ký là bắt buộc' })}
                   max={maxRegDeadline}
                   className={`input-field ${errors.registrationDeadline ? 'border-red-500' : ''}`}
                   disabled={isSubmitting || isOngoing}
@@ -357,13 +357,13 @@ const TournamentEditForm = ({ tournament, isOpen, onClose, onSuccess }) => {
             {/* Location */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Location *
+                Địa Điểm *
               </label>
               <input
                 type="text"
-                {...register('location', { required: 'Location is required' })}
+                {...register('location', { required: 'Địa điểm là bắt buộc' })}
                 className={`input-field ${errors.location ? 'border-red-500' : ''}`}
-                placeholder="Enter tournament location"
+                placeholder="Nhập địa điểm giải đấu"
                 disabled={isSubmitting}
               />
               {errors.location && (
@@ -375,26 +375,26 @@ const TournamentEditForm = ({ tournament, isOpen, onClose, onSuccess }) => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tournament Rules
+                  Quy Tắc Giải Đấu
                 </label>
                 <textarea
                   {...register('rules')}
                   rows={4}
                   className="input-field resize-none"
-                  placeholder="Describe tournament rules and regulations"
+                  placeholder="Mô tả các quy tắc và điều lệ giải đấu"
                   disabled={isSubmitting}
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Prize Information
+                  Thông Tin Giải Thưởng
                 </label>
                 <textarea
                   {...register('prizeInfo')}
                   rows={4}
                   className="input-field resize-none"
-                  placeholder="Describe prizes and awards"
+                  placeholder="Mô tả các giải thưởng và phần thưởng"
                   disabled={isSubmitting}
                 />
               </div>
@@ -403,13 +403,13 @@ const TournamentEditForm = ({ tournament, isOpen, onClose, onSuccess }) => {
             {/* Contact Info */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Contact Information *
+                Thông Tin Liên Hệ *
               </label>
               <input
                 type="text"
-                {...register('contactInfo', { required: 'Contact information is required' })}
+                {...register('contactInfo', { required: 'Thông tin liên hệ là bắt buộc' })}
                 className={`input-field ${errors.contactInfo ? 'border-red-500' : ''}`}
-                placeholder="Email or phone number for contact"
+                placeholder="Email hoặc số điện thoại liên hệ"
                 disabled={isSubmitting}
               />
               {errors.contactInfo && (
@@ -423,9 +423,9 @@ const TournamentEditForm = ({ tournament, isOpen, onClose, onSuccess }) => {
                 <div className="flex items-start space-x-3">
                   <Trophy className="h-5 w-5 text-blue-600 mt-0.5" />
                   <div>
-                    <h4 className="text-sm font-medium text-blue-900">Pending Changes</h4>
+                    <h4 className="text-sm font-medium text-blue-900">Thay Đổi Đang Chờ Xử Lý</h4>
                     <p className="text-sm text-blue-700 mt-1">
-                      You have unsaved changes to this tournament. Click "Save Changes" to apply them.
+                      Bạn có những thay đổi chưa được lưu cho giải đấu này. Nhấp "Lưu Thay Đổi" để áp dụng.
                     </p>
                   </div>
                 </div>
@@ -441,7 +441,7 @@ const TournamentEditForm = ({ tournament, isOpen, onClose, onSuccess }) => {
               className="btn-secondary"
               disabled={isSubmitting}
             >
-              Cancel
+              Hủy
             </button>
             <button
               type="submit"
@@ -451,12 +451,12 @@ const TournamentEditForm = ({ tournament, isOpen, onClose, onSuccess }) => {
               {isSubmitting ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Saving...
+                  Đang lưu...
                 </>
               ) : (
                 <>
                   <Save className="h-4 w-4 mr-2" />
-                  Save Changes
+                  Lưu Thay Đổi
                 </>
               )}
             </button>

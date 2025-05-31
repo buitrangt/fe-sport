@@ -27,67 +27,67 @@ const TournamentWorkflowGuide = ({ tournament, currentRound, matches, onClose })
   const steps = [
     {
       id: 1,
-      title: "Input Match Results",
-      description: "Enter scores for each match in the current round",
+      title: "Nhập Kết Quả Trận Đấu",
+      description: "Nhập tỷ số cho mỗi trận đấu trong vòng hiện tại",
       icon: Save,
       status: remainingMatches > 0 ? 'current' : 'completed',
       details: [
-        "Click 'Input Score' button for each match",
-        "Enter team scores (must be different - no ties)",
-        "Click 'Save' to confirm results",
-        "Match status will change to COMPLETED"
+        "Nhấp vào nút 'Nhập Tỷ Số' cho mỗi trận đấu",
+        "Nhập tỷ số của các đội (phải khác nhau - không hòa)",
+        "Nhấp 'Lưu' để xác nhận kết quả",
+        "Trạng thái trận đấu sẽ chuyển sang ĐÃ HOÀN THÀNH"
       ]
     },
     {
       id: 2,
-      title: "Complete Current Round",
-      description: "Finish all matches in this round",
+      title: "Hoàn Thành Vòng Hiện Tại",
+      description: "Hoàn thành tất cả các trận đấu trong vòng này",
       icon: CheckCircle,
       status: remainingMatches === 0 ? 'completed' : 'pending',
       details: [
-        `Complete ${remainingMatches} remaining matches`,
-        "All matches must have winners determined",
-        "Round progress will show 100%",
-        "Ready to advance to next round"
+        `Hoàn thành ${remainingMatches} trận đấu còn lại`,
+        "Tất cả các trận đấu phải có người thắng cuộc được xác định",
+        "Tiến độ vòng đấu sẽ hiển thị 100%",
+        "Sẵn sàng để chuyển sang vòng tiếp theo"
       ]
     },
     {
       id: 3,
-      title: "Advance Round",
-      description: "Move winners to the next round",
+      title: "Chuyển Vòng",
+      description: "Đưa người thắng cuộc vào vòng tiếp theo",
       icon: ArrowRight,
       status: remainingMatches === 0 ? 'current' : 'pending',
       details: [
-        "Go to 'Round Management' tab",
-        "Click 'Advance to Round X' button",
-        "System automatically creates new matches",
-        "Winners become participants in next round"
+        "Truy cập tab 'Quản Lý Vòng Đấu'",
+        "Nhấp vào nút 'Chuyển sang Vòng X'",
+        "Hệ thống tự động tạo các trận đấu mới",
+        "Người thắng cuộc trở thành người tham gia vòng tiếp theo"
       ]
     },
     {
       id: 4,
-      title: "Repeat Until Final",
-      description: "Continue until tournament completion",
+      title: "Lặp Lại Cho Đến Chung Kết",
+      description: "Tiếp tục cho đến khi giải đấu hoàn thành",
       icon: Trophy,
       status: 'pending',
       details: [
-        "Repeat steps 1-3 for each round",
-        "Each round has fewer teams",
-        "Final round determines winner",
-        "Tournament status becomes COMPLETED"
+        "Lặp lại bước 1-3 cho mỗi vòng",
+        "Mỗi vòng có ít đội hơn",
+        "Vòng chung kết xác định người thắng cuộc",
+        "Trạng thái giải đấu trở thành ĐÃ HOÀN THÀNH"
       ]
     },
     {
       id: 5,
-      title: "Declare Winner",
-      description: "Celebrate the tournament champion",
+      title: "Tuyên Bố Người Thắng Cuộc",
+      description: "Chúc mừng nhà vô địch giải đấu",
       icon: Crown,
       status: 'pending',
       details: [
-        "Final match determines champion",
-        "Winner is automatically declared",
-        "Tournament is marked as COMPLETED",
-        "Results are final and public"
+        "Trận chung kết xác định nhà vô địch",
+        "Người thắng cuộc được tự động công bố",
+        "Giải đấu được đánh dấu là ĐÃ HOÀN THÀNH",
+        "Kết quả là cuối cùng và công khai"
       ]
     }
   ];
@@ -125,9 +125,9 @@ const TournamentWorkflowGuide = ({ tournament, currentRound, matches, onClose })
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold mb-2">Tournament Management Workflow</h2>
+              <h2 className="text-2xl font-bold mb-2">Quy Trình Quản Lý Giải Đấu</h2>
               <p className="text-blue-100">
-                Step-by-step guide to manage your tournament: {tournament.name}
+                Hướng dẫn từng bước để quản lý giải đấu của bạn: {tournament.name}
               </p>
             </div>
             <button
@@ -143,19 +143,19 @@ const TournamentWorkflowGuide = ({ tournament, currentRound, matches, onClose })
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
               <div>
                 <div className="text-2xl font-bold">{currentRound}</div>
-                <div className="text-sm text-blue-100">Current Round</div>
+                <div className="text-sm text-blue-100">Vòng Hiện Tại</div>
               </div>
               <div>
                 <div className="text-2xl font-bold">{totalMatches}</div>
-                <div className="text-sm text-blue-100">Total Matches</div>
+                <div className="text-sm text-blue-100">Tổng Số Trận</div>
               </div>
               <div>
                 <div className="text-2xl font-bold">{completedMatches}</div>
-                <div className="text-sm text-blue-100">Completed</div>
+                <div className="text-sm text-blue-100">Đã Hoàn Thành</div>
               </div>
               <div>
                 <div className="text-2xl font-bold">{remainingMatches}</div>
-                <div className="text-sm text-blue-100">Remaining</div>
+                <div className="text-sm text-blue-100">Còn Lại</div>
               </div>
             </div>
           </div>
@@ -166,9 +166,9 @@ const TournamentWorkflowGuide = ({ tournament, currentRound, matches, onClose })
           {/* Progress Indicator */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-700">Tournament Progress</span>
+              <span className="text-sm font-medium text-gray-700">Tiến Độ Giải Đấu</span>
               <span className="text-sm text-gray-600">
-                {completedMatches}/{totalMatches} matches completed
+                {completedMatches}/{totalMatches} trận đấu đã hoàn thành
               </span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-3">
@@ -217,8 +217,8 @@ const TournamentWorkflowGuide = ({ tournament, currentRound, matches, onClose })
                         <span className={`px-3 py-1 rounded-full text-sm font-medium border-2 ${
                           getStepColor(step.status)
                         }`}>
-                          {step.status === 'completed' ? 'Completed' : 
-                           step.status === 'current' ? 'Current' : 'Pending'}
+                          {step.status === 'completed' ? 'Đã Hoàn Thành' : 
+                           step.status === 'current' ? 'Hiện Tại' : 'Đang Chờ'}
                         </span>
                       </div>
                       
@@ -227,7 +227,7 @@ const TournamentWorkflowGuide = ({ tournament, currentRound, matches, onClose })
                       {/* Step Details */}
                       {isActive && (
                         <div className="bg-white rounded-lg p-4 border border-gray-200">
-                          <h4 className="font-semibold text-gray-900 mb-3">Detailed Instructions:</h4>
+                          <h4 className="font-semibold text-gray-900 mb-3">Hướng Dẫn Chi Tiết:</h4>
                           <ul className="space-y-2">
                             {step.details.map((detail, detailIndex) => (
                               <li key={detailIndex} className="flex items-start space-x-2">
@@ -257,23 +257,23 @@ const TournamentWorkflowGuide = ({ tournament, currentRound, matches, onClose })
             <div className="flex items-start space-x-3">
               <AlertCircle className="h-6 w-6 text-orange-600 mt-0.5" />
               <div>
-                <h3 className="text-lg font-semibold text-orange-900 mb-2">Next Action Required</h3>
+                <h3 className="text-lg font-semibold text-orange-900 mb-2">Hành Động Tiếp Theo Cần Thiết</h3>
                 {remainingMatches > 0 ? (
                   <div>
                     <p className="text-orange-700 mb-2">
-                      <strong>🎯 Input match results:</strong> {remainingMatches} matches need scores
+                      <strong>🎯 Nhập kết quả trận đấu:</strong> {remainingMatches} trận cần tỷ số
                     </p>
                     <p className="text-sm text-orange-600">
-                      Go to "Match Results" tab and click "Input Score" for each pending match.
+                      Chuyển đến tab "Kết Quả Trận Đấu" và nhấp "Nhập Tỷ Số" cho mỗi trận đấu đang chờ.
                     </p>
                   </div>
                 ) : (
                   <div>
                     <p className="text-orange-700 mb-2">
-                      <strong>🚀 Advance round:</strong> All matches completed!
+                      <strong>🚀 Chuyển vòng:</strong> Tất cả các trận đấu đã hoàn thành!
                     </p>
                     <p className="text-sm text-orange-600">
-                      Go to "Round Management" tab and click "Advance to Round {currentRound + 1}".
+                      Chuyển đến tab "Quản Lý Vòng Đấu" và nhấp "Chuyển sang Vòng {currentRound + 1}".
                     </p>
                   </div>
                 )}
@@ -285,13 +285,13 @@ const TournamentWorkflowGuide = ({ tournament, currentRound, matches, onClose })
         {/* Footer */}
         <div className="bg-gray-50 px-6 py-4 flex items-center justify-between border-t">
           <div className="text-sm text-gray-600">
-            💡 Tip: Complete matches in order and advance rounds systematically
+            💡 Mẹo: Hoàn thành các trận đấu theo thứ tự và chuyển vòng một cách có hệ thống
           </div>
           <button
             onClick={onClose}
             className="btn-primary"
           >
-            Got it!
+            Đã hiểu!
           </button>
         </div>
       </div>

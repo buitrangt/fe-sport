@@ -11,7 +11,7 @@ const TournamentRoundManager = ({ tournament, currentRound, matches, onRoundAdva
     setIsAdvancing(true);
     try {
       const response = await tournamentKnockoutService.advanceRound(tournament.id);
-      toast.success('Successfully advanced to next round!');
+      toast.success('Đã chuyển sang vòng tiếp theo thành công!');
       onRoundAdvanced?.(response.data);
       
       // Force refresh page to ensure UI updates
@@ -19,8 +19,8 @@ const TournamentRoundManager = ({ tournament, currentRound, matches, onRoundAdva
         window.location.reload();
       }, 1000);
     } catch (error) {
-      console.error('Advance round error:', error);
-      toast.error(error.response?.data?.message || 'Failed to advance round');
+      console.error('Lỗi khi chuyển vòng:', error);
+      toast.error(error.response?.data?.message || 'Không thể chuyển vòng');
     } finally {
       setIsAdvancing(false);
     }
@@ -30,11 +30,11 @@ const TournamentRoundManager = ({ tournament, currentRound, matches, onRoundAdva
     setIsCompleting(true);
     try {
       const response = await tournamentKnockoutService.completeTournament(tournament.id);
-      toast.success('Tournament completed successfully!');
+      toast.success('Giải đấu đã hoàn thành thành công!');
       window.location.reload(); // Refresh to update tournament status
     } catch (error) {
-      console.error('Complete tournament error:', error);
-      toast.error(error.response?.data?.message || 'Failed to complete tournament');
+      console.error('Lỗi khi hoàn thành giải đấu:', error);
+      toast.error(error.response?.data?.message || 'Không thể hoàn thành giải đấu');
     } finally {
       setIsCompleting(false);
     }
@@ -43,7 +43,7 @@ const TournamentRoundManager = ({ tournament, currentRound, matches, onRoundAdva
   const completedMatches = matches?.filter(match => match.status === 'COMPLETED') || [];
   const totalMatches = matches?.length || 0;
   const allMatchesCompleted = totalMatches > 0 && completedMatches.length === totalMatches;
-  const isLastRound = currentRound?.name?.includes('Final') || currentRound?.isLastRound;
+  const isLastRound = currentRound?.name?.includes('Chung Kết') || currentRound?.isLastRound;
 
   return (
     <div className="card">
@@ -52,8 +52,8 @@ const TournamentRoundManager = ({ tournament, currentRound, matches, onRoundAdva
           <Clock className="h-6 w-6 text-white" />
         </div>
         <div>
-          <h3 className="text-xl font-semibold text-gray-900">Round Management</h3>
-          <p className="text-gray-600">Manage tournament progression</p>
+          <h3 className="text-xl font-semibold text-gray-900">Quản Lý Vòng Đấu</h3>
+          <p className="text-gray-600">Quản lý tiến độ giải đấu</p>
         </div>
       </div>
 
@@ -63,17 +63,17 @@ const TournamentRoundManager = ({ tournament, currentRound, matches, onRoundAdva
             <div className="flex items-center justify-between">
               <div>
                 <h4 className="text-lg font-semibold text-primary-900">
-                  {currentRound.name || `Round ${currentRound.roundNumber}`}
+                  {currentRound.name || `Vòng ${currentRound.roundNumber}`}
                 </h4>
                 <p className="text-sm text-primary-700 mt-1">
-                  {completedMatches.length} of {totalMatches} matches completed
+                  {completedMatches.length} trên {totalMatches} trận đã hoàn thành
                 </p>
               </div>
               <div className="text-right">
                 <div className="text-2xl font-bold text-primary-600">
                   {Math.round((completedMatches.length / totalMatches) * 100) || 0}%
                 </div>
-                <div className="text-xs text-primary-500">Complete</div>
+                <div className="text-xs text-primary-500">Hoàn thành</div>
               </div>
             </div>
             
@@ -92,12 +92,12 @@ const TournamentRoundManager = ({ tournament, currentRound, matches, onRoundAdva
               <div className="flex items-start space-x-3">
                 <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
                 <div className="flex-1">
-                  <h4 className="text-sm font-medium text-green-900">Round Complete</h4>
+                  <h4 className="text-sm font-medium text-green-900">Vòng Đấu Hoàn Thành</h4>
                   <p className="text-sm text-green-700 mt-1">
-                    All matches in this round have been completed. 
+                    Tất cả các trận đấu trong vòng này đã hoàn thành. 
                     {isLastRound 
-                      ? ' You can now complete the tournament.'
-                      : ' You can advance to the next round.'
+                      ? ' Bây giờ bạn có thể hoàn thành giải đấu.'
+                      : ' Bạn có thể chuyển sang vòng tiếp theo.'
                     }
                   </p>
                 </div>
@@ -117,7 +117,7 @@ const TournamentRoundManager = ({ tournament, currentRound, matches, onRoundAdva
                 ) : (
                   <ArrowRight className="h-4 w-4" />
                 )}
-                <span>{isAdvancing ? 'Advancing...' : 'Advance to Next Round'}</span>
+                <span>{isAdvancing ? 'Đang chuyển...' : 'Chuyển Sang Vòng Tiếp Theo'}</span>
               </button>
             )}
 
@@ -132,7 +132,7 @@ const TournamentRoundManager = ({ tournament, currentRound, matches, onRoundAdva
                 ) : (
                   <Trophy className="h-4 w-4" />
                 )}
-                <span>{isCompleting ? 'Completing...' : 'Complete Tournament'}</span>
+                <span>{isCompleting ? 'Đang hoàn tất...' : 'Hoàn Tất Giải Đấu'}</span>
               </button>
             )}
           </div>
@@ -142,7 +142,7 @@ const TournamentRoundManager = ({ tournament, currentRound, matches, onRoundAdva
       {!currentRound && (
         <div className="text-center text-gray-500 py-8">
           <Clock className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-          <p>No active round information available</p>
+          <p>Không có thông tin vòng đấu đang hoạt động</p>
         </div>
       )}
     </div>
