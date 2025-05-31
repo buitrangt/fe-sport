@@ -386,12 +386,12 @@ const HomePage = () => {
         </section>
 
         {/* 3 Sections chính theo mẫu */}
-        <section className="py-12 bg-gray-50">
+        {/* <section className="py-12 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8"> */}
               
               {/* SỰ KIỆN TIẾP THEO */}
-              <div className="bg-gradient-to-br from-red-600 via-purple-600 to-blue-600 text-white p-6 rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300 animate-glow">
+              {/* <div className="bg-gradient-to-br from-red-600 via-purple-600 to-blue-600 text-white p-6 rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300 animate-glow">
                 <h3 className="text-2xl font-bold mb-4 text-center flex items-center justify-center space-x-2">
                   <Zap className="h-6 w-6 animate-bounce-slow" />
                   <span>SỰ KIỆN TIẾP THEO</span>
@@ -418,10 +418,10 @@ const HomePage = () => {
                     </div>
                   </div>
                 ))}
-              </div>
+              </div> */}
 
               {/* LỊCH THỂ THAO SẮP TỚI */}
-              <div className="bg-white p-6 rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-2 border-purple-100">
+              {/* <div className="bg-white p-6 rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300 border-2 border-purple-100">
                 <h3 className="text-2xl font-bold mb-4 text-center text-gray-800 flex items-center justify-center space-x-2">
                   <Calendar className="h-6 w-6 text-purple-600 animate-float" />
                   <span>LỊCH THỂ THAO SẮP TỚI</span>
@@ -450,10 +450,10 @@ const HomePage = () => {
                 >
                   Xem tất cả →
                 </Link>
-              </div>
+              </div> */}
 
               {/* KẾT QUẢ MỚI NHẤT */}
-              <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-red-600 text-white p-6 rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300">
+              {/* <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-red-600 text-white p-6 rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300">
                 <h3 className="text-2xl font-bold mb-4 text-center flex items-center justify-center space-x-2">
                   <Award className="h-6 w-6 animate-bounce-slow" />
                   <span>KẾT QUẢ MỚI NHẤT</span>
@@ -483,10 +483,10 @@ const HomePage = () => {
                 >
                   Xem thêm kết quả →
                 </Link>
-              </div>
-            </div>
+              </div> */}
+            {/* </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Features Section */}
         <section className="py-20 bg-white">
@@ -554,10 +554,10 @@ const HomePage = () => {
                             <SportImage
                               src={
                                 index === 0 ? 
-                                'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80' :
+                                'https://phongvu.vn/cong-nghe/wp-content/uploads/sites/2/2022/12/hinh-nen-bong-da-3.png' :
                                 index === 1 ?
-                                'https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80' :
-                                'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80'
+                                'https://cdn2.fptshop.com.vn/unsafe/Uploads/images/2015/Tin-Tuc/Khang/082017/card-man-hinh-onboard-la-gi-3.jpg' :
+                                'https://watermark.lovepik.com/photo/20211208/large/lovepik-billiards-picture_501624976.jpg'
                               }
                               alt={`${tournament.name} - Giải thể thao`}
                               fallbackType={

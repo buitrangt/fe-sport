@@ -7,16 +7,16 @@ import {
   BarChart3,
   Play,
   CheckCircle,
-  Clock, // Giữ lại cho Clock icon
+  Clock,
   TrendingUp,
   AlertTriangle,
   Plus,
   RefreshCw,
   Eye,
-  ArrowRight, // Icon cho nút "View All"
-  Timer, // Thay thế ClockCountdown
-  List // Thay thế ListDashed (nếu có sử dụng)
-} from 'lucide-react'; // Đảm bảo tất cả icon được import đều có trong thư viện
+  ArrowRight, 
+  Timer,
+  List 
+} from 'lucide-react'; 
 
 import { tournamentService } from '../../services';
 import { formatDate, getStatusColor } from '../../utils/helpers';
