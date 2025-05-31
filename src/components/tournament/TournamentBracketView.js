@@ -15,13 +15,13 @@ const TournamentBracketView = ({ tournament, refreshInterval = 30000 }) => {
     {
       enabled: !!tournament.id,
       refetchInterval: autoRefresh ? refreshInterval : false,
-      staleTime: 10000, // 10 seconds
+      staleTime: 10000, // 10 giây
       onError: (error) => {
-        console.error('Failed to fetch matches:', error);
+        console.error('Không thể tìm nạp trận đấu:', error);
       },
       onSuccess: (data) => {
-        console.log('🔍 [BracketView] Raw matches API response:', data);
-        console.log('🔍 [BracketView] Data structure:', {
+        console.log('🔍 [BracketView] Phản hồi API trận đấu thô:', data);
+        console.log('🔍 [BracketView] Cấu trúc dữ liệu:', {
           type: typeof data,
           keys: Object.keys(data || {}),
           hasData: !!data?.data,
@@ -47,11 +47,11 @@ const TournamentBracketView = ({ tournament, refreshInterval = 30000 }) => {
     } else if (Array.isArray(matchesData)) {
       allMatches = matchesData;
     } else {
-      console.log('🚷 [BracketView] No valid match array found in:', matchesData);
+      console.log('🚷 [BracketView] Không tìm thấy mảng trận đấu hợp lệ trong:', matchesData);
       allMatches = [];
     }
   } catch (err) {
-    console.error('🚨 [BracketView] Error extracting match data:', err);
+    console.error('🚨 [BracketView] Lỗi khi trích xuất dữ liệu trận đấu:', err);
     allMatches = [];
   }
 
@@ -75,14 +75,14 @@ const TournamentBracketView = ({ tournament, refreshInterval = 30000 }) => {
         const roundMatches = matchesByRound[roundNum];
         rounds.push({
           roundNumber: parseInt(roundNum),
-          name: roundMatches[0]?.roundName || `Round ${roundNum}`,
-          roundName: roundMatches[0]?.roundName || `Round ${roundNum}`,
+          name: roundMatches[0]?.roundName || `Vòng ${roundNum}`,
+          roundName: roundMatches[0]?.roundName || `Vòng ${roundNum}`,
           matches: roundMatches
         });
       });
   }
 
-  console.log('🔍 [BracketView] Processed data:', {
+  console.log('🔍 [BracketView] Dữ liệu đã xử lý:', {
     allMatchesCount: allMatches.length,
     roundsCount: rounds.length,
     rounds: rounds.map(r => ({ 
@@ -96,20 +96,20 @@ const TournamentBracketView = ({ tournament, refreshInterval = 30000 }) => {
     return (
       <div className="card text-center py-12">
         <LoadingSpinner />
-        <p className="text-gray-600 mt-4">Loading tournament bracket...</p>
+        <p className="text-gray-600 mt-4">Đang tải bảng đấu giải đấu...</p>
       </div>
     );
   }
 
   if (error) {
-    console.error('🔍 [BracketView] Error details:', error);
+    console.error('🔍 [BracketView] Chi tiết lỗi:', error);
     return (
       <div className="card text-center py-8">
         <Trophy className="h-16 w-16 text-red-300 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Bracket</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">Lỗi khi tải bảng đấu</h3>
         <p className="text-red-600 mb-4">{error.message}</p>
         <button onClick={() => refetch()} className="btn-primary">
-          Try Again
+          Thử lại
         </button>
       </div>
     );
@@ -117,17 +117,17 @@ const TournamentBracketView = ({ tournament, refreshInterval = 30000 }) => {
 
   // FIXED: Check for matches properly
   if (!rounds || rounds.length === 0) {
-    console.log('🔍 [BracketView] No rounds found - showing empty state');
+    console.log('🔍 [BracketView] Không tìm thấy vòng đấu - hiển thị trạng thái trống');
     return (
       <div className="card text-center py-12">
         <Trophy className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No Bracket Generated</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">Chưa có bảng đấu được tạo</h3>
         <p className="text-gray-600 mb-4">
-          Generate a tournament bracket to view the competition structure.
+          Hãy tạo một bảng đấu để xem cấu trúc giải đấu.
         </p>
         <div className="mt-4 p-4 bg-gray-50 rounded-lg">
           <p className="text-sm text-gray-600">
-            <strong>Debug info:</strong>
+            <strong>Thông tin gỡ lỗi:</strong>
           </p>
           <pre className="text-xs text-left mt-2 bg-white p-2 rounded border overflow-auto">
             {JSON.stringify({ 
@@ -148,7 +148,7 @@ const TournamentBracketView = ({ tournament, refreshInterval = 30000 }) => {
   const totalMatches = allMatches.length;
   const tournamentProgress = totalMatches > 0 ? (completedMatches / totalMatches) * 100 : 0;
 
-  console.log('🔍 [BracketView] Stats:', {
+  console.log('🔍 [BracketView] Thống kê:', {
     totalTeams,
     completedMatches,
     totalMatches,
@@ -162,23 +162,23 @@ const TournamentBracketView = ({ tournament, refreshInterval = 30000 }) => {
       <div className="card">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-xl font-semibold text-gray-900">Tournament Bracket</h3>
-            <p className="text-gray-600">Live tournament bracket with real-time updates</p>
+            <h3 className="text-xl font-semibold text-gray-900">Bảng đấu giải đấu</h3>
+            <p className="text-gray-600">Bảng đấu giải đấu trực tiếp với cập nhật theo thời gian thực</p>
           </div>
           <div className="flex items-center space-x-3">
             {/* Tournament Stats */}
             <div className="flex items-center space-x-4 text-sm text-gray-600">
               <div className="flex items-center space-x-1">
                 <Users className="h-4 w-4" />
-                <span>{totalTeams} Teams</span>
+                <span>{totalTeams} Đội</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Target className="h-4 w-4" />
-                <span>{rounds.length} Rounds</span>
+                <span>{rounds.length} Vòng</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Trophy className="h-4 w-4" />
-                <span>{Math.round(tournamentProgress)}% Complete</span>
+                <span>{Math.round(tournamentProgress)}% Hoàn thành</span>
               </div>
             </div>
             
@@ -191,7 +191,7 @@ const TournamentBracketView = ({ tournament, refreshInterval = 30000 }) => {
                     ? 'bg-green-50 border-green-200 text-green-700' 
                     : 'bg-gray-50 border-gray-200 text-gray-600'
                 }`}
-                title={autoRefresh ? 'Auto-refresh ON' : 'Auto-refresh OFF'}
+                title={autoRefresh ? 'Tự động làm mới BẬT' : 'Tự động làm mới TẮT'}
               >
                 <RefreshCw className={`h-4 w-4 ${autoRefresh ? 'animate-pulse' : ''}`} />
               </button>
@@ -199,7 +199,7 @@ const TournamentBracketView = ({ tournament, refreshInterval = 30000 }) => {
               <button
                 onClick={() => refetch()}
                 className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
-                title="Refresh bracket"
+                title="Làm mới bảng đấu"
               >
                 <RefreshCw className="h-4 w-4" />
               </button>
@@ -207,7 +207,7 @@ const TournamentBracketView = ({ tournament, refreshInterval = 30000 }) => {
               <button
                 onClick={() => setExpandedView(!expandedView)}
                 className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
-                title={expandedView ? 'Compact view' : 'Expanded view'}
+                title={expandedView ? 'Chế độ xem thu gọn' : 'Chế độ xem mở rộng'}
               >
                 {expandedView ? <Eye className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
               </button>
@@ -218,8 +218,8 @@ const TournamentBracketView = ({ tournament, refreshInterval = 30000 }) => {
         {/* Progress Bar */}
         <div className="mb-4">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-gray-700">Tournament Progress</span>
-            <span className="text-sm text-gray-600">{completedMatches}/{totalMatches} matches completed</span>
+            <span className="text-sm font-medium text-gray-700">Tiến độ giải đấu</span>
+            <span className="text-sm text-gray-600">{completedMatches}/{totalMatches} trận đã hoàn thành</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div 
@@ -241,7 +241,7 @@ const TournamentBracketView = ({ tournament, refreshInterval = 30000 }) => {
               const roundTotal = roundMatches.length;
               const isCurrentRound = tournament.currentRound === round.roundNumber;
               
-              console.log(`🔍 [BracketView] Round ${round.roundNumber}:`, {
+              console.log(`🔍 [BracketView] Vòng ${round.roundNumber}:`, {
                 roundName: round.name,
                 matchesCount: roundMatches.length,
                 completed: roundCompleted,
@@ -264,7 +264,7 @@ const TournamentBracketView = ({ tournament, refreshInterval = 30000 }) => {
                       {isCurrentRound && <span className="w-2 h-2 bg-primary-600 rounded-full animate-pulse"></span>}
                     </div>
                     <p className="text-xs text-gray-600 mt-1">
-                      {roundCompleted}/{roundTotal} completed
+                      {roundCompleted}/{roundTotal} đã hoàn thành
                     </p>
                   </div>
 
@@ -278,7 +278,7 @@ const TournamentBracketView = ({ tournament, refreshInterval = 30000 }) => {
                       const winnerId = match.winnerTeam?.id || match.winnerId;
                       const matchStatus = match.status || 'SCHEDULED';
                       
-                      console.log(`🔍 [BracketView] Match ${match.matchNumber || matchIndex + 1}:`, {
+                      console.log(`🔍 [BracketView] Trận ${match.matchNumber || matchIndex + 1}:`, {
                         team1: team1?.name,
                         team2: team2?.name,
                         team1Score,
@@ -302,7 +302,7 @@ const TournamentBracketView = ({ tournament, refreshInterval = 30000 }) => {
                                 matchStatus === 'IN_PROGRESS' ? 'text-blue-600' :
                                 'text-gray-500'
                               }`}>
-                                Match {match.matchNumber || matchIndex + 1}
+                                Trận {match.matchNumber || matchIndex + 1}
                               </span>
                               {matchStatus === 'IN_PROGRESS' && (
                                 <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
@@ -330,7 +330,7 @@ const TournamentBracketView = ({ tournament, refreshInterval = 30000 }) => {
                                   <span className={`font-medium ${expandedView ? 'text-base' : 'text-sm'} ${
                                     team1?.name ? 'text-gray-900' : 'text-gray-400 italic'
                                   }`}>
-                                    {team1?.name || 'TBD'}
+                                    {team1?.name || 'Chưa xác định'}
                                   </span>
                                 </div>
                                 {team1Score !== undefined && (
@@ -349,7 +349,7 @@ const TournamentBracketView = ({ tournament, refreshInterval = 30000 }) => {
                             <div className={`text-center font-medium ${
                               expandedView ? 'text-sm text-gray-500' : 'text-xs text-gray-400'
                             }`}>
-                              {matchStatus === 'IN_PROGRESS' ? 'LIVE' : 'VS'}
+                              {matchStatus === 'IN_PROGRESS' ? 'TRỰC TIẾP' : 'VS'}
                             </div>
 
                             {/* Team 2 */}
@@ -366,7 +366,7 @@ const TournamentBracketView = ({ tournament, refreshInterval = 30000 }) => {
                                   <span className={`font-medium ${expandedView ? 'text-base' : 'text-sm'} ${
                                     team2?.name ? 'text-gray-900' : 'text-gray-400 italic'
                                   }`}>
-                                    {team2?.name || 'TBD'}
+                                    {team2?.name || 'Chưa xác định'}
                                   </span>
                                 </div>
                                 {team2Score !== undefined && (
@@ -393,7 +393,7 @@ const TournamentBracketView = ({ tournament, refreshInterval = 30000 }) => {
                             }`}>
                               {matchStatus === 'COMPLETED' && <Trophy className="h-3 w-3" />}
                               {matchStatus === 'IN_PROGRESS' && <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>}
-                              <span>{matchStatus || 'PENDING'}</span>
+                              <span>{matchStatus === 'COMPLETED' ? 'ĐÃ HOÀN THÀNH' : matchStatus === 'IN_PROGRESS' ? 'ĐANG DIỄN RA' : 'ĐÃ LÊN LỊCH'}</span>
                             </span>
                           </div>
 
@@ -422,12 +422,12 @@ const TournamentBracketView = ({ tournament, refreshInterval = 30000 }) => {
         <div className="card bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200">
           <div className="text-center">
             <Trophy className="h-12 w-12 text-yellow-600 mx-auto mb-3" />
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Tournament Winner</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Đội vô địch giải đấu</h3>
             <p className="text-lg font-semibold text-yellow-700">
               {tournament.winnerTeam.name}
             </p>
             <p className="text-sm text-gray-600 mt-1">
-              Congratulations to the champion!
+              Chúc mừng nhà vô địch!
             </p>
           </div>
         </div>

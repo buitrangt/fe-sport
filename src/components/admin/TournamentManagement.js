@@ -293,12 +293,9 @@ const TournamentManagement = () => {
               className="input-field min-w-[150px]"
             >
               <option value="">Tất cả trạng thái</option>
-              <option value="DRAFT">Bản nháp</option>
-              <option value="REGISTRATION">Đăng ký</option>
               <option value="REGISTRATION_OPEN">Mở đăng ký</option>
               <option value="REGISTRATION_CLOSED">Đóng đăng ký</option>
               <option value="ONGOING">Đang diễn ra</option>
-              <option value="IN_PROGRESS">Đang tiến hành</option>
               <option value="COMPLETED">Đã hoàn thành</option>
               <option value="CANCELLED">Đã hủy</option>
             </select>

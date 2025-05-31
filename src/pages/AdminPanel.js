@@ -75,7 +75,7 @@ const AdminPanel = () => {
  
     {
         id: 'news',
-        name: 'Quản lý tin tức', 
+        name: 'Quản Lý Tin Tức', 
         icon: FileText,
         component: NewsManagement,
         roles: ['ADMIN', 'ORGANIZER']

@@ -556,8 +556,8 @@ const HomePage = () => {
                                 index === 0 ? 
                                 'https://phongvu.vn/cong-nghe/wp-content/uploads/sites/2/2022/12/hinh-nen-bong-da-3.png' :
                                 index === 1 ?
-                                'https://cdn2.fptshop.com.vn/unsafe/Uploads/images/2015/Tin-Tuc/Khang/082017/card-man-hinh-onboard-la-gi-3.jpg' :
-                                'https://watermark.lovepik.com/photo/20211208/large/lovepik-billiards-picture_501624976.jpg'
+                                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRR6JOE7E2eX3ft9co3dVKUdxkjEIFhmtq8jA&s' :
+                                'https://cdn2.fptshop.com.vn/unsafe/1920x0/filters:format(webp):quality(75)/2023_11_30_638369553968368819_co-tft-bia.jpg'
                               }
                               alt={`${tournament.name} - Giải thể thao`}
                               fallbackType={

@@ -57,6 +57,8 @@ const UserManagement = () => {
             sortDirection,
             search: searchTerm || undefined,
             role: roleFilter || undefined,
+            // Giữ isActive ở đây, vì API của bạn có thể mong đợi tên tham số này cho bộ lọc
+            // Nếu backend của bạn mong đợi 'active', hãy thay đổi thành 'active'
             isActive: statusFilter !== '' ? statusFilter === 'true' : undefined
         }),
         {
@@ -200,7 +202,8 @@ const UserManagement = () => {
     const handleToggleStatus = (user) => {
         toggleStatusMutation.mutate({
             id: user.id,
-            isActive: !user.isActive
+            // Sử dụng user.active từ dữ liệu API để xác định trạng thái hiện tại
+            isActive: !user.active 
         });
     };
 
@@ -246,6 +249,8 @@ const UserManagement = () => {
             const response = await adminUserService.exportUsers({
                 search: searchTerm || undefined,
                 role: roleFilter || undefined,
+                // Giữ isActive ở đây, vì API của bạn có thể mong đợi tên tham số này cho bộ lọc
+                // Nếu backend của bạn mong đợi 'active', hãy thay đổi thành 'active'
                 isActive: statusFilter !== '' ? statusFilter === 'true' : undefined
             });
 
@@ -336,7 +341,7 @@ const UserManagement = () => {
             {/* Phần đầu với Thống kê */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Quản lý người dùng</h2>
+                    <h2 className="text-2xl font-bold text-gray-900">Quản lý tài khoản</h2>
                     <p className="text-gray-600">Quản lý tài khoản người dùng, vai trò và quyền hạn</p>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -409,9 +414,9 @@ const UserManagement = () => {
             {selectedUsers.length > 0 && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <div className="flex items-center justify-between">
-            <span className="text-blue-800 font-medium">
-              Đã chọn {selectedUsers.length} người dùng
-            </span>
+                        <span className="text-blue-800 font-medium">
+                            Đã chọn {selectedUsers.length} người dùng
+                        </span>
                         <div className="flex space-x-2">
                             <button
                                 onClick={handleBulkDelete}
@@ -433,6 +438,7 @@ const UserManagement = () => {
             )}
 
             {/* Nút xuất */}
+            {/* Nếu bạn muốn dùng lại, chỉ cần bỏ comment */}
             {/* <div className="flex justify-end">
                 <button
                     onClick={handleExportUsers}
@@ -458,151 +464,151 @@ const UserManagement = () => {
                     <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
-                            <tr>
-                                <th className="px-6 py-3 text-left">
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedUsers.length === users?.content?.length && users?.content?.length > 0}
-                                        onChange={(e) => handleSelectAll(e.target.checked)}
-                                        className="rounded border-gray-300"
-                                    />
-                                </th>
-                                <th
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
-                                    onClick={() => handleSort('name')}
-                                >
-                                    Người dùng {sortBy === 'name' && (sortDirection === 'ASC' ? '↑' : '↓')}
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Vai trò
-                                </th>
-                                <th
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
-                                    onClick={() => handleSort('isActive')}
-                                >
-                                    Trạng thái {sortBy === 'isActive' && (sortDirection === 'ASC' ? '↑' : '↓')}
-                                </th>
-                                <th
-                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
-                                    onClick={() => handleSort('createdAt')}
-                                >
-                                    Đã tạo {sortBy === 'createdAt' && (sortDirection === 'ASC' ? '↑' : '↓')}
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Đăng nhập lần cuối
-                                </th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Hành động
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                            {users?.content?.map((user) => (
-                                <tr key={user.id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 whitespace-nowrap">
+                                <tr>
+                                    <th className="px-6 py-3 text-left">
                                         <input
                                             type="checkbox"
-                                            checked={selectedUsers.includes(user.id)}
-                                            onChange={() => handleSelectUser(user.id)}
+                                            checked={selectedUsers.length === users?.content?.length && users?.content?.length > 0}
+                                            onChange={(e) => handleSelectAll(e.target.checked)}
                                             className="rounded border-gray-300"
                                         />
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center">
-                                            <div className="flex-shrink-0 h-10 w-10">
-                                                {user.avatar ? (
-                                                    <img className="h-10 w-10 rounded-full" src={user.avatar} alt={user.name} />
-                                                ) : (
-                                                    <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
-                              <span className="text-primary-600 font-medium text-sm">
-                                {user.name.charAt(0).toUpperCase()}
-                              </span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div className="ml-4">
-                                                <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                                                <div className="text-sm text-gray-500">{user.email}</div>
-                                                {user.phone && (
-                                                    <div className="text-xs text-gray-400">{user.phone}</div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center space-x-2">
-                                            {getRoleIcon(user.roles)}
-                                            <span className={getRoleBadge(user.roles)}>
-                          {Array.isArray(user.roles) ? user.roles.join(', ') : user.roles}
-                        </span>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          user.isActive
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
-                      }`}>
-                        {user.isActive ? 'Hoạt động' : 'Không hoạt động'}
-                      </span>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {formatDate(user.createdAt)}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {user.lastLogin ? formatDate(user.lastLogin) : 'Chưa bao giờ'}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <div className="flex items-center justify-end space-x-2">
-                                            <button
-                                                onClick={() => handleViewUser(user)}
-                                                className="text-gray-600 hover:text-primary-600 transition-colors"
-                                                title="Xem chi tiết"
-                                            >
-                                                <Eye className="h-4 w-4" />
-                                            </button>
-                                            <button
-                                                onClick={() => handleEditUser(user)}
-                                                className="text-gray-600 hover:text-blue-600 transition-colors"
-                                                title="Chỉnh sửa người dùng"
-                                            >
-                                                <Edit className="h-4 w-4" />
-                                            </button>
-                                            <button
-                                                onClick={() => handleResetPassword(user)}
-                                                className="text-gray-600 hover:text-purple-600 transition-colors"
-                                                title="Đặt lại mật khẩu"
-                                            >
-                                                <Key className="h-4 w-4" />
-                                            </button>
-                                            <button
-                                                onClick={() => handleToggleStatus(user)}
-                                                className={`transition-colors ${
-                                                    user.isActive
-                                                        ? 'text-gray-600 hover:text-red-600'
-                                                        : 'text-gray-600 hover:text-green-600'
-                                                }`}
-                                                title={user.isActive ? 'Vô hiệu hóa' : 'Kích hoạt'}
-                                                disabled={toggleStatusMutation.isLoading}
-                                            >
-                                                {user.isActive ? (
-                                                    <UserX className="h-4 w-4" />
-                                                ) : (
-                                                    <UserCheck className="h-4 w-4" />
-                                                )}
-                                            </button>
-                                            <button
-                                                onClick={() => handleDeleteUser(user)}
-                                                className="text-gray-600 hover:text-red-600 transition-colors"
-                                                title="Xóa người dùng"
-                                                disabled={deleteUserMutation.isLoading}
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </button>
-                                        </div>
-                                    </td>
+                                    </th>
+                                    <th
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
+                                        onClick={() => handleSort('name')}
+                                    >
+                                        Người dùng {sortBy === 'name' && (sortDirection === 'ASC' ? '↑' : '↓')}
+                                    </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Vai trò
+                                    </th>
+                                    <th
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
+                                        onClick={() => handleSort('isActive')}
+                                    >
+                                        Trạng thái {sortBy === 'isActive' && (sortDirection === 'ASC' ? '↑' : '↓')}
+                                    </th>
+                                    <th
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
+                                        onClick={() => handleSort('createdAt')}
+                                    >
+                                        Đã tạo {sortBy === 'createdAt' && (sortDirection === 'ASC' ? '↑' : '↓')}
+                                    </th>
+                                    {/* Cột "Đăng nhập lần cuối" đã bị xóa như yêu cầu trước đó */}
+                                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Hành động
+                                    </th>
                                 </tr>
-                            ))}
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {users?.content?.map((user) => (
+                                    <tr key={user.id} className="hover:bg-gray-50">
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedUsers.includes(user.id)}
+                                                onChange={() => handleSelectUser(user.id)}
+                                                className="rounded border-gray-300"
+                                            />
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="flex items-center">
+                                                <div className="flex-shrink-0 h-10 w-10">
+                                                    {user.avatar ? (
+                                                        <img className="h-10 w-10 rounded-full" src={user.avatar} alt={user.name} />
+                                                    ) : (
+                                                        <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
+                                                            <span className="text-primary-600 font-medium text-sm">
+                                                                {user.name.charAt(0).toUpperCase()}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="ml-4">
+                                                    <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                                                    <div className="text-sm text-gray-500">{user.email}</div>
+                                                    {user.phone && (
+                                                        <div className="text-xs text-gray-400">{user.phone}</div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="flex items-center space-x-2">
+                                                {getRoleIcon(user.roles)}
+                                                <span className={getRoleBadge(user.roles)}>
+                                                    {Array.isArray(user.roles) ? user.roles.join(', ') : user.roles}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                                // Thay đổi từ user.isActive thành user.active
+                                                user.active
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : 'bg-red-100 text-red-800'
+                                            }`}>
+                                                {/* Thay đổi từ user.isActive thành user.active */}
+                                                {user.active ? 'Hoạt động' : 'Không hoạt động'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {formatDate(user.createdAt)}
+                                        </td>
+                                        {/* Cột "Đăng nhập lần cuối" đã bị xóa ở đây */}
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <div className="flex items-center justify-end space-x-2">
+                                                <button
+                                                    onClick={() => handleViewUser(user)}
+                                                    className="text-gray-600 hover:text-primary-600 transition-colors"
+                                                    title="Xem chi tiết"
+                                                >
+                                                    <Eye className="h-4 w-4" />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleEditUser(user)}
+                                                    className="text-gray-600 hover:text-blue-600 transition-colors"
+                                                    title="Chỉnh sửa người dùng"
+                                                >
+                                                    <Edit className="h-4 w-4" />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleResetPassword(user)}
+                                                    className="text-gray-600 hover:text-purple-600 transition-colors"
+                                                    title="Đặt lại mật khẩu"
+                                                >
+                                                    <Key className="h-4 w-4" />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleToggleStatus(user)}
+                                                    className={`transition-colors ${
+                                                        // Sử dụng user.active để xác định icon và màu sắc
+                                                        user.active
+                                                            ? 'text-gray-600 hover:text-red-600'
+                                                            : 'text-gray-600 hover:text-green-600'
+                                                    }`}
+                                                    title={user.active ? 'Vô hiệu hóa' : 'Kích hoạt'}
+                                                    disabled={toggleStatusMutation.isLoading}
+                                                >
+                                                    {/* Sử dụng user.active để hiển thị icon */}
+                                                    {user.active ? (
+                                                        <UserX className="h-4 w-4" />
+                                                    ) : (
+                                                        <UserCheck className="h-4 w-4" />
+                                                    )}
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteUser(user)}
+                                                    className="text-gray-600 hover:text-red-600 transition-colors"
+                                                    title="Xóa người dùng"
+                                                    disabled={deleteUserMutation.isLoading}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
@@ -624,8 +630,8 @@ const UserManagement = () => {
                                     Trước
                                 </button>
                                 <span className="px-3 py-2 text-sm text-gray-700">
-                  Trang {page + 1} trên {users.totalPages}
-                </span>
+                                    Trang {page + 1} trên {users.totalPages}
+                                </span>
                                 <button
                                     onClick={() => setPage(page + 1)}
                                     disabled={users.last}

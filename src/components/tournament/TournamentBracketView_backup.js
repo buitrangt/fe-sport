@@ -50,9 +50,8 @@ const TournamentBracketView = ({ tournament, refreshInterval = 30000 }) => {
     return (
       <div className="card text-center py-12">
         <Trophy className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No Bracket Generated</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">Chưa có kết quả</h3>
         <p className="text-gray-600">
-          Generate a tournament bracket to view the competition structure.
         </p>
       </div>
     );
