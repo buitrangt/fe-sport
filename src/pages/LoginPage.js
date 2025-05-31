@@ -4,12 +4,12 @@ import { useForm } from 'react-hook-form';
 import { Eye, EyeOff, LogIn, Trophy } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
-import { GoogleLogin } from '@react-oauth/google'; // Thay đổi: Import GoogleLogin component
+import { GoogleLogin } from '@react-oauth/google';
 import { FcGoogle } from 'react-icons/fc';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { login, loginWithGoogle, isLoading } = useAuth(); 
+  const { login, loginWithGoogle, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const {
@@ -26,40 +26,39 @@ const LoginPage = () => {
         password: data.password,
       });
       console.log('Login successful:', response);
-      toast.success('Login successful!');
-      navigate('/dashboard');
+      toast.success('Đăng nhập thành công!');
+      // Thay đổi ở đây: Chuyển hướng về trang chủ
+      navigate('/');
     } catch (error) {
       console.error('Login error:', error);
-      toast.error(error.message || 'Login failed');
+      toast.error(error.message || 'Đăng nhập thất bại!');
     }
   };
 
-  // HÀM XỬ LÝ KHI GOOGLE LOGIN THÀNH CÔNG (từ GoogleLogin component)
   const handleGoogleSuccess = async (credentialResponse) => {
     console.log("Google Login Success (via GoogleLogin component):", credentialResponse);
-    
-    // credentialResponse.credential CHÍNH LÀ GOOGLE ID TOKEN
+
     const googleIdToken = credentialResponse.credential;
 
     if (googleIdToken) {
       try {
-        // Gửi Google ID Token đến backend của bạn
-        await loginWithGoogle(googleIdToken); // Hàm này trong AuthContext sẽ gửi ID Token
-        toast.success('Google login successful!');
-        navigate('/dashboard');
+        await loginWithGoogle(googleIdToken);
+        toast.success('Đăng nhập bằng Google thành công!');
+        // Thay đổi ở đây: Chuyển hướng về trang chủ
+        navigate('/');
       } catch (error) {
         console.error('Backend login with Google ID Token failed:', error);
-        toast.error(error.message || 'Google login failed on backend.');
+        toast.error(error.message || 'Đăng nhập bằng Google thất bại ở backend.');
       }
     } else {
-      toast.error('Google login response missing ID token (credential).');
-      console.error('Google credentialResponse did not contain an ID token.');
+      toast.error('Phản hồi đăng nhập Google thiếu ID token (credential).');
+      console.error('credentialResponse của Google không chứa ID token.');
     }
   };
 
   const handleGoogleError = () => {
-    console.log('Google Login Failed');
-    toast.error('Google login failed. Please try again.');
+    console.log('Đăng nhập bằng Google thất bại');
+    toast.error('Đăng nhập bằng Google thất bại. Vui lòng thử lại.');
   };
 
   return (
@@ -89,10 +88,10 @@ const LoginPage = () => {
               </label>
               <input
                 {...register('email', {
-                  required: 'Email is required',
+                  required: 'Email là bắt buộc',
                   pattern: {
                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: 'Invalid email address',
+                    message: 'Địa chỉ email không hợp lệ',
                   },
                 })}
                 type="email"
@@ -111,15 +110,15 @@ const LoginPage = () => {
               <div className="relative">
                 <input
                   {...register('password', {
-                    required: 'Password is required',
+                    required: 'Mật khẩu là bắt buộc',
                     minLength: {
                       value: 6,
-                      message: 'Password must be at least 6 characters',
+                      message: 'Mật khẩu phải có ít nhất 6 ký tự',
                     },
                   })}
                   type={showPassword ? 'text' : 'password'}
                   className="input-field pr-10"
-                  placeholder="Nhập password"
+                  placeholder="Nhập mật khẩu"
                 />
                 <button
                   type="button"
@@ -153,7 +152,7 @@ const LoginPage = () => {
 
               <div className="text-sm">
                 <Link to="/forgot-password" className="text-primary-600 hover:text-primary-500">
-                  Quên mật khẩu ?
+                  Quên mật khẩu?
                 </Link>
               </div>
             </div>
@@ -182,15 +181,10 @@ const LoginPage = () => {
               <span className="bg-white px-2 text-gray-500">Hoặc</span>
             </div>
           </div>
-          
-          {/* SỬ DỤNG LẠI COMPONENT GoogleLogin */}
+
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
             onError={handleGoogleError}
-            // Bạn có thể tùy chỉnh theme/style nếu cần
-            // useOneTap={true} // Kích hoạt One Tap nếu muốn
-            // size="large" // Kích thước nút
-            // width="360" // Chiều rộng nút (tùy chỉnh cho mobile/responsive)
           />
 
           <div className="mt-8 text-center">
@@ -205,7 +199,7 @@ const LoginPage = () => {
 
         <div className="text-center mt-8">
           <Link to="/" className="text-white hover:text-gray-200 text-sm">
-            ← Back to Home
+            ← Quay lại Trang chủ
           </Link>
         </div>
       </div>
