@@ -604,7 +604,7 @@ const TournamentAdminDetailPage = () => {
               <div className="bg-white rounded-lg shadow p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                   <Trophy className="h-5 w-5 mr-2 text-blue-600" />
-                  Thông tin giải đấu
+                  Thông tin giải đấu  
                 </h3>
                 
                 <div className="space-y-4">

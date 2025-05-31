@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from 'react-query';
-import {
-  Calendar,
-  Users,
-  MapPin,
-  Trophy,
-  ArrowLeft,
+import { 
+  Calendar, 
+  Users, 
+  MapPin, 
+  Trophy, 
+  ArrowLeft, 
   Clock,
   Target,
   Award,
@@ -40,20 +40,20 @@ const TournamentDetailPage = () => {
   const { data: tournament, isLoading: tournamentLoading, refetch: refetchTournament } = useQuery(
     ['tournament', id],
     () => tournamentService.getTournamentById(id),
-    { staleTime: 1000 } // 1 giây để cập nhật nhanh
+    { staleTime: 1000 } // 1 second for fast updates
   );
 
   const { data: teams, isLoading: teamsLoading, refetch: refetchTeams } = useQuery(
     ['tournament-teams', id],
     () => teamService.getTeamsByTournament(id),
-    {
-      staleTime: 1000, // 1 giây để cập nhật nhanh
+    { 
+      staleTime: 1000, // 1 second for fast updates
       enabled: !!id,
       onSuccess: (data) => {
-        console.log('👥 [TournamentDetailPage] Dữ liệu đội đã tải:', data);
+        console.log('👥 [TournamentDetailPage] Teams data loaded:', data);
       },
       onError: (error) => {
-        console.error('❌ [TournamentDetailPage] Tải đội thất bại:', error);
+        console.error('❌ [TournamentDetailPage] Teams loading failed:', error);
       }
     }
   );
@@ -61,26 +61,26 @@ const TournamentDetailPage = () => {
   const { data: matches, isLoading: matchesLoading, refetch: refetchMatches } = useQuery(
     ['tournament-matches', id],
     () => matchService.getMatchesByTournament(id),
-    {
-      staleTime: 1000, // 1 giây để cập nhật nhanh
-      enabled: !!id
+    { 
+      staleTime: 1000, // 1 second for fast updates
+      enabled: !!id 
     }
   );
 
   const { data: currentRoundData, isLoading: currentRoundLoading, error: currentRoundError } = useQuery(
     ['tournament-current-round', id],
     () => {
-      console.log('🚀 [getCurrentRound] API call đã được kích hoạt cho giải đấu:', id);
+      console.log('🚀 [getCurrentRound] API call triggered for tournament:', id);
       return tournamentService.getCurrentRound(id);
     },
-    {
-      staleTime: 1000, // 1 giây để cập nhật nhanh
-      enabled: !!id, // Kích hoạt cho tất cả trạng thái giải đấu
+    { 
+      staleTime: 1000, // 1 second for fast updates
+      enabled: !!id, // Enable for all tournament states
       onSuccess: (data) => {
-        console.log('✅ [getCurrentRound] API thành công:', data);
+        console.log('✅ [getCurrentRound] API success:', data);
       },
       onError: (error) => {
-        console.error('❌ [getCurrentRound] Lỗi API:', error);
+        console.error('❌ [getCurrentRound] API error:', error);
       }
     }
   );
@@ -88,8 +88,8 @@ const TournamentDetailPage = () => {
   const { data: bracket, isLoading: bracketLoading, refetch: refetchBracket } = useQuery(
     ['tournament-bracket', id],
     () => matchService.getTournamentBracket(id),
-    {
-      staleTime: 1000, // 1 giây để cập nhật nhanh
+    { 
+      staleTime: 1000, // 1 second for fast updates
       enabled: !!id && (tournament?.data?.status === 'READY' || tournament?.data?.status === 'ONGOING' || tournament?.data?.status === 'COMPLETED')
     }
   );
@@ -104,7 +104,7 @@ const TournamentDetailPage = () => {
     refetchMatches();
     refetchBracket();
     refetchTournament();
-    // Làm mới dữ liệu vòng hiện tại
+    // Refetch current round data
     queryClient.invalidateQueries(['tournament-current-round', id]);
   };
 
@@ -116,9 +116,9 @@ const TournamentDetailPage = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Không tìm thấy giải đấu</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Tournament not found</h2>
           <Link to="/tournaments" className="text-primary-600 hover:text-primary-700">
-            ← Quay lại danh sách giải đấu
+            ← Quay lại
           </Link>
         </div>
       </div>
@@ -126,8 +126,8 @@ const TournamentDetailPage = () => {
   }
 
   const tournamentData = tournament.data;
-
-  // Kiểm tra an toàn cho tournamentData
+  
+  // Safety check for tournamentData
   if (!tournamentData) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -136,49 +136,49 @@ const TournamentDetailPage = () => {
     );
   }
   const canRegister = user && !isAdmin && (tournamentData.status === 'REGISTRATION' || tournamentData.status === 'UPCOMING');
-
-  // Trích xuất dữ liệu trận đấu một cách an toàn
+  
+  // Safe extraction of matches data
   const matchesData = matches?.data || matches || {};
-
-  // Lấy vòng hiện tại từ dữ liệu giải đấu trước, sau đó tính toán dự phòng
+  
+  // Get current round from tournament data first, fallback to calculation
   let currentRound = 1;
-
-  // Debug: Ghi lại tất cả các nguồn dữ liệu có thể có
-  console.log('🔍 [DEBUG] Nguồn dữ liệu cho vòng hiện tại:');
+  
+  // Debug: Log all possible data sources
+  console.log('🔍 [DEBUG] Data sources for current round:');
   console.log('  currentRoundData:', currentRoundData);
   console.log('  currentRoundData?.data:', currentRoundData?.data);
   console.log('  currentRoundData?.data?.data:', currentRoundData?.data?.data);
   console.log('  tournamentData.currentRound:', tournamentData.currentRound);
   console.log('  bracket?.data?.currentRound:', bracket?.data?.currentRound);
-
-  // Phương pháp 1: Sử dụng API vòng hiện tại chuyên dụng
+  
+  // Method 1: Use dedicated current round API
   if (currentRoundData?.data?.data?.currentRound) {
-    // Định dạng phản hồi API chuẩn
+    // Standard API response format
     currentRound = currentRoundData.data.data.currentRound;
-    console.log('🎯 [TournamentDetailPage] Đang sử dụng currentRound từ API (chuẩn):', currentRound);
+    console.log('🎯 [TournamentDetailPage] Using currentRound from API (standard):', currentRound);
   }
   else if (currentRoundData?.data?.currentRound) {
-    // Định dạng dự phòng
+    // Fallback format
     currentRound = currentRoundData.data.currentRound;
-    console.log('🎯 [TournamentDetailPage] Đang sử dụng currentRound từ API (dự phòng):', currentRound);
+    console.log('🎯 [TournamentDetailPage] Using currentRound from API (fallback):', currentRound);
   }
-  // Phương pháp 2: Kiểm tra xem backend có trả về currentRound trong dữ liệu giải đấu không
+  // Method 2: Check if backend returns currentRound in tournament data
   else if (tournamentData.currentRound) {
     currentRound = tournamentData.currentRound;
-    console.log('🎯 [TournamentDetailPage] Đang sử dụng currentRound từ dữ liệu giải đấu:', currentRound);
+    console.log('🎯 [TournamentDetailPage] Using currentRound from tournament data:', currentRound);
   }
-  // Phương pháp 3: Kiểm tra dữ liệu bảng đấu để tìm vòng hiện tại
+  // Method 3: Check bracket data for current round
   else if (bracket?.data?.currentRound) {
     currentRound = bracket.data.currentRound;
-    console.log('🎯 [TournamentDetailPage] Đang sử dụng currentRound từ bảng đấu:', currentRound);
+    console.log('🎯 [TournamentDetailPage] Using currentRound from bracket:', currentRound);
   }
-  // Phương pháp 4: Tính toán dự phòng dựa trên dữ liệu trận đấu
+  // Method 4: Fallback calculation based on match data
   else if (matchesData?.matches?.length > 0) {
-    // Tìm vòng cao nhất có trận đấu
+    // Find the highest round with matches
     const rounds = matchesData.matches.map(m => m.round || 1);
     const maxRound = Math.max(...rounds);
-
-    // Tìm các vòng có trận đấu chưa hoàn thành
+    
+    // Find rounds with incomplete matches
     const incompleteRounds = [];
     for (let round = 1; round <= maxRound; round++) {
       const roundMatches = matchesData.matches.filter(m => (m.round || 1) === round);
@@ -187,25 +187,25 @@ const TournamentDetailPage = () => {
         incompleteRounds.push(round);
       }
     }
-
-    // Logic vòng hiện tại
+    
+    // Current round logic
     if (incompleteRounds.length > 0) {
-      // Có các vòng chưa hoàn thành - vòng hiện tại là vòng chưa hoàn thành thấp nhất
+      // There are incomplete rounds - current is the lowest incomplete round
       currentRound = Math.min(...incompleteRounds);
     } else {
-      // Tất cả các vòng hiện có đã hoàn thành - vòng hiện tại là vòng tiếp theo (maxRound + 1)
+      // All existing rounds completed - current round is next round (maxRound + 1)
       currentRound = maxRound + 1;
     }
-
-    console.log('🔍 [TournamentDetailPage] currentRound được tính toán:', currentRound);
+    
+    console.log('🔍 [TournamentDetailPage] Calculated currentRound:', currentRound);
   }
-
-  console.log('🎯 [CUỐI CÙNG] Kết quả vòng hiện tại:', currentRound);
+  
+  console.log('🎯 [FINAL] Current Round Result:', currentRound);
   const matchesList = matchesData?.matches || [];
   const roundMatches = matchesList.filter(match => match.round === currentRound) || [];
-
-  // Ghi nhật ký gỡ lỗi
-  console.log('🔍 [TournamentDetailPage] Tính toán vòng ĐÃ SỬA:', {
+  
+  // Debug logging
+  console.log('🔍 [TournamentDetailPage] Round calculation FIXED:', {
     matchesCount: matchesList.length,
     currentRound,
     roundMatches: roundMatches.length,
@@ -216,21 +216,21 @@ const TournamentDetailPage = () => {
       for (let r = 1; r <= maxRound; r++) {
         const rMatches = matchesList.filter(m => (m.round || 1) === r);
         const completed = rMatches.filter(m => m.status === 'COMPLETED').length;
-        roundsInfo[`Vòng ${r}`] = `${completed}/${rMatches.length} đã hoàn thành`;
+        roundsInfo[`Round ${r}`] = `${completed}/${rMatches.length} completed`;
       }
       return roundsInfo;
     })()
   });
 
   const tabs = [
-    { id: 'overview', name: 'Tổng quan', icon: Trophy },
-    { id: 'teams', name: 'Đội', icon: Users },
-    { id: 'matches', name: 'Trận đấu', icon: Play },
-    { id: 'bracket', name: 'Bảng đấu', icon: Target },
+    { id: 'overview', name: 'Overview', icon: Trophy },
+    { id: 'teams', name: 'Teams', icon: Users },
+    { id: 'matches', name: 'Matches', icon: Play },
+    { id: 'bracket', name: 'Bracket', icon: Target },
     ...(isAdmin ? [
-      { id: 'match-results', name: 'Kết quả trận đấu', icon: Award },
-      { id: 'round-management', name: 'Quản lý vòng đấu', icon: ArrowLeft },
-      { id: 'management', name: 'Quản lý', icon: Settings }
+      { id: 'match-results', name: 'Match Results', icon: Award },
+      { id: 'round-management', name: 'Round Management', icon: ArrowLeft },
+      { id: 'management', name: 'Management', icon: Settings }
     ] : [])
   ];
 
@@ -240,15 +240,15 @@ const TournamentDetailPage = () => {
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center space-x-4 mb-4">
-            <Link
+            <Link 
               to="/tournaments"
               className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
             >
               <ArrowLeft className="h-5 w-5 mr-1" />
-              Quay lại danh sách giải đấu
+              Back to Tournaments
             </Link>
           </div>
-
+          
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <div className="flex-1">
               <div className="flex items-center space-x-3 mb-2">
@@ -258,24 +258,24 @@ const TournamentDetailPage = () => {
                 </div>
               </div>
               <p className="text-lg text-gray-600">{tournamentData.description}</p>
-
-              {/* Banner vô địch giải đấu */}
+              
+              {/* Tournament Champion Banner */}
               {tournamentData.winnerTeam && tournamentData.status === 'COMPLETED' && (
                 <div className="mt-4 bg-gradient-to-r from-yellow-100 to-orange-100 border-2 border-yellow-300 rounded-lg p-4">
                   <div className="flex items-center space-x-3">
                     <Trophy className="h-8 w-8 text-yellow-600" />
                     <div>
-                      <p className="text-sm text-yellow-700 font-medium">🏆 Nhà vô địch giải đấu</p>
+                      <p className="text-sm text-yellow-700 font-medium">🏆 Tournament Champion</p>
                       <p className="text-xl font-bold text-gray-900">{tournamentData.winnerTeam.name}</p>
                       {tournamentData.runnerUpTeam && (
-                        <p className="text-sm text-gray-600">Á quân: {tournamentData.runnerUpTeam.name}</p>
+                        <p className="text-sm text-gray-600">Runner-up: {tournamentData.runnerUpTeam.name}</p>
                       )}
                     </div>
                   </div>
                 </div>
               )}
             </div>
-
+            
             <div className="mt-4 lg:mt-0 flex items-center space-x-3">
               {canRegister && (
                 <button
@@ -286,14 +286,14 @@ const TournamentDetailPage = () => {
                   <span>Đăng ký tham gia</span>
                 </button>
               )}
-
+              
               {isAdmin && (tournamentData.status === 'ONGOING' || tournamentData.status === 'READY') && (
                 <button
                   onClick={() => setShowWorkflowGuide(true)}
                   className="btn-secondary flex items-center space-x-2"
                 >
                   <Target className="h-4 w-4" />
-                  <span>Hướng dẫn quy trình</span>
+                  <span>Workflow Guide</span>
                 </button>
               )}
             </div>
@@ -331,12 +331,12 @@ const TournamentDetailPage = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Nội dung Tab */}
+        {/* Tab Content */}
         {activeTab === 'overview' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Nội dung chính */}
+            {/* Main Content */}
             <div className="lg:col-span-2">
-              {/* Vô địch giải đấu */}
+              {/* Tournament Champion Celebration */}
               {tournamentData.status === 'COMPLETED' && tournamentData.winnerTeam && (
                 <div className="card mb-8 bg-gradient-to-r from-yellow-50 via-orange-50 to-red-50 border-2 border-yellow-300">
                   <div className="text-center py-8">
@@ -346,18 +346,18 @@ const TournamentDetailPage = () => {
                         <div className="absolute -top-2 -right-2 text-2xl">🎆</div>
                       </div>
                     </div>
-                    <h2 className="text-3xl font-bold text-gray-900 mb-2">🎉 Nhà vô địch giải đấu! 🎉</h2>
+                    <h2 className="text-3xl font-bold text-gray-900 mb-2">🎉 Tournament Champion! 🎉</h2>
                     <p className="text-xl font-semibold text-yellow-800 mb-4">{tournamentData.winnerTeam.name}</p>
                     <div className="flex justify-center space-x-8 text-sm text-gray-600">
                       <div className="text-center">
                         <div className="font-bold text-lg text-gray-900">🥇</div>
-                        <div>Nhà vô địch</div>
+                        <div>Champion</div>
                         <div className="font-medium">{tournamentData.winnerTeam.name}</div>
                       </div>
                       {tournamentData.runnerUpTeam && (
                         <div className="text-center">
                           <div className="font-bold text-lg text-gray-900">🥈</div>
-                          <div>Á quân</div>
+                          <div>Runner-up</div>
                           <div className="font-medium">{tournamentData.runnerUpTeam.name}</div>
                         </div>
                       )}
@@ -366,10 +366,10 @@ const TournamentDetailPage = () => {
                 </div>
               )}
 
-              {/* Thông tin giải đấu */}
+              {/* Tournament Info */}
               <div className="card mb-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Thông tin giải đấu</h2>
-
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div className="flex items-center space-x-3">
@@ -379,7 +379,7 @@ const TournamentDetailPage = () => {
                         <p className="font-medium">{formatDate(tournamentData.startDate)}</p>
                       </div>
                     </div>
-
+                    
                     <div className="flex items-center space-x-3">
                       <Calendar className="h-5 w-5 text-gray-400" />
                       <div>
@@ -391,175 +391,208 @@ const TournamentDetailPage = () => {
                     <div className="flex items-center space-x-3">
                       <Users className="h-5 w-5 text-gray-400" />
                       <div>
-                        <p className="text-sm text-gray-500">Sức chứa đội</p>
-                        <p className="font-medium">{teams?.data?.length || 0} / {tournamentData.maxTeams} đội</p>
+                        <p className="text-sm text-gray-500">Số đội đăng ký</p>
+                        <p className="font-medium">{teams?.data?.length || 0} / {tournamentData.maxTeams} teams</p>
                       </div>
                     </div>
                   </div>
 
                   <div className="space-y-4">
-                    <div className="flex items-center space-x-3">
-                      <MapPin className="h-5 w-5 text-gray-400" />
-                      <div>
-                        <p className="text-sm text-gray-500">Địa điểm</p>
-                        <p className="font-medium">{tournamentData.location || 'Chưa xác định'}</p>
+                    {tournamentData.location && (
+                      <div className="flex items-center space-x-3">
+                        <MapPin className="h-5 w-5 text-gray-400" />
+                        <div>
+                          <p className="text-sm text-gray-500">Địa chỉ</p>
+                          <p className="font-medium">{tournamentData.location}</p>
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     <div className="flex items-center space-x-3">
                       <Trophy className="h-5 w-5 text-gray-400" />
                       <div>
-                        <p className="text-sm text-gray-500">Môn thể thao</p>
-                        <p className="font-medium">{tournamentData.sportType || 'Chưa xác định'}</p>
+                        <p className="text-sm text-gray-500">Loại hình</p>
+                        <p className="font-medium">{tournamentData.type || 'Standard'}</p>
                       </div>
                     </div>
 
                     <div className="flex items-center space-x-3">
-                      <Clock className="h-5 w-5 text-gray-400" />
+                      <Target className="h-5 w-5 text-gray-400" />
                       <div>
-                        <p className="text-sm text-gray-500">Phí tham gia</p>
-                        <p className="font-medium">{tournamentData.registrationFee ? `${tournamentData.registrationFee.toLocaleString()} VND` : 'Miễn phí'}</p>
+                        <p className="text-sm text-gray-500">Thể thức</p>
+                        <p className="font-medium">{tournamentData.format || 'Knockout'}</p>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Recent Matches */}
-              <div className="card">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Các trận đấu gần đây</h2>
-                {matchesLoading ? (
-                  <LoadingSpinner />
-                ) : matchesList.length === 0 ? (
-                  <p className="text-gray-600">Chưa có trận đấu nào được tạo.</p>
-                ) : (
-                  <div className="space-y-4">
-                    {matchesList.slice(0, 5).map((match) => (
-                      <div key={match.id} className="border-b border-gray-100 pb-4 last:border-b-0 last:pb-0">
-                        <div className="flex justify-between items-center text-sm mb-1">
-                          <span className="font-medium text-gray-700">
-                            {match.team1?.name || 'Đội 1'} vs {match.team2?.name || 'Đội 2'}
-                          </span>
-                          <span className={`px-2 py-0.5 rounded-full text-xs ${getStatusColor(match.status)}`}>
-                            {match.status}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-xs text-gray-500">
-                          <span>Vòng {match.round}</span>
-                          <span>{formatDateTime(match.matchDate)}</span>
-                        </div>
-                        {match.status === 'COMPLETED' && (
-                          <div className="text-sm font-bold text-gray-900 mt-2">
-                            {match.score1} - {match.score2}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {matchesList.length > 5 && (
-                  <div className="mt-4 text-center">
-                    <button onClick={() => setActiveTab('matches')} className="text-primary-600 hover:text-primary-700 text-sm font-medium">
-                      Xem tất cả trận đấu
-                    </button>
+                {tournamentData.rules && (
+                  <div className="mt-6 pt-6 border-t border-gray-200">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Điều luật</h3>
+                    <div className="prose text-gray-600">
+                      <p>{tournamentData.rules}</p>
+                    </div>
                   </div>
                 )}
               </div>
             </div>
 
             {/* Sidebar */}
-            <div className="lg:col-span-1 space-y-8">
-              {/* Current Round */}
-              <div className="card">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Vòng hiện tại</h3>
-                {currentRoundLoading ? (
-                  <LoadingSpinner />
-                ) : currentRoundError ? (
-                  <p className="text-red-600">Lỗi tải vòng hiện tại: {currentRoundError.message}</p>
-                ) : (
-                  <>
-                    <div className="flex items-center space-x-2 text-lg font-semibold text-primary-600 mb-3">
-                      <Target className="h-6 w-6" />
-                      <span>Vòng {currentRound}</span>
-                    </div>
-                    {roundMatches.length === 0 ? (
-                      <p className="text-gray-600">Chưa có trận đấu nào trong vòng này.</p>
-                    ) : (
-                      <ul className="space-y-3">
-                        {roundMatches.slice(0, 3).map((match) => (
-                          <li key={match.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg shadow-sm">
-                            <div>
-                              <p className="font-medium text-gray-900">{match.team1?.name || 'Đội 1'} vs {match.team2?.name || 'Đội 2'}</p>
-                              <p className="text-xs text-gray-500">{formatDateTime(match.matchDate)}</p>
-                            </div>
-                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(match.status)}`}>
-                              {match.status}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    {roundMatches.length > 3 && (
-                      <div className="mt-4 text-center">
-                        <button onClick={() => setActiveTab('matches')} className="text-primary-600 hover:text-primary-700 text-sm font-medium">
-                          Xem tất cả trận đấu trong vòng này
-                        </button>
+            <div className="space-y-6">
+              {/* Tournament Champion & Runner-up */}
+              {(tournamentData.winnerTeam || tournamentData.runnerUpTeam) && (
+                <div className="card">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+                    <Trophy className="h-5 w-5 text-yellow-600" />
+                    <span>Tournament Results</span>
+                  </h3>
+                  
+                  {/* Champion */}
+                  {tournamentData.winnerTeam && (
+                    <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center">
+                          <Trophy className="h-6 w-6 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2">
+                            <p className="text-sm font-medium text-yellow-800">🥇 Champion</p>
+                          </div>
+                          <p className="font-bold text-lg text-yellow-900">{tournamentData.winnerTeam.name}</p>
+                        </div>
                       </div>
-                    )}
-                  </>
-                )}
+                    </div>
+                  )}
+                  
+                  {/* Runner-up */}
+                  {tournamentData.runnerUpTeam && (
+                    <div className="bg-gradient-to-r from-gray-50 to-slate-50 border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 bg-gradient-to-r from-gray-500 to-slate-500 rounded-full flex items-center justify-center">
+                          <Award className="h-6 w-6 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2">
+                            <p className="text-sm font-medium text-gray-700">🥈 Runner-up</p>
+                          </div>
+                          <p className="font-bold text-lg text-gray-900">{tournamentData.runnerUpTeam.name}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Quick Stats */}
+              <div className="card">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Số liệu thống kê nhanh chóng
+</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Số đội đã đăng ký</span>
+                    <span className="font-medium">{teams?.data?.length || 0}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Tổng số trận đấu</span>
+                    <span className="font-medium">{matchesData?.totalMatches || matchesList.length || 0}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Hoàn thành các trận đấu</span>
+                    <span className="font-medium">{matchesData?.completedMatches || matchesList.filter(m => m?.status === 'COMPLETED').length || 0}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Vòng hiện tại</span>
+                    <span className="font-medium">{currentRound || 1}</span>
+                  </div>
+                </div>
               </div>
 
-              {/* Tournament Progress */}
+              {/* Tournament Organizer */}
               <div className="card">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Tiến độ giải đấu</h3>
-                {matchesLoading ? (
-                  <LoadingSpinner />
-                ) : (
-                  <>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-700">Trận đấu đã hoàn thành</span>
-                      <span className="text-sm text-gray-600">
-                        {matchesList.filter(m => m.status === 'COMPLETED').length} / {matchesList.length}
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2.5">
-                      <div
-                        className="bg-primary-600 h-2.5 rounded-full transition-all duration-500"
-                        style={{ width: `${(matchesList.filter(m => m.status === 'COMPLETED').length / (matchesList.length || 1)) * 100}%` }}
-                      ></div>
-                    </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Người tổ chức</h3>
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-gradient-to-r from-primary-500 to-sports-purple rounded-full flex items-center justify-center">
+                    <Award className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">{tournamentData.organizer || 'EduSports'}</p>
+                    <p className="text-sm text-gray-500">Tournament Organizer</p>
+                  </div>
+                </div>
+              </div>
 
-                    {matchesList.length > 0 && (
-                      <div className="mt-4 p-3 bg-blue-50 rounded-lg text-blue-800 text-sm flex items-center space-x-2">
-                        <Award className="h-5 w-5" />
-                        <span>Tổng số trận đã tạo: <span className="font-semibold">{matchesList.length}</span></span>
+              {/* Tournament Winner */}
+              {tournamentData.winnerTeam && (
+                <div className="card">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">🏆 Tournament Champion</h3>
+                  <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-lg p-4">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                        <Trophy className="h-8 w-8 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-xl font-bold text-gray-900">{tournamentData.winnerTeam.name}</h4>
+                        <p className="text-sm text-yellow-700 font-medium">🥇 Tournament Champion</p>
+                      </div>
+                    </div>
+                    
+                    {tournamentData.runnerUpTeam && (
+                      <div className="mt-3 pt-3 border-t border-yellow-200">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-gradient-to-r from-gray-300 to-gray-400 rounded-full flex items-center justify-center">
+                            <Award className="h-5 w-5 text-white" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900">{tournamentData.runnerUpTeam.name}</p>
+                            <p className="text-xs text-gray-600">🥈 Runner-up</p>
+                          </div>
+                        </div>
                       </div>
                     )}
-                  </>
-                )}
-              </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
 
-        {/* Tab Teams */}
         {activeTab === 'teams' && (
           <div className="card">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Các đội tham gia</h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-900">Các đội đã đăng ký</h2>
+              <span className="text-sm text-gray-500">
+                {teams?.data?.length || 0} teams registered
+              </span>
+            </div>
+
             {teamsLoading ? (
-              <LoadingSpinner />
+              <LoadingSpinner size="small" />
             ) : teams?.data?.length === 0 ? (
-              <p className="text-gray-600">Hiện chưa có đội nào đăng ký cho giải đấu này.</p>
+              <div className="text-center py-8">
+                <Users className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-gray-600">Chưa có đội đăng ký</p>
+              </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {teams.data.map((team) => (
-                  <div key={team.id} className="bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex items-center space-x-4">
-                    <Users className="h-8 w-8 text-primary-500" />
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900">{team.name}</h3>
-                      <p className="text-sm text-gray-600">Thành viên: {team.members?.length || 0}</p>
-                      <p className="text-xs text-gray-500">Đăng ký vào: {formatDate(team.registrationDate)}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {teams?.data?.map((team, index) => (
+                  <div key={team.id} className="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className="bg-primary-600 text-white w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium">
+                        {index + 1}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-medium text-gray-900">{team.name}</h3>
+                        <p className="text-sm text-gray-500">{team.memberCount || 0} members</p>
+                      </div>
+                    </div>
+                    {team.description && (
+                      <p className="text-sm text-gray-600 mb-2">{team.description}</p>
+                    )}
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>Registered: {formatDate(team.registrationDate || team.createdAt)}</span>
+                      <div className={`px-2 py-1 rounded-full ${getStatusColor(team.status || 'APPROVED')}`}>
+                        {team.status || 'APPROVED'}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -568,116 +601,216 @@ const TournamentDetailPage = () => {
           </div>
         )}
 
-        {/* Tab Matches */}
         {activeTab === 'matches' && (
-          <div className="card">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Tất cả trận đấu</h2>
+          <div className="space-y-6">
             {matchesLoading ? (
               <LoadingSpinner />
             ) : matchesList.length === 0 ? (
-              <p className="text-gray-600">Hiện chưa có trận đấu nào được tạo cho giải đấu này.</p>
-            ) : (
-              <div className="space-y-4">
-                {matchesList.sort((a, b) => a.round - b.round || new Date(a.matchDate) - new Date(b.matchDate)).map((match) => (
-                  <div key={match.id} className="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        {match.team1?.name || 'Đội 1'} vs {match.team2?.name || 'Đội 2'}
-                      </h3>
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(match.status)}`}>
-                        {match.status}
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 text-sm text-gray-700">
-                      <div>
-                        <p><span className="font-medium">Vòng:</span> {match.round}</p>
-                        <p><span className="font-medium">Thời gian:</span> {formatDateTime(match.matchDate)}</p>
-                      </div>
-                      <div>
-                        {match.status === 'COMPLETED' && (
-                          <p><span className="font-medium">Tỷ số:</span> {match.score1} - {match.score2}</p>
-                        )}
-                        <p><span className="font-medium">Địa điểm:</span> {match.location || 'Chưa xác định'}</p>
-                      </div>
-                    </div>
+              <div className="card text-center py-12">
+                <Play className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Chưa có lịch thi đấu</h3>
+                <p className="text-gray-600">
+                  Các trận đấu sẽ có sẵn sau khi bảng đấu được tạo.
+                </p>
+                {isAdmin && tournamentData.status === 'REGISTRATION' && (
+                  <div className="mt-6">
+                    <TournamentBracketGenerator
+                      tournament={tournamentData}
+                      onBracketGenerated={handleBracketGenerated}
+                    />
                   </div>
-                ))}
+                )}
+              </div>
+            ) : (
+              <div className="card">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Tournament Matches</h2>
+                <div className="space-y-4">
+                  {matchesList.map((match) => (
+                    <div key={match.id} className="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-6">
+                          <div className={`text-center min-w-24 p-2 rounded-lg ${
+                            match.winnerTeam?.id === match.team1?.id 
+                              ? 'bg-green-100 border-2 border-green-300' 
+                              : match.status === 'COMPLETED' && match.winnerTeam?.id !== match.team1?.id
+                              ? 'bg-red-50 border border-red-200'
+                              : 'bg-white border border-gray-200'
+                          }`}>
+                            <p className="font-medium text-gray-900 flex items-center justify-center">
+                              {match.team1?.name || 'TBD'}
+                              {match.winnerTeam?.id === match.team1?.id && (
+                                <Trophy className="h-4 w-4 text-green-600 ml-1" />
+                              )}
+                            </p>
+                            <p className="text-3xl font-bold text-primary-600">{match.team1Score || 0}</p>
+                          </div>
+                          
+                          <div className="text-gray-400 font-medium">VS</div>
+                          
+                          <div className={`text-center min-w-24 p-2 rounded-lg ${
+                            match.winnerTeam?.id === match.team2?.id 
+                              ? 'bg-green-100 border-2 border-green-300' 
+                              : match.status === 'COMPLETED' && match.winnerTeam?.id !== match.team2?.id
+                              ? 'bg-red-50 border border-red-200'
+                              : 'bg-white border border-gray-200'
+                          }`}>
+                            <p className="font-medium text-gray-900 flex items-center justify-center">
+                              {match.team2?.name || 'TBD'}
+                              {match.winnerTeam?.id === match.team2?.id && (
+                                <Trophy className="h-4 w-4 text-green-600 ml-1" />
+                              )}
+                            </p>
+                            <p className="text-3xl font-bold text-primary-600">{match.team2Score || 0}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="text-right">
+                          <div className="text-sm text-gray-500 mb-1">
+                            Round {match.round || 1} • Match {match.matchNumber || 1}
+                          </div>
+                          <div className="text-sm text-gray-500 mb-2">
+                            {formatDateTime(match.scheduledTime)}
+                          </div>
+                          <div className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(match.status)}`}>
+                            {match.status}
+                          </div>
+                          
+                          {/* Winner Display */}
+                          {match.winnerTeam && match.status === 'COMPLETED' && (
+                            <div className="mt-2 text-xs text-green-600 font-medium flex items-center justify-end">
+                              <Trophy className="h-3 w-3 mr-1" />
+                              Winner: {match.winnerTeam.name}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {match.location && (
+                        <div className="mt-2 text-sm text-gray-500 flex items-center">
+                          <MapPin className="h-4 w-4 mr-1" />
+                          {match.location}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
         )}
 
-        {/* Tab Bracket */}
         {activeTab === 'bracket' && (
           <div className="space-y-6">
-            {tournamentData.status === 'REGISTRATION' || tournamentData.status === 'UPCOMING' ? (
-              <div className="card text-center py-8">
-                <Target className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-medium text-gray-900 mb-2">Bảng đấu chưa có sẵn</h3>
-                <p className="text-gray-600">Bảng đấu sẽ được tạo sau khi giai đoạn đăng ký kết thúc và giải đấu bắt đầu.</p>
-                {isAdmin && (
-                  <div className="mt-6">
-                    <TournamentBracketGenerator tournamentId={id} onBracketGenerated={handleBracketGenerated} />
-                  </div>
-                )}
-              </div>
+            {/* Bracket Generator for Admin */}
+            {isAdmin && (tournamentData.status === 'REGISTRATION' || tournamentData.status === 'UPCOMING' || tournamentData.status === 'READY_TO_START') && (
+              <TournamentBracketGenerator
+                tournament={tournamentData}
+                onBracketGenerated={handleBracketGenerated}
+              />
+            )}
+            
+            {/* Bracket View */}
+            {bracketLoading ? (
+              <LoadingSpinner />
             ) : (
               <TournamentBracketView tournament={tournamentData} />
             )}
           </div>
         )}
 
-        {/* Tab Match Results (Admin only) */}
-        {isAdmin && activeTab === 'match-results' && (
+        {activeTab === 'match-results' && isAdmin && (
           <MatchResultsManager
-            tournamentId={id}
-            matches={matchesList}
-            onUpdateSuccess={() => {
-              refetchMatches();
-              refetchBracket();
-              refetchTournament(); // To update winnerTeam if available
-            }}
-            isLoading={matchesLoading}
+            tournament={tournamentData}
+            currentRound={currentRound || 1}
+            onMatchResultUpdated={handleRoundAdvanced}
           />
         )}
 
-        {/* Tab Round Management (Admin only) */}
-        {isAdmin && activeTab === 'round-management' && (
+        {activeTab === 'round-management' && isAdmin && (
           <RoundManager
             tournament={tournamentData}
-            currentRound={currentRound}
+            currentRound={currentRound || 1}
             onRoundAdvanced={handleRoundAdvanced}
-            onBracketGenerated={handleBracketGenerated}
-            matches={matchesList}
           />
         )}
 
-        {/* Tab Management (Admin only) - Redirects to /admin/tournaments/{id} */}
-        {/* This tab's content is handled by the navigation to a dedicated admin page */}
-
+        {activeTab === 'management' && isAdmin && (
+          <div className="space-y-6">
+            {/* Tournament Status & Controls */}
+            <div className="card">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Tournament Management</h2>
+              
+              {/* Tournament Actions Based on Status */}
+              {tournamentData.status === 'REGISTRATION' && (
+                <div className="space-y-4">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 className="text-lg font-semibold text-blue-900 mb-2">Registration Phase</h3>
+                    <p className="text-blue-700 mb-4">
+                      Tournament is currently in registration phase. 
+                      You can generate bracket once enough teams have registered.
+                    </p>
+                    <TournamentBracketGenerator
+                      tournament={tournamentData}
+                      onBracketGenerated={handleBracketGenerated}
+                    />
+                  </div>
+                </div>
+              )}
+              
+              {(tournamentData.status === 'READY' || tournamentData.status === 'ONGOING') && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Match Management</h3>
+                    <MatchResultsManager
+                      tournament={tournamentData}
+                      currentRound={currentRound || 1}
+                    />
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Round Management</h3>
+                    <RoundManager
+                      tournament={tournamentData}
+                      currentRound={currentRound || 1}
+                    />
+                  </div>
+                </div>
+              )}
+              
+              {tournamentData.status === 'COMPLETED' && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
+                  <Trophy className="h-16 w-16 text-green-600 mx-auto mb-4" />
+                  <h3 className="text-xl font-bold text-green-900 mb-2">Tournament Completed!</h3>
+                  <p className="text-green-700">
+                    This tournament has been successfully completed. 
+                    All results and brackets are final.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Team Registration Modal */}
-      {showRegistrationModal && (
-        <TeamRegistrationModal
-          tournamentId={id}
-          maxTeams={tournamentData.maxTeams}
-          currentRegisteredTeams={teams?.data?.length || 0}
-          onClose={() => setShowRegistrationModal(false)}
-          onRegistrationSuccess={() => {
-            setShowRegistrationModal(false);
-            refetchTeams(); // Refresh team list after successful registration
-            refetchTournament(); // To update currentTeams count on overview if backend provides it
-          }}
-        />
-      )}
-
-      {/* Tournament Workflow Guide Modal */}
-      {showWorkflowGuide && (
+      <TeamRegistrationModal
+        isOpen={showRegistrationModal}
+        onClose={() => setShowRegistrationModal(false)}
+        tournament={tournamentData}
+        onSuccess={() => {
+          setShowRegistrationModal(false);
+          refetchTournament();
+          refetchTeams();
+        }}
+      />
+      
+      {/* Tournament Workflow Guide */}
+      {showWorkflowGuide && tournamentData && (
         <TournamentWorkflowGuide
+          tournament={tournamentData}
+          currentRound={currentRound}
+          matches={matchesList}
           onClose={() => setShowWorkflowGuide(false)}
-          tournamentStatus={tournamentData.status}
-          tournamentId={id}
         />
       )}
     </div>
