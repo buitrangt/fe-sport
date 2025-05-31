@@ -52,9 +52,9 @@ const NewsDetailModal = ({ show, onClose, newsItem }) => {
                 {imageUrl ? (
                     <img
                         src={imageUrl}
-                        alt={newsItem.name || 'News Image'}
+                        alt={newsItem.name || 'Hình ảnh tin tức'}
                         className="object-contain max-h-96 w-full" // Dòng này đã được sửa
-                        onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/600x400?text=No+Image'; e.target.className = 'object-contain max-h-96 w-full p-4'; }} // Và dòng này
+                        onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/600x400?text=Khong+co+anh'; e.target.className = 'object-contain max-h-96 w-full p-4'; }} // Và dòng này
                     />
                 ) : (
                     <ImageIcon className="h-20 w-20 text-gray-400" />
@@ -74,7 +74,7 @@ const NewsDetailModal = ({ show, onClose, newsItem }) => {
                 </div>
                 <div className="flex items-center">
                   <User className="h-4 w-4 mr-1 text-gray-400" />
-                  <span>{newsItem.author || 'EduSports Team'}</span>
+                  <span>{newsItem.author || 'Đội EduSports'}</span>
                 </div>
               </div>
 

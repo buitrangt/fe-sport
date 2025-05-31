@@ -32,13 +32,13 @@ const UserManagement = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [roleFilter, setRoleFilter] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
-    const [page, setPage] = useState(0); // Backend uses 0-based pagination
+    const [page, setPage] = useState(0); // Backend sử dụng phân trang dựa trên 0
     const [size] = useState(10);
     const [sortBy, setSortBy] = useState('id');
     const [sortDirection, setSortDirection] = useState('ASC');
     const [selectedUsers, setSelectedUsers] = useState([]);
 
-    // Modal states
+    // Trạng thái Modal
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -47,7 +47,7 @@ const UserManagement = () => {
 
     const queryClient = useQueryClient();
 
-    // Fetch users with pagination and filters
+    // Lấy người dùng với phân trang và bộ lọc
     const { data: usersResponse, isLoading, error } = useQuery(
         ['admin-users', { page, size, sortBy, sortDirection, search: searchTerm, role: roleFilter, isActive: statusFilter }],
         () => adminUserService.getAllUsers({
@@ -60,35 +60,35 @@ const UserManagement = () => {
             isActive: statusFilter !== '' ? statusFilter === 'true' : undefined
         }),
         {
-            staleTime: 30 * 1000, // 30 seconds
+            staleTime: 30 * 1000, // 30 giây
             keepPreviousData: true,
             onError: (error) => {
-                console.error('Error fetching users:', error);
-                toast.error('Failed to load users');
+                console.error('Lỗi khi tải người dùng:', error);
+                toast.error('Không thể tải người dùng');
             }
         }
     );
 
-    // Fetch user statistics
+    // Lấy thống kê người dùng
     const { data: userStats } = useQuery(
         'user-statistics',
         () => adminUserService.getUserStatistics(),
         {
-            staleTime: 5 * 60 * 1000, // 5 minutes
+            staleTime: 5 * 60 * 1000, // 5 phút
             onError: (error) => {
-                console.error('Error fetching user statistics:', error);
+                console.error('Lỗi khi tải thống kê người dùng:', error);
             }
         }
     );
 
-    // Fetch roles for dropdown
+    // Lấy vai trò cho dropdown
     const { data: rolesResponse } = useQuery(
         'roles',
         () => roleManagementService.getAllRoles(),
         {
-            staleTime: 10 * 60 * 1000, // 10 minutes
+            staleTime: 10 * 60 * 1000, // 10 phút
             onError: (error) => {
-                console.error('Error fetching roles:', error);
+                console.error('Lỗi khi tải vai trò:', error);
             }
         }
     );
@@ -98,13 +98,13 @@ const UserManagement = () => {
         (userData) => adminUserService.createUser(userData),
         {
             onSuccess: () => {
-                toast.success('User created successfully');
+                toast.success('Người dùng đã được tạo thành công');
                 queryClient.invalidateQueries('admin-users');
                 queryClient.invalidateQueries('user-statistics');
                 setIsCreateModalOpen(false);
             },
             onError: (error) => {
-                toast.error(error.errorMessage || 'Failed to create user');
+                toast.error(error.errorMessage || 'Không thể tạo người dùng');
             }
         }
     );
@@ -113,13 +113,13 @@ const UserManagement = () => {
         ({ id, userData }) => adminUserService.updateUser(id, userData),
         {
             onSuccess: () => {
-                toast.success('User updated successfully');
+                toast.success('Người dùng đã được cập nhật thành công');
                 queryClient.invalidateQueries('admin-users');
                 setIsEditModalOpen(false);
                 setSelectedUser(null);
             },
             onError: (error) => {
-                toast.error(error.errorMessage || 'Failed to update user');
+                toast.error(error.errorMessage || 'Không thể cập nhật người dùng');
             }
         }
     );
@@ -128,14 +128,14 @@ const UserManagement = () => {
         (id) => adminUserService.deleteUser(id),
         {
             onSuccess: () => {
-                toast.success('User deleted successfully');
+                toast.success('Người dùng đã được xóa thành công');
                 queryClient.invalidateQueries('admin-users');
                 queryClient.invalidateQueries('user-statistics');
                 setIsDeleteModalOpen(false);
                 setSelectedUser(null);
             },
             onError: (error) => {
-                toast.error(error.errorMessage || 'Failed to delete user');
+                toast.error(error.errorMessage || 'Không thể xóa người dùng');
             }
         }
     );
@@ -144,12 +144,12 @@ const UserManagement = () => {
         ({ id, isActive }) => adminUserService.toggleUserStatus(id, isActive),
         {
             onSuccess: () => {
-                toast.success('User status updated successfully');
+                toast.success('Trạng thái người dùng đã được cập nhật thành công');
                 queryClient.invalidateQueries('admin-users');
                 queryClient.invalidateQueries('user-statistics');
             },
             onError: (error) => {
-                toast.error(error.errorMessage || 'Failed to update user status');
+                toast.error(error.errorMessage || 'Không thể cập nhật trạng thái người dùng');
             }
         }
     );
@@ -158,10 +158,10 @@ const UserManagement = () => {
         ({ id, newPassword }) => adminUserService.resetUserPassword(id, newPassword),
         {
             onSuccess: () => {
-                toast.success('Password reset successfully');
+                toast.success('Mật khẩu đã được đặt lại thành công');
             },
             onError: (error) => {
-                toast.error(error.errorMessage || 'Failed to reset password');
+                toast.error(error.errorMessage || 'Không thể đặt lại mật khẩu');
             }
         }
     );
@@ -170,21 +170,21 @@ const UserManagement = () => {
         (userIds) => adminUserService.bulkDeleteUsers(userIds),
         {
             onSuccess: () => {
-                toast.success(`${selectedUsers.length} users deleted successfully`);
+                toast.success(`${selectedUsers.length} người dùng đã được xóa thành công`);
                 queryClient.invalidateQueries('admin-users');
                 queryClient.invalidateQueries('user-statistics');
                 setSelectedUsers([]);
             },
             onError: (error) => {
-                toast.error(error.errorMessage || 'Failed to delete users');
+                toast.error(error.errorMessage || 'Không thể xóa người dùng');
             }
         }
     );
 
-    // Event handlers
+    // Xử lý sự kiện
     const handleSearch = (e) => {
         e.preventDefault();
-        setPage(0); // Reset to first page
+        setPage(0); // Đặt lại về trang đầu tiên
     };
 
     const handleSort = (field) => {
@@ -220,23 +220,23 @@ const UserManagement = () => {
     };
 
     const handleResetPassword = (user) => {
-        const newPassword = prompt('Enter new password for ' + user.name + ':');
+        const newPassword = prompt('Nhập mật khẩu mới cho ' + user.name + ':');
         if (newPassword && newPassword.length >= 6) {
             resetPasswordMutation.mutate({
                 id: user.id,
                 newPassword
             });
         } else if (newPassword) {
-            toast.error('Password must be at least 6 characters long');
+            toast.error('Mật khẩu phải dài ít nhất 6 ký tự');
         }
     };
 
     const handleBulkDelete = () => {
         if (selectedUsers.length === 0) {
-            toast.error('Please select users to delete');
+            toast.error('Vui lòng chọn người dùng để xóa');
             return;
         }
-        if (window.confirm(`Are you sure you want to delete ${selectedUsers.length} users?`)) {
+        if (window.confirm(`Bạn có chắc chắn muốn xóa ${selectedUsers.length} người dùng này không?`)) {
             bulkDeleteMutation.mutate(selectedUsers);
         }
     };
@@ -249,7 +249,7 @@ const UserManagement = () => {
                 isActive: statusFilter !== '' ? statusFilter === 'true' : undefined
             });
 
-            // Create and download CSV file
+            // Tạo và tải xuống tệp CSV
             const blob = new Blob([response.data], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -260,9 +260,9 @@ const UserManagement = () => {
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
 
-            toast.success('Users exported successfully');
+            toast.success('Người dùng đã được xuất thành công');
         } catch (error) {
-            toast.error('Failed to export users');
+            toast.error('Không thể xuất người dùng');
         }
     };
 
@@ -282,7 +282,7 @@ const UserManagement = () => {
         }
     };
 
-    // Helper functions
+    // Hàm trợ giúp
     const getRoleIcon = (role) => {
         const roleArray = Array.isArray(role) ? role : [role];
         if (roleArray.includes('ADMIN')) {
@@ -315,12 +315,12 @@ const UserManagement = () => {
         return (
             <div className="text-center py-8">
                 <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-                <p className="text-red-600">Error loading users. Please try again later.</p>
+                <p className="text-red-600">Lỗi khi tải người dùng. Vui lòng thử lại sau.</p>
                 <button
                     onClick={() => queryClient.invalidateQueries('admin-users')}
                     className="btn-primary mt-4"
                 >
-                    Retry
+                    Thử lại
                 </button>
             </div>
         );
@@ -333,30 +333,30 @@ const UserManagement = () => {
 
     return (
         <div className="space-y-6">
-            {/* Header with Statistics */}
+            {/* Phần đầu với Thống kê */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-900">User Management</h2>
-                    <p className="text-gray-600">Manage user accounts, roles, and permissions</p>
+                    <h2 className="text-2xl font-bold text-gray-900">Quản lý người dùng</h2>
+                    <p className="text-gray-600">Quản lý tài khoản người dùng, vai trò và quyền hạn</p>
                 </div>
                 <div className="flex items-center space-x-3">
                     <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                        {totalUsers} Total Users
+                        {totalUsers} Tổng số người dùng
                     </div>
                     <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                        {activeUsers} Active
+                        {activeUsers} Hoạt động
                     </div>
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
                         className="btn-primary"
                     >
                         <Plus className="h-4 w-4 mr-2" />
-                        Add User
+                        Thêm người dùng
                     </button>
                 </div>
             </div>
 
-            {/* Search and Filters */}
+            {/* Tìm kiếm và Bộ lọc */}
             <div className="bg-white rounded-lg border border-gray-200 p-4">
                 <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4">
                     <div className="flex-1">
@@ -364,7 +364,7 @@ const UserManagement = () => {
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                             <input
                                 type="text"
-                                placeholder="Search users by name or email..."
+                                placeholder="Tìm kiếm người dùng theo tên hoặc email..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="pl-10 input-field"
@@ -378,7 +378,7 @@ const UserManagement = () => {
                             onChange={(e) => setRoleFilter(e.target.value)}
                             className="input-field min-w-[120px]"
                         >
-                            <option value="">All Roles</option>
+                            <option value="">Tất cả vai trò</option>
                             {availableRoles.map((role) => (
                                 <option key={role.name} value={role.name}>{role.name}</option>
                             ))}
@@ -389,9 +389,9 @@ const UserManagement = () => {
                             onChange={(e) => setStatusFilter(e.target.value)}
                             className="input-field min-w-[120px]"
                         >
-                            <option value="">All Status</option>
-                            <option value="true">Active</option>
-                            <option value="false">Inactive</option>
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="true">Hoạt động</option>
+                            <option value="false">Không hoạt động</option>
                         </select>
 
                         <button
@@ -399,18 +399,18 @@ const UserManagement = () => {
                             className="btn-primary whitespace-nowrap"
                         >
                             <Filter className="h-4 w-4 mr-2" />
-                            Apply
+                            Áp dụng
                         </button>
                     </div>
                 </form>
             </div>
 
-            {/* Actions Bar */}
+            {/* Thanh hành động */}
             {selectedUsers.length > 0 && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <div className="flex items-center justify-between">
             <span className="text-blue-800 font-medium">
-              {selectedUsers.length} user{selectedUsers.length > 1 ? 's' : ''} selected
+              Đã chọn {selectedUsers.length} người dùng
             </span>
                         <div className="flex space-x-2">
                             <button
@@ -419,31 +419,31 @@ const UserManagement = () => {
                                 disabled={bulkDeleteMutation.isLoading}
                             >
                                 <Trash2 className="h-4 w-4 mr-2" />
-                                Delete Selected
+                                Xóa đã chọn
                             </button>
                             <button
                                 onClick={() => setSelectedUsers([])}
                                 className="btn-secondary"
                             >
-                                Cancel
+                                Hủy bỏ
                             </button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Export Button */}
+            {/* Nút xuất */}
             {/* <div className="flex justify-end">
                 <button
                     onClick={handleExportUsers}
                     className="btn-secondary"
                 >
                     <Download className="h-4 w-4 mr-2" />
-                    Export CSV
+                    Xuất CSV
                 </button>
             </div> */}
 
-            {/* Users Table */}
+            {/* Bảng người dùng */}
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
                 {isLoading ? (
                     <div className="p-8 text-center">
@@ -452,7 +452,7 @@ const UserManagement = () => {
                 ) : users?.content?.length === 0 ? (
                     <div className="p-8 text-center">
                         <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <p className="text-gray-600">No users found</p>
+                        <p className="text-gray-600">Không tìm thấy người dùng nào</p>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
@@ -471,28 +471,28 @@ const UserManagement = () => {
                                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
                                     onClick={() => handleSort('name')}
                                 >
-                                    User {sortBy === 'name' && (sortDirection === 'ASC' ? '↑' : '↓')}
+                                    Người dùng {sortBy === 'name' && (sortDirection === 'ASC' ? '↑' : '↓')}
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Role
+                                    Vai trò
                                 </th>
                                 <th
                                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
                                     onClick={() => handleSort('isActive')}
                                 >
-                                    Status {sortBy === 'isActive' && (sortDirection === 'ASC' ? '↑' : '↓')}
+                                    Trạng thái {sortBy === 'isActive' && (sortDirection === 'ASC' ? '↑' : '↓')}
                                 </th>
                                 <th
                                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
                                     onClick={() => handleSort('createdAt')}
                                 >
-                                    Created {sortBy === 'createdAt' && (sortDirection === 'ASC' ? '↑' : '↓')}
+                                    Đã tạo {sortBy === 'createdAt' && (sortDirection === 'ASC' ? '↑' : '↓')}
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Last Login
+                                    Đăng nhập lần cuối
                                 </th>
                                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Actions
+                                    Hành động
                                 </th>
                             </tr>
                             </thead>
@@ -543,35 +543,35 @@ const UserManagement = () => {
                               ? 'bg-green-100 text-green-800'
                               : 'bg-red-100 text-red-800'
                       }`}>
-                        {user.isActive ? 'Active' : 'Inactive'}
+                        {user.isActive ? 'Hoạt động' : 'Không hoạt động'}
                       </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {formatDate(user.createdAt)}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {user.lastLogin ? formatDate(user.lastLogin) : 'Never'}
+                                        {user.lastLogin ? formatDate(user.lastLogin) : 'Chưa bao giờ'}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <div className="flex items-center justify-end space-x-2">
                                             <button
                                                 onClick={() => handleViewUser(user)}
                                                 className="text-gray-600 hover:text-primary-600 transition-colors"
-                                                title="View Details"
+                                                title="Xem chi tiết"
                                             >
                                                 <Eye className="h-4 w-4" />
                                             </button>
                                             <button
                                                 onClick={() => handleEditUser(user)}
                                                 className="text-gray-600 hover:text-blue-600 transition-colors"
-                                                title="Edit User"
+                                                title="Chỉnh sửa người dùng"
                                             >
                                                 <Edit className="h-4 w-4" />
                                             </button>
                                             <button
                                                 onClick={() => handleResetPassword(user)}
                                                 className="text-gray-600 hover:text-purple-600 transition-colors"
-                                                title="Reset Password"
+                                                title="Đặt lại mật khẩu"
                                             >
                                                 <Key className="h-4 w-4" />
                                             </button>
@@ -582,7 +582,7 @@ const UserManagement = () => {
                                                         ? 'text-gray-600 hover:text-red-600'
                                                         : 'text-gray-600 hover:text-green-600'
                                                 }`}
-                                                title={user.isActive ? 'Deactivate' : 'Activate'}
+                                                title={user.isActive ? 'Vô hiệu hóa' : 'Kích hoạt'}
                                                 disabled={toggleStatusMutation.isLoading}
                                             >
                                                 {user.isActive ? (
@@ -594,7 +594,7 @@ const UserManagement = () => {
                                             <button
                                                 onClick={() => handleDeleteUser(user)}
                                                 className="text-gray-600 hover:text-red-600 transition-colors"
-                                                title="Delete User"
+                                                title="Xóa người dùng"
                                                 disabled={deleteUserMutation.isLoading}
                                             >
                                                 <Trash2 className="h-4 w-4" />
@@ -608,12 +608,12 @@ const UserManagement = () => {
                     </div>
                 )}
 
-                {/* Pagination */}
+                {/* Phân trang */}
                 {users && users.totalPages > 1 && (
                     <div className="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
                         <div className="flex items-center justify-between">
                             <div className="text-sm text-gray-700">
-                                Showing {users.page * users.size + 1} to {Math.min((users.page + 1) * users.size, users.totalElements)} of {users.totalElements} results
+                                Hiển thị từ {users.page * users.size + 1} đến {Math.min((users.page + 1) * users.size, users.totalElements)} trên tổng số {users.totalElements} kết quả
                             </div>
                             <div className="flex space-x-2">
                                 <button
@@ -621,17 +621,17 @@ const UserManagement = () => {
                                     disabled={users.first}
                                     className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    Previous
+                                    Trước
                                 </button>
                                 <span className="px-3 py-2 text-sm text-gray-700">
-                  Page {page + 1} of {users.totalPages}
+                  Trang {page + 1} trên {users.totalPages}
                 </span>
                                 <button
                                     onClick={() => setPage(page + 1)}
                                     disabled={users.last}
                                     className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    Next
+                                    Tiếp
                                 </button>
                             </div>
                         </div>
@@ -647,7 +647,7 @@ const UserManagement = () => {
                     onSubmit={(userData) => createUserMutation.mutate(userData)}
                     isLoading={createUserMutation.isLoading}
                     availableRoles={availableRoles}
-                    title="Create New User"
+                    title="Tạo người dùng mới"
                 />
             )}
 
@@ -662,7 +662,7 @@ const UserManagement = () => {
                     isLoading={updateUserMutation.isLoading}
                     availableRoles={availableRoles}
                     initialData={selectedUser}
-                    title="Edit User"
+                    title="Chỉnh sửa người dùng"
                 />
             )}
 
@@ -686,9 +686,9 @@ const UserManagement = () => {
                     }}
                     onConfirm={() => deleteUserMutation.mutate(selectedUser.id)}
                     isLoading={deleteUserMutation.isLoading}
-                    title="Delete User"
-                    message={`Are you sure you want to delete "${selectedUser.name}"? This action cannot be undone.`}
-                    confirmText="Delete"
+                    title="Xóa người dùng"
+                    message={`Bạn có chắc chắn muốn xóa "${selectedUser.name}"? Hành động này không thể hoàn tác.`}
+                    confirmText="Xóa"
                     confirmButtonClass="btn-danger"
                 />
             )}

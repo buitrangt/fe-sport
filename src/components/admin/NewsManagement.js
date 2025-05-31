@@ -28,8 +28,8 @@ const formatDate = (dateString) => {
   try {
     return new Date(dateString).toLocaleDateString(undefined, options);
   } catch (e) {
-    console.error("Invalid date format:", dateString, e);
-    return 'Invalid Date';
+    console.error("Định dạng ngày không hợp lệ:", dateString, e);
+    return 'Ngày không hợp lệ';
   }
 };
 
@@ -53,7 +53,7 @@ const NewsManagement = () => {
   const { data: news, isLoading, error, refetch } = useQuery(
       ['admin-news', { page, searchTerm }],
       async () => {
-        console.log("DEBUG FETCH: Fetching news with page:", page, "searchTerm:", searchTerm);
+        console.log("DEBUG FETCH: Đang tìm nạp tin tức với trang:", page, "từ khóa tìm kiếm:", searchTerm);
         const allNews = await newsService.getAllNews();
 
         let filteredNews = allNews;
@@ -85,7 +85,7 @@ const NewsManagement = () => {
         staleTime: 2 * 60 * 1000,
         keepPreviousData: true,
         onError: (err) => {
-          console.error("DEBUG FETCH ERROR: Error fetching news articles:", err);
+          console.error("DEBUG FETCH ERROR: Lỗi khi tìm nạp các bài viết tin tức:", err);
         }
       }
   );
@@ -94,13 +94,13 @@ const NewsManagement = () => {
       (newsId) => newsService.deleteNews(newsId),
       {
         onSuccess: () => {
-          toast.success('News article deleted successfully');
+          toast.success('Bài viết tin tức đã được xóa thành công');
           queryClient.invalidateQueries('admin-news');
           queryClient.invalidateQueries('news');
         },
         onError: (error) => {
-          console.error("DEBUG DELETE ERROR: Error deleting news article:", error);
-          toast.error(`Error deleting news: ${error.message || 'Please try again.'}`);
+          console.error("DEBUG DELETE ERROR: Lỗi khi xóa bài viết tin tức:", error);
+          toast.error(`Lỗi khi xóa tin tức: ${error.message || 'Vui lòng thử lại.'}`);
         }
       }
   );
@@ -146,7 +146,7 @@ const NewsManagement = () => {
   // Callback khi UpdateNewsModal submit thành công
   const handleNewsUpdated = () => {
     setShowUpdateModal(false);
-    setSelectedNews(null); // Clear selected news
+    setSelectedNews(null); // Xóa tin tức đã chọn
     queryClient.invalidateQueries('admin-news');
     queryClient.invalidateQueries('news');
     refetch();
@@ -157,7 +157,7 @@ const NewsManagement = () => {
     return (
         <div className="text-center py-8">
           <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <p className="text-red-600">Error loading news articles. Please try again later.</p>
+          <p className="text-red-600">Lỗi khi tải các bài viết tin tức. Vui lòng thử lại sau.</p>
         </div>
     );
   }
@@ -167,19 +167,19 @@ const NewsManagement = () => {
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900">News Management</h2>
-            <p className="text-gray-600">Create, edit, and publish news articles and announcements.</p>
+            <h2 className="text-3xl font-bold text-gray-900">Quản Lý Tin Tức</h2>
+            <p className="text-gray-600">Tạo, chỉnh sửa và xuất bản các bài viết tin tức và thông báo.</p>
           </div>
           <div className="flex items-center space-x-3">
             <div className="bg-purple-100 text-purple-800 px-4 py-2 rounded-full text-sm font-medium">
-              {news?.pagination?.totalItems || 0} Articles
+              {news?.pagination?.totalItems || 0} Bài Viết
             </div>
             <button
                 onClick={handleCreateNews} // Gọi hàm để mở modal tạo mới
                 className="btn-primary"
             >
               <Plus className="h-4 w-4 mr-2" />
-              Create Article
+              Tạo Bài Viết
             </button>
           </div>
         </div>
@@ -192,7 +192,7 @@ const NewsManagement = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <input
                     type="text"
-                    placeholder="Search news articles by title or content..."
+                    placeholder="Tìm kiếm bài viết tin tức theo tiêu đề hoặc nội dung..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10 input-field"
@@ -204,7 +204,7 @@ const NewsManagement = () => {
                 className="btn-primary whitespace-nowrap"
             >
               <Filter className="h-4 w-4 mr-2" />
-              Search
+              Tìm kiếm
             </button>
           </form>
         </div>
@@ -214,18 +214,18 @@ const NewsManagement = () => {
           {isLoading ? (
               <div className="p-8 text-center">
                 <LoadingSpinner />
-                <p className="text-gray-500 mt-2">Loading news articles...</p>
+                <p className="text-gray-500 mt-2">Đang tải các bài viết tin tức...</p>
               </div>
           ) : news?.data?.length === 0 ? (
               <div className="p-8 text-center">
                 <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600 text-lg mb-4">No news articles found.</p>
+                <p className="text-gray-600 text-lg mb-4">Không tìm thấy bài viết tin tức nào.</p>
                 <button
                     onClick={handleCreateNews}
                     className="btn-primary"
                 >
                   <Plus className="h-4 w-4 mr-2" />
-                  Create Your First Article
+                  Tạo Bài Viết Đầu Tiên Của Bạn
                 </button>
               </div>
           ) : (
@@ -243,7 +243,7 @@ const NewsManagement = () => {
                                 src={newsService.getImageUrl(article.attachments[0].url)}
                                 alt={article.name}
                                 className="w-full h-full object-cover"
-                                onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/400x200?text=No+Image'; }}
+                                onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/400x200?text=Không+có+ảnh'; }}
                             />
                         ) : (
                             <Image className="h-16 w-16 text-gray-400" />
@@ -265,7 +265,7 @@ const NewsManagement = () => {
                     <Calendar className="h-3 w-3 mr-1" />
                     <span>{formatDate(article.createdAt)}</span>
                     <User className="h-3 w-3 ml-4 mr-1" />
-                    <span>{article.author || 'EduSports Team'}</span>
+                    <span>{article.author || 'Đội EduSports'}</span>
                   </div> */}
 
                         {/* Action Buttons for each article */}
@@ -274,14 +274,14 @@ const NewsManagement = () => {
                             <button
                                 onClick={(e) => { e.stopPropagation(); handleViewNewsDetail(article); }}
                                 className="btn-icon"
-                                title="View Article"
+                                title="Xem Bài Viết"
                             >
                               <Eye className="h-4 w-4" />
                             </button>
                             <button
                                 onClick={(e) => { e.stopPropagation(); handleEditNews(article); }} // Gọi hàm để mở modal cập nhật
                                 className="btn-icon text-blue-600 hover:text-blue-700"
-                                title="Edit Article"
+                                title="Chỉnh Sửa Bài Viết"
                             >
                               <Edit className="h-4 w-4" />
                             </button>
@@ -290,7 +290,7 @@ const NewsManagement = () => {
                           <button
                               onClick={(e) => { e.stopPropagation(); handleDeleteNews(article.id); }}
                               className="btn-icon text-red-600 hover:text-red-700"
-                              title="Delete Article"
+                              title="Xóa Bài Viết"
                               disabled={deleteNewsMutation.isLoading}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -306,7 +306,7 @@ const NewsManagement = () => {
           {news?.pagination?.totalPages > 1 && (
               <div className="bg-white px-4 py-3 border-t border-gray-200 sm:px-6 flex items-center justify-between">
                 <div className="text-sm text-gray-700">
-                  Showing page <span className="font-medium">{news.pagination.currentPage}</span> of <span className="font-medium">{news.pagination.totalPages}</span> ({news.pagination.totalItems} items)
+                  Hiển thị trang <span className="font-medium">{news.pagination.currentPage}</span> trên <span className="font-medium">{news.pagination.totalPages}</span> ({news.pagination.totalItems} mục)
                 </div>
                 <div className="flex space-x-2">
                   <button
@@ -314,14 +314,14 @@ const NewsManagement = () => {
                       disabled={!news.pagination.hasPrev || deleteNewsMutation.isLoading}
                       className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Previous
+                    Trước
                   </button>
                   <button
                       onClick={() => setPage(prev => prev + 1)}
                       disabled={!news.pagination.hasNext || deleteNewsMutation.isLoading}
                       className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Next
+                    Tiếp
                   </button>
                 </div>
               </div>
@@ -354,5 +354,3 @@ const NewsManagement = () => {
 };
 
 export default NewsManagement;
-
-//test commit

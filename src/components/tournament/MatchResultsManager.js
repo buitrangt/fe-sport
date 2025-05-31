@@ -21,64 +21,64 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
   const [notification, setNotification] = useState(null);
   const queryClient = useQueryClient();
 
-  // Fetch matches for current tournament and round
+  // Lấy dữ liệu các trận đấu cho giải đấu và vòng hiện tại
   const { data: matches, isLoading, error, refetch } = useQuery(
     ['tournament-matches', tournament.id, currentRound],
     () => matchService.getMatchesByTournament(tournament.id, { round: currentRound }),
     {
       enabled: !!tournament.id,
-      staleTime: 30000, // 30 seconds
+      staleTime: 30000, // 30 giây
       onSuccess: (data) => {
-        console.log('📋 [MatchResultsManager] Matches data received:', data);
-        console.log('📋 [MatchResultsManager] Data type:', typeof data);
-        console.log('📋 [MatchResultsManager] Is array:', Array.isArray(data));
+        console.log('📋 [MatchResultsManager] Dữ liệu trận đấu đã nhận:', data);
+        console.log('📋 [MatchResultsManager] Loại dữ liệu:', typeof data);
+        console.log('📋 [MatchResultsManager] Có phải mảng không:', Array.isArray(data));
         if (data?.data) {
-          console.log('📋 [MatchResultsManager] Nested data:', data.data);
-          console.log('📋 [MatchResultsManager] Nested data type:', typeof data.data);
-          console.log('📋 [MatchResultsManager] Nested is array:', Array.isArray(data.data));
+          console.log('📋 [MatchResultsManager] Dữ liệu lồng:', data.data);
+          console.log('📋 [MatchResultsManager] Loại dữ liệu lồng:', typeof data.data);
+          console.log('📋 [MatchResultsManager] Lồng có phải mảng không:', Array.isArray(data.data));
         }
       },
       onError: (error) => {
-        console.error('Failed to fetch matches:', error);
-        showNotification('error', 'Failed to load matches');
+        console.error('Không thể lấy dữ liệu trận đấu:', error);
+        showNotification('error', 'Không thể tải các trận đấu');
       }
     }
   );
 
-  // Update match score mutation
+  // Mutation cập nhật điểm trận đấu
   const updateScoreMutation = useMutation(
     ({ matchId, scoreData }) => matchService.updateMatchScore(matchId, scoreData),
     {
       onSuccess: (data, variables) => {
-        showNotification('success', 'Match score updated successfully!');
+        showNotification('success', 'Điểm trận đấu đã được cập nhật thành công!');
         queryClient.invalidateQueries(['tournament-matches', tournament.id]);
         queryClient.invalidateQueries(['tournament-bracket', tournament.id]);
         setEditingMatch(null);
         setMatchScores(prev => ({ ...prev, [variables.matchId]: {} }));
-        // Trigger callback to parent component
+        // Kích hoạt callback cho component cha
         onMatchResultUpdated?.();
       },
       onError: (error) => {
-        console.error('Failed to update match score:', error);
-        showNotification('error', error.response?.data?.message || 'Failed to update match score');
+        console.error('Không thể cập nhật điểm trận đấu:', error);
+        showNotification('error', error.response?.data?.message || 'Không thể cập nhật điểm trận đấu');
       }
     }
   );
 
-  // Update match status mutation
+  // Mutation cập nhật trạng thái trận đấu
   const updateStatusMutation = useMutation(
     ({ matchId, status }) => matchService.updateMatchStatus(matchId, { status }),
     {
       onSuccess: () => {
-        showNotification('success', 'Match status updated successfully!');
+        showNotification('success', 'Trạng thái trận đấu đã được cập nhật thành công!');
         queryClient.invalidateQueries(['tournament-matches', tournament.id]);
         queryClient.invalidateQueries(['tournament-bracket', tournament.id]);
-        // Trigger callback to parent component
+        // Kích hoạt callback cho component cha
         onMatchResultUpdated?.();
       },
       onError: (error) => {
-        console.error('Failed to update match status:', error);
-        showNotification('error', error.response?.data?.message || 'Failed to update match status');
+        console.error('Không thể cập nhật trạng thái trận đấu:', error);
+        showNotification('error', error.response?.data?.message || 'Không thể cập nhật trạng thái trận đấu');
       }
     }
   );
@@ -116,18 +116,18 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
 
     const { team1Score, team2Score } = scores;
     
-    // Validate scores
+    // Xác thực điểm số
     if (team1Score === team2Score) {
-      showNotification('error', 'Scores cannot be tied. Please enter different scores.');
+      showNotification('error', 'Điểm số không được hòa. Vui lòng nhập điểm số khác nhau.');
       return;
     }
 
     if (team1Score < 0 || team2Score < 0) {
-      showNotification('error', 'Scores cannot be negative.');
+      showNotification('error', 'Điểm số không được âm.');
       return;
     }
 
-    // Determine winner
+    // Xác định người thắng
     const winnerId = team1Score > team2Score ? match.team1.id : match.team2.id;
 
     try {
@@ -141,7 +141,7 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
         }
       });
     } catch (error) {
-      console.error('Error saving score:', error);
+      console.error('Lỗi khi lưu điểm:', error);
     }
   };
 
@@ -199,20 +199,20 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
     return (
       <div className="card text-center py-8">
         <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Error Loading Matches</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">Lỗi khi tải các trận đấu</h3>
         <p className="text-gray-600 mb-4">{error.message}</p>
         <button onClick={() => refetch()} className="btn-primary">
-          Try Again
+          Thử lại
         </button>
       </div>
     );
   }
 
-  // Safe data extraction with comprehensive fallbacks
+  // Trích xuất dữ liệu an toàn với các phương án dự phòng toàn diện
   let matchList = [];
   
   try {
-    // Try different possible data structures
+    // Thử các cấu trúc dữ liệu có thể có
     if (Array.isArray(matches?.data?.matches)) {
       matchList = matches.data.matches;
     } else if (Array.isArray(matches?.data)) {
@@ -222,16 +222,16 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
     } else if (Array.isArray(matches)) {
       matchList = matches;
     } else {
-      console.log('🚷 [MatchResultsManager] No valid match array found in:', matches);
+      console.log('🚷 [MatchResultsManager] Không tìm thấy mảng trận đấu hợp lệ trong:', matches);
       matchList = [];
     }
   } catch (err) {
-    console.error('🚨 [MatchResultsManager] Error extracting match data:', err);
+    console.error('🚨 [MatchResultsManager] Lỗi khi trích xuất dữ liệu trận đấu:', err);
     matchList = [];
   }
   
-  console.log('🏆 [MatchResultsManager] Final matchList:', matchList);
-  console.log('🏆 [MatchResultsManager] MatchList length:', matchList.length);
+  console.log('🏆 [MatchResultsManager] Danh sách trận đấu cuối cùng:', matchList);
+  console.log('🏆 [MatchResultsManager] Độ dài danh sách trận đấu:', matchList.length);
   
   const completedMatches = matchList.filter(match => match?.status === 'COMPLETED').length;
   const totalMatches = matchList.length;
@@ -239,7 +239,7 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
 
   return (
     <div className="space-y-6">
-      {/* Notification */}
+      {/* Thông báo */}
       {notification && (
         <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
           notification.type === 'success' 
@@ -253,20 +253,20 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
         </div>
       )}
 
-      {/* Round Header */}
+      {/* Tiêu đề vòng đấu */}
       <div className="card">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-xl font-semibold text-gray-900">
-              Round {currentRound} - Match Results
+              Vòng {currentRound} - Kết quả trận đấu
             </h3>
             <p className="text-gray-600">
-              Input match results and manage tournament progression
+              Nhập kết quả trận đấu và quản lý tiến trình giải đấu
             </p>
           </div>
           <div className="flex items-center space-x-4">
             <div className="text-right">
-              <div className="text-sm text-gray-600">Progress</div>
+              <div className="text-sm text-gray-600">Tiến độ</div>
               <div className="text-lg font-semibold text-gray-900">
                 {completedMatches}/{totalMatches}
               </div>
@@ -280,7 +280,7 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
           </div>
         </div>
 
-        {/* Round Statistics */}
+        {/* Thống kê vòng đấu */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-blue-50 rounded-lg p-4">
             <div className="flex items-center space-x-3">
@@ -288,7 +288,7 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
                 <Target className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <div className="text-sm text-blue-600 font-medium">Total Matches</div>
+                <div className="text-sm text-blue-600 font-medium">Tổng số trận đấu</div>
                 <div className="text-xl font-bold text-blue-900">{totalMatches}</div>
               </div>
             </div>
@@ -300,7 +300,7 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
                 <CheckCircle className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <div className="text-sm text-green-600 font-medium">Completed</div>
+                <div className="text-sm text-green-600 font-medium">Đã hoàn thành</div>
                 <div className="text-xl font-bold text-green-900">{completedMatches}</div>
               </div>
             </div>
@@ -312,7 +312,7 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
                 <Clock className="h-5 w-5 text-orange-600" />
               </div>
               <div>
-                <div className="text-sm text-orange-600 font-medium">Remaining</div>
+                <div className="text-sm text-orange-600 font-medium">Còn lại</div>
                 <div className="text-xl font-bold text-orange-900">{totalMatches - completedMatches}</div>
               </div>
             </div>
@@ -320,22 +320,22 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
         </div>
       </div>
 
-      {/* Matches List */}
+      {/* Danh sách trận đấu */}
       <div className="space-y-4">
         {totalMatches === 0 ? (
           <div className="card text-center py-12">
             <Trophy className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Matches Found</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Không tìm thấy trận đấu nào</h3>
             <p className="text-gray-600 mb-4">
-              No matches found for Round {currentRound}. This could mean:
+              Không tìm thấy trận đấu nào cho Vòng {currentRound}. Điều này có thể có nghĩa là:
             </p>
             <div className="text-sm text-gray-500 space-y-1 mb-6">
-              <p>• Tournament bracket hasn't been generated yet</p>
-              <p>• No matches exist for this round</p> 
-              <p>• Backend data is not in expected format</p>
+              <p>• Sơ đồ giải đấu chưa được tạo</p>
+              <p>• Không có trận đấu nào tồn tại cho vòng này</p> 
+              <p>• Dữ liệu backend không đúng định dạng</p>
             </div>
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h4 className="text-sm font-medium text-blue-900 mb-2">📊 Current API Data</h4>
+              <h4 className="text-sm font-medium text-blue-900 mb-2">📊 Dữ liệu API hiện tại</h4>
               <pre className="text-xs text-blue-700 text-left overflow-auto">
                 {JSON.stringify(matches, null, 2)}
               </pre>
@@ -351,12 +351,12 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
                   </div>
                   <div>
                     <h4 className="text-lg font-semibold text-gray-900">
-                      Match {index + 1}
+                      Trận {index + 1}
                     </h4>
                     <div className="flex items-center space-x-2">
                       <span className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium border ${getMatchStatusColor(match.status)}`}>
                         {getMatchStatusIcon(match.status)}
-                        <span>{match.status || 'PENDING'}</span>
+                        <span>{match.status || 'ĐANG CHỜ'}</span>
                       </span>
                       {match.scheduledTime && (
                         <span className="text-xs text-gray-500">
@@ -367,7 +367,7 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
                   </div>
                 </div>
 
-                {/* Action Buttons */}
+                {/* Nút hành động */}
                 <div className="flex items-center space-x-2">
                   {(match.status === 'PENDING' || match.status === 'SCHEDULED') && (
                     <button
@@ -376,7 +376,7 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
                       className="btn-secondary flex items-center space-x-1 text-sm"
                     >
                       <Play className="h-4 w-4" />
-                      <span>Start</span>
+                      <span>Bắt đầu</span>
                     </button>
                   )}
                   
@@ -387,7 +387,7 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
                       className="btn-primary flex items-center space-x-1 text-sm"
                     >
                       <Edit3 className="h-4 w-4" />
-                      <span>Input Score</span>
+                      <span>Nhập điểm</span>
                     </button>
                   )}
                   
@@ -397,15 +397,15 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
                       className="btn-secondary flex items-center space-x-1 text-sm"
                     >
                       <Edit3 className="h-4 w-4" />
-                      <span>Edit Score</span>
+                      <span>Sửa điểm</span>
                     </button>
                   )}
                 </div>
               </div>
 
-              {/* Match Details */}
+              {/* Chi tiết trận đấu */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                {/* Team 1 */}
+                {/* Đội 1 */}
                 <div className={`p-4 rounded-lg border-2 ${
                   match.winnerId === match.team1?.id 
                     ? 'bg-green-50 border-green-300'
@@ -418,10 +418,10 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
                       </div>
                       <div>
                         <div className="font-semibold text-gray-900">
-                          {match.team1?.name || 'Team 1'}
+                          {match.team1?.name || 'Đội 1'}
                         </div>
                         {match.winnerId === match.team1?.id && (
-                          <div className="text-sm text-green-600 font-medium">Winner</div>
+                          <div className="text-sm text-green-600 font-medium">Người thắng</div>
                         )}
                       </div>
                     </div>
@@ -442,7 +442,7 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
                   </div>
                 </div>
 
-                {/* VS / Actions */}
+                {/* VS / Hành động */}
                 <div className="text-center">
                   {editingMatch === match.id ? (
                     <div className="space-y-2">
@@ -458,13 +458,13 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
                           ) : (
                             <Save className="h-4 w-4" />
                           )}
-                          <span>Save</span>
+                          <span>Lưu</span>
                         </button>
                         <button
                           onClick={() => handleCancelEdit(match.id)}
                           className="btn-secondary text-sm"
                         >
-                          Cancel
+                          Hủy
                         </button>
                       </div>
                     </div>
@@ -473,7 +473,7 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
                   )}
                 </div>
 
-                {/* Team 2 */}
+                {/* Đội 2 */}
                 <div className={`p-4 rounded-lg border-2 ${
                   match.winnerId === match.team2?.id 
                     ? 'bg-green-50 border-green-300'
@@ -486,10 +486,10 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
                       </div>
                       <div>
                         <div className="font-semibold text-gray-900">
-                          {match.team2?.name || 'Team 2'}
+                          {match.team2?.name || 'Đội 2'}
                         </div>
                         {match.winnerId === match.team2?.id && (
-                          <div className="text-sm text-green-600 font-medium">Winner</div>
+                          <div className="text-sm text-green-600 font-medium">Người thắng</div>
                         )}
                       </div>
                     </div>
@@ -515,7 +515,7 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
         )}
       </div>
 
-      {/* Round Completion Status */}
+      {/* Trạng thái hoàn thành vòng đấu */}
       {totalMatches > 0 && (
         <div className="card">
           <div className="text-center">
@@ -523,20 +523,20 @@ const MatchResultsManager = ({ tournament, currentRound = 1, onMatchResultUpdate
               <div className="space-y-3">
                 <CheckCircle className="h-12 w-12 text-green-600 mx-auto" />
                 <h3 className="text-lg font-semibold text-green-900">
-                  Round {currentRound} Completed!
+                  Vòng {currentRound} Đã Hoàn Thành!
                 </h3>
                 <p className="text-green-700">
-                  All matches in this round have been completed. Ready to advance to next round.
+                  Tất cả các trận đấu trong vòng này đã hoàn thành. Sẵn sàng chuyển sang vòng tiếp theo.
                 </p>
               </div>
             ) : (
               <div className="space-y-3">
                 <Clock className="h-12 w-12 text-orange-400 mx-auto" />
                 <h3 className="text-lg font-semibold text-gray-900">
-                  Round {currentRound} In Progress
+                  Vòng {currentRound} Đang Diễn Ra
                 </h3>
                 <p className="text-gray-600">
-                  {totalMatches - completedMatches} matches remaining to complete this round.
+                  Còn lại {totalMatches - completedMatches} trận đấu để hoàn thành vòng này.
                 </p>
               </div>
             )}

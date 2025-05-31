@@ -9,7 +9,7 @@ const UserModal = ({
                        isLoading,
                        availableRoles = [],
                        initialData = null,
-                       title = 'User Form'
+                       title = 'Biểu mẫu người dùng' // Tiêu đề mặc định
                    }) => {
     const [formData, setFormData] = useState({
         name: '',
@@ -30,7 +30,7 @@ const UserModal = ({
             setFormData({
                 name: initialData.name || '',
                 email: initialData.email || '',
-                password: '', // Always empty for edit mode
+                password: '', // Luôn để trống cho chế độ chỉnh sửa
                 phone: initialData.phone || '',
                 roles: Array.isArray(initialData.roles) ? initialData.roles : [initialData.roles || 'STUDENT'],
                 isActive: initialData.isActive ?? true,
@@ -54,29 +54,29 @@ const UserModal = ({
         const newErrors = {};
 
         if (!formData.name.trim()) {
-            newErrors.name = 'Name is required';
+            newErrors.name = 'Tên là bắt buộc';
         } else if (formData.name.trim().length < 2) {
-            newErrors.name = 'Name must be at least 2 characters';
+            newErrors.name = 'Tên phải có ít nhất 2 ký tự';
         }
 
         if (!formData.email.trim()) {
-            newErrors.email = 'Email is required';
+            newErrors.email = 'Email là bắt buộc';
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = 'Please enter a valid email address';
+            newErrors.email = 'Vui lòng nhập địa chỉ email hợp lệ';
         }
 
         if (!isEditMode && !formData.password) {
-            newErrors.password = 'Password is required';
+            newErrors.password = 'Mật khẩu là bắt buộc';
         } else if (formData.password && formData.password.length < 6) {
-            newErrors.password = 'Password must be at least 6 characters';
+            newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
         }
 
         if (formData.phone && !/^[\d+\-\s()]+$/.test(formData.phone)) {
-            newErrors.phone = 'Please enter a valid phone number';
+            newErrors.phone = 'Vui lòng nhập số điện thoại hợp lệ';
         }
 
         if (!formData.roles || formData.roles.length === 0) {
-            newErrors.roles = 'At least one role is required';
+            newErrors.roles = 'Phải có ít nhất một vai trò';
         }
 
         setErrors(newErrors);
@@ -87,23 +87,23 @@ const UserModal = ({
         e.preventDefault();
 
         if (!validateForm()) {
-            toast.error('Please fix the form errors');
+            toast.error('Vui lòng sửa các lỗi trong biểu mẫu');
             return;
         }
 
         const submitData = { ...formData };
 
-        // Don't send empty password for edit mode
+        // Không gửi mật khẩu trống cho chế độ chỉnh sửa
         if (isEditMode && !submitData.password) {
             delete submitData.password;
         }
 
-        // Don't send empty avatar
+        // Không gửi avatar trống
         if (!submitData.avatar) {
             delete submitData.avatar;
         }
 
-        // Don't send empty phone
+        // Không gửi số điện thoại trống
         if (!submitData.phone) {
             delete submitData.phone;
         }
@@ -114,7 +114,7 @@ const UserModal = ({
     const handleInputChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
 
-        // Clear error when user starts typing
+        // Xóa lỗi khi người dùng bắt đầu nhập
         if (errors[field]) {
             setErrors(prev => ({ ...prev, [field]: '' }));
         }
@@ -135,12 +135,12 @@ const UserModal = ({
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto">
             <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                {/* Background overlay */}
+                {/* Lớp phủ nền */}
                 <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onClick={onClose}></div>
 
-                {/* Modal panel */}
+                {/* Bảng điều khiển Modal */}
                 <div className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-lg">
-                    {/* Header */}
+                    {/* Tiêu đề */}
                     <div className="flex items-center justify-between mb-6">
                         <h3 className="text-lg font-medium text-gray-900">{title}</h3>
                         <button
@@ -151,12 +151,12 @@ const UserModal = ({
                         </button>
                     </div>
 
-                    {/* Form */}
+                    {/* Biểu mẫu */}
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        {/* Name */}
+                        {/* Tên */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Full Name *
+                                Họ và Tên *
                             </label>
                             <div className="relative">
                                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -167,7 +167,7 @@ const UserModal = ({
                                     className={`pl-10 input-field ${
                                         errors.name ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
                                     }`}
-                                    placeholder="Enter full name"
+                                    placeholder="Nhập họ và tên"
                                     disabled={isLoading}
                                 />
                             </div>
@@ -179,7 +179,7 @@ const UserModal = ({
                         {/* Email */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Email Address *
+                                Địa chỉ Email *
                             </label>
                             <div className="relative">
                                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -190,7 +190,7 @@ const UserModal = ({
                                     className={`pl-10 input-field ${
                                         errors.email ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
                                     }`}
-                                    placeholder="Enter email address"
+                                    placeholder="Nhập địa chỉ email"
                                     disabled={isLoading}
                                 />
                             </div>
@@ -199,11 +199,11 @@ const UserModal = ({
                             )}
                         </div>
 
-                        {/* Password */}
+                        {/* Mật khẩu */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Password {!isEditMode && '*'}
-                                {isEditMode && <span className="text-gray-500 text-xs"> (leave empty to keep current)</span>}
+                                Mật khẩu {!isEditMode && '*'}
+                                {isEditMode && <span className="text-gray-500 text-xs"> (để trống nếu không muốn thay đổi)</span>}
                             </label>
                             <div className="relative">
                                 <input
@@ -213,7 +213,7 @@ const UserModal = ({
                                     className={`input-field pr-10 ${
                                         errors.password ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
                                     }`}
-                                    placeholder={isEditMode ? 'Enter new password' : 'Enter password'}
+                                    placeholder={isEditMode ? 'Nhập mật khẩu mới' : 'Nhập mật khẩu'}
                                     disabled={isLoading}
                                 />
                                 <button
@@ -229,10 +229,10 @@ const UserModal = ({
                             )}
                         </div>
 
-                        {/* Phone */}
+                        {/* Điện thoại */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Phone Number
+                                Số điện thoại
                             </label>
                             <div className="relative">
                                 <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -243,7 +243,7 @@ const UserModal = ({
                                     className={`pl-10 input-field ${
                                         errors.phone ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : ''
                                     }`}
-                                    placeholder="Enter phone number"
+                                    placeholder="Nhập số điện thoại"
                                     disabled={isLoading}
                                 />
                             </div>
@@ -252,10 +252,10 @@ const UserModal = ({
                             )}
                         </div>
 
-                        {/* Roles */}
+                        {/* Vai trò */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Roles *
+                                Vai trò *
                             </label>
                             <div className="space-y-2 max-h-32 overflow-y-auto border rounded-md p-3">
                                 {availableRoles.length > 0 ? (
@@ -270,7 +270,7 @@ const UserModal = ({
                                             />
                                             <span className="text-sm text-gray-700">{role.name || role}</span>
                                             {role.userCount !== undefined && (
-                                                <span className="text-xs text-gray-500">({role.userCount} users)</span>
+                                                <span className="text-xs text-gray-500">({role.userCount} người dùng)</span>
                                             )}
                                         </label>
                                     ))
@@ -294,7 +294,7 @@ const UserModal = ({
                             )}
                         </div>
 
-                        {/* Status */}
+                        {/* Trạng thái */}
                         <div>
                             <label className="flex items-center space-x-2">
                                 <input
@@ -304,11 +304,11 @@ const UserModal = ({
                                     className="rounded border-gray-300"
                                     disabled={isLoading}
                                 />
-                                <span className="text-sm text-gray-700">Active user account</span>
+                                <span className="text-sm text-gray-700">Tài khoản người dùng hoạt động</span>
                             </label>
                         </div>
 
-                        {/* Actions */}
+                        {/* Hành động */}
                         <div className="flex justify-end space-x-3 pt-4">
                             <button
                                 type="button"
@@ -316,7 +316,7 @@ const UserModal = ({
                                 className="btn-secondary"
                                 disabled={isLoading}
                             >
-                                Cancel
+                                Hủy
                             </button>
                             <button
                                 type="submit"
@@ -326,10 +326,10 @@ const UserModal = ({
                                 {isLoading ? (
                                     <div className="flex items-center">
                                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                        {isEditMode ? 'Updating...' : 'Creating...'}
+                                        {isEditMode ? 'Đang cập nhật...' : 'Đang tạo...'}
                                     </div>
                                 ) : (
-                                    isEditMode ? 'Update User' : 'Create User'
+                                    isEditMode ? 'Cập nhật người dùng' : 'Tạo người dùng'
                                 )}
                             </button>
                         </div>

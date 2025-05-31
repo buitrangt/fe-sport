@@ -29,7 +29,7 @@ const MatchManagement = () => {
   const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
 
-  // Get tournaments for filter dropdown
+  // Lấy các giải đấu để điền vào dropdown bộ lọc
   const { data: tournaments } = useQuery(
     'tournaments-for-filter',
     () => tournamentService.getAllTournaments({ page: 1, limit: 100 }),
@@ -39,59 +39,59 @@ const MatchManagement = () => {
     }
   );
 
-  // Mock match data since we need to aggregate from multiple tournaments
+  // Dữ liệu trận đấu giả định vì cần tổng hợp từ nhiều giải đấu
   const { data: matches, isLoading, error } = useQuery(
     ['admin-matches', { page, searchTerm, status: statusFilter, tournament: tournamentFilter }],
     async () => {
-      // This would be replaced with actual API call
+      // Phần này sẽ được thay thế bằng cuộc gọi API thực tế
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       const mockMatches = [
         {
           id: 1,
-          tournament: { id: 1, name: 'Spring Championship' },
-          team1: { id: 1, name: 'Team Alpha', teamColor: '#FF0000' },
-          team2: { id: 2, name: 'Team Beta', teamColor: '#0000FF' },
+          tournament: { id: 1, name: 'Giải Vô Địch Mùa Xuân' },
+          team1: { id: 1, name: 'Đội Alpha', teamColor: '#FF0000' },
+          team2: { id: 2, name: 'Đội Beta', teamColor: '#0000FF' },
           roundNumber: 1,
-          roundName: 'Quarter Finals',
+          roundName: 'Tứ kết',
           matchDate: new Date('2025-06-01T15:00:00'),
-          location: 'Main Stadium',
+          location: 'Sân vận động chính',
           status: 'SCHEDULED',
           team1Score: 0,
           team2Score: 0,
-          referee: 'John Referee'
+          referee: 'Trọng tài John'
         },
         {
           id: 2,
-          tournament: { id: 1, name: 'Spring Championship' },
-          team1: { id: 3, name: 'Team Gamma', teamColor: '#00FF00' },
-          team2: { id: 4, name: 'Team Delta', teamColor: '#FFFF00' },
+          tournament: { id: 1, name: 'Giải Vô Địch Mùa Xuân' },
+          team1: { id: 3, name: 'Đội Gamma', teamColor: '#00FF00' },
+          team2: { id: 4, name: 'Đội Delta', teamColor: '#FFFF00' },
           roundNumber: 1,
-          roundName: 'Quarter Finals',
+          roundName: 'Tứ kết',
           matchDate: new Date('2025-06-01T17:00:00'),
-          location: 'Secondary Field',
+          location: 'Sân phụ',
           status: 'IN_PROGRESS',
           team1Score: 2,
           team2Score: 1,
-          referee: 'Jane Referee'
+          referee: 'Trọng tài Jane'
         },
         {
           id: 3,
-          tournament: { id: 2, name: 'Summer League' },
-          team1: { id: 5, name: 'Team Echo', teamColor: '#FF00FF' },
-          team2: { id: 6, name: 'Team Foxtrot', teamColor: '#00FFFF' },
+          tournament: { id: 2, name: 'Giải Đấu Mùa Hè' },
+          team1: { id: 5, name: 'Đội Echo', teamColor: '#FF00FF' },
+          team2: { id: 6, name: 'Đội Foxtrot', teamColor: '#00FFFF' },
           roundNumber: 2,
-          roundName: 'Semi Finals',
+          roundName: 'Bán kết',
           matchDate: new Date('2025-05-30T14:00:00'),
-          location: 'Training Ground',
+          location: 'Sân tập',
           status: 'COMPLETED',
           team1Score: 3,
           team2Score: 2,
-          referee: 'Bob Referee'
+          referee: 'Trọng tài Bob'
         }
       ];
 
-      // Apply filters
+      // Áp dụng các bộ lọc
       let filteredMatches = mockMatches;
       
       if (tournamentFilter) {
@@ -131,7 +131,7 @@ const MatchManagement = () => {
     }
   );
 
-  // Mock mutations
+  // Các mutation giả định
   const updateMatchMutation = useMutation(
     async ({ matchId, updateData }) => {
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -139,11 +139,11 @@ const MatchManagement = () => {
     },
     {
       onSuccess: () => {
-        toast.success('Match updated successfully');
+        toast.success('Trận đấu đã cập nhật thành công');
         queryClient.invalidateQueries('admin-matches');
       },
       onError: () => {
-        toast.error('Failed to update match');
+        toast.error('Cập nhật trận đấu thất bại');
       }
     }
   );
@@ -155,11 +155,11 @@ const MatchManagement = () => {
     },
     {
       onSuccess: () => {
-        toast.success('Match deleted successfully');
+        toast.success('Trận đấu đã xóa thành công');
         queryClient.invalidateQueries('admin-matches');
       },
       onError: () => {
-        toast.error('Failed to delete match');
+        toast.error('Xóa trận đấu thất bại');
       }
     }
   );
@@ -177,7 +177,7 @@ const MatchManagement = () => {
   };
 
   const handleDeleteMatch = (matchId) => {
-    if (window.confirm('Are you sure you want to delete this match?')) {
+    if (window.confirm('Bạn có chắc chắn muốn xóa trận đấu này?')) {
       deleteMatchMutation.mutate(matchId);
     }
   };
@@ -220,7 +220,7 @@ const MatchManagement = () => {
           <button
             onClick={() => handleUpdateStatus(match.id, 'IN_PROGRESS')}
             className="text-gray-600 hover:text-green-600 transition-colors"
-            title="Start Match"
+            title="Bắt đầu Trận đấu"
           >
             <Play className="h-4 w-4" />
           </button>
@@ -230,7 +230,7 @@ const MatchManagement = () => {
           <button
             onClick={() => handleUpdateStatus(match.id, 'COMPLETED')}
             className="text-gray-600 hover:text-blue-600 transition-colors"
-            title="Complete Match"
+            title="Hoàn thành Trận đấu"
           >
             <CheckCircle className="h-4 w-4" />
           </button>
@@ -244,7 +244,7 @@ const MatchManagement = () => {
     return (
       <div className="text-center py-8">
         <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-        <p className="text-red-600">Error loading matches. Please try again later.</p>
+        <p className="text-red-600">Lỗi khi tải các trận đấu. Vui lòng thử lại sau.</p>
       </div>
     );
   }
@@ -254,16 +254,16 @@ const MatchManagement = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Match Management</h2>
-          <p className="text-gray-600">Schedule matches, update scores, and manage game results</p>
+          <h2 className="text-2xl font-bold text-gray-900">Quản Lý Trận Đấu</h2>
+          <p className="text-gray-600">Lên lịch các trận đấu, cập nhật tỉ số và quản lý kết quả trận đấu</p>
         </div>
         <div className="flex items-center space-x-3">
           <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-            {matches?.pagination?.totalItems || 0} Matches
+            {matches?.pagination?.totalItems || 0} Trận Đấu
           </div>
           <button className="btn-primary">
             <Plus className="h-4 w-4 mr-2" />
-            Schedule Match
+            Lên Lịch Trận Đấu
           </button>
         </div>
       </div>
@@ -276,7 +276,7 @@ const MatchManagement = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <input
                 type="text"
-                placeholder="Search matches by team or tournament..."
+                placeholder="Tìm kiếm trận đấu theo đội hoặc giải đấu..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 input-field"
@@ -290,7 +290,7 @@ const MatchManagement = () => {
               onChange={(e) => setTournamentFilter(e.target.value)}
               className="input-field min-w-[150px]"
             >
-              <option value="">All Tournaments</option>
+              <option value="">Tất cả Giải Đấu</option>
               {tournaments?.map((tournament) => (
                 <option key={tournament.id} value={tournament.id}>
                   {tournament.name}
@@ -303,11 +303,11 @@ const MatchManagement = () => {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="input-field min-w-[150px]"
             >
-              <option value="">All Status</option>
-              <option value="SCHEDULED">Scheduled</option>
-              <option value="IN_PROGRESS">In Progress</option>
-              <option value="COMPLETED">Completed</option>
-              <option value="CANCELLED">Cancelled</option>
+              <option value="">Tất cả Trạng Thái</option>
+              <option value="SCHEDULED">Đã lên lịch</option>
+              <option value="IN_PROGRESS">Đang diễn ra</option>
+              <option value="COMPLETED">Đã hoàn thành</option>
+              <option value="CANCELLED">Đã hủy</option>
             </select>
 
             <button
@@ -315,7 +315,7 @@ const MatchManagement = () => {
               className="btn-primary whitespace-nowrap"
             >
               <Filter className="h-4 w-4 mr-2" />
-              Apply
+              Áp dụng
             </button>
           </div>
         </form>
@@ -330,7 +330,7 @@ const MatchManagement = () => {
         ) : matches?.data?.length === 0 ? (
           <div className="p-8 text-center">
             <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600">No matches found</p>
+            <p className="text-gray-600">Không tìm thấy trận đấu nào</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -338,22 +338,22 @@ const MatchManagement = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Match
+                    Trận Đấu
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Teams
+                    Đội
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Score
+                    Tỉ Số
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                    Trạng Thái
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Schedule
+                    Lịch Trình
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    Hành Động
                   </th>
                 </tr>
               </thead>
@@ -366,7 +366,7 @@ const MatchManagement = () => {
                           {match.tournament.name}
                         </div>
                         <div className="text-sm text-gray-500">
-                          {match.roundName} - Round {match.roundNumber}
+                          {match.roundName} - Vòng {match.roundNumber}
                         </div>
                       </div>
                     </td>
@@ -423,14 +423,14 @@ const MatchManagement = () => {
                         <button
                           onClick={() => window.open(`/matches/${match.id}`, '_blank')}
                           className="text-gray-600 hover:text-primary-600 transition-colors"
-                          title="View Match"
+                          title="Xem Trận Đấu"
                         >
                           <Eye className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => window.open(`/admin/matches/${match.id}/edit`, '_blank')}
                           className="text-gray-600 hover:text-blue-600 transition-colors"
-                          title="Edit Match"
+                          title="Chỉnh Sửa Trận Đấu"
                         >
                           <Edit className="h-4 w-4" />
                         </button>
@@ -438,7 +438,7 @@ const MatchManagement = () => {
                         <button
                           onClick={() => handleDeleteMatch(match.id)}
                           className="text-gray-600 hover:text-red-600 transition-colors"
-                          title="Delete Match"
+                          title="Xóa Trận Đấu"
                           disabled={deleteMatchMutation.isLoading}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -457,7 +457,7 @@ const MatchManagement = () => {
           <div className="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700">
-                Showing page {matches.pagination.currentPage} of {matches.pagination.totalPages}
+                Hiển thị trang {matches.pagination.currentPage} trên {matches.pagination.totalPages}
               </div>
               <div className="flex space-x-2">
                 <button
@@ -465,14 +465,14 @@ const MatchManagement = () => {
                   disabled={page === 1}
                   className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Previous
+                  Trước
                 </button>
                 <button
                   onClick={() => setPage(page + 1)}
                   disabled={page >= matches.pagination.totalPages}
                   className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Next
+                  Tiếp
                 </button>
               </div>
             </div>

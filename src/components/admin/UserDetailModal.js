@@ -47,14 +47,14 @@ const UserDetailModal = ({ isOpen, onClose, user }) => {
     return (
         <div className="fixed inset-0 z-50 overflow-y-auto">
             <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                {/* Background overlay */}
+                {/* Lớp phủ nền */}
                 <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onClick={onClose}></div>
 
-                {/* Modal panel */}
+                {/* Bảng điều khiển Modal */}
                 <div className="inline-block w-full max-w-2xl p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-lg">
-                    {/* Header */}
+                    {/* Tiêu đề */}
                     <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-xl font-semibold text-gray-900">User Details</h3>
+                        <h3 className="text-xl font-semibold text-gray-900">Chi Tiết Người Dùng</h3>
                         <button
                             onClick={onClose}
                             className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -63,7 +63,7 @@ const UserDetailModal = ({ isOpen, onClose, user }) => {
                         </button>
                     </div>
 
-                    {/* User Profile Header */}
+                    {/* Tiêu đề Hồ sơ Người dùng */}
                     <div className="flex items-center space-x-6 mb-8 p-6 bg-gray-50 rounded-lg">
                         <div className="flex-shrink-0">
                             {user.avatar ? (
@@ -95,18 +95,18 @@ const UserDetailModal = ({ isOpen, onClose, user }) => {
                                         ? 'bg-green-100 text-green-800'
                                         : 'bg-red-100 text-red-800'
                                 }`}>
-                  {user.isActive ? 'Active' : 'Inactive'}
+                  {user.isActive ? 'Hoạt động' : 'Không hoạt động'}
                 </span>
                             </div>
                         </div>
                     </div>
 
-                    {/* User Information Grid */}
+                    {/* Lưới Thông tin Người dùng */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Contact Information */}
+                        {/* Thông tin Liên hệ */}
                         <div className="space-y-4">
                             <h4 className="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2">
-                                Contact Information
+                                Thông Tin Liên Hệ
                             </h4>
 
                             <div className="space-y-3">
@@ -122,7 +122,7 @@ const UserDetailModal = ({ isOpen, onClose, user }) => {
                                     <div className="flex items-center space-x-3">
                                         <Phone className="h-5 w-5 text-gray-400" />
                                         <div>
-                                            <p className="text-sm text-gray-500">Phone</p>
+                                            <p className="text-sm text-gray-500">Điện thoại</p>
                                             <p className="text-gray-900">{user.phone}</p>
                                         </div>
                                     </div>
@@ -131,7 +131,7 @@ const UserDetailModal = ({ isOpen, onClose, user }) => {
                                 <div className="flex items-center space-x-3">
                                     <Shield className="h-5 w-5 text-gray-400" />
                                     <div>
-                                        <p className="text-sm text-gray-500">Roles</p>
+                                        <p className="text-sm text-gray-500">Vai trò</p>
                                         <div className="flex flex-wrap gap-1 mt-1">
                                             {getRoleBadge(user.roles)}
                                         </div>
@@ -143,28 +143,28 @@ const UserDetailModal = ({ isOpen, onClose, user }) => {
                                         user.isActive ? 'bg-green-500' : 'bg-red-500'
                                     }`} />
                                     <div>
-                                        <p className="text-sm text-gray-500">Account Status</p>
+                                        <p className="text-sm text-gray-500">Trạng thái tài khoản</p>
                                         <p className={`font-medium ${
                                             user.isActive ? 'text-green-600' : 'text-red-600'
                                         }`}>
-                                            {user.isActive ? 'Active Account' : 'Inactive Account'}
+                                            {user.isActive ? 'Tài khoản hoạt động' : 'Tài khoản không hoạt động'}
                                         </p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Account Information */}
+                        {/* Thông tin Tài khoản */}
                         <div className="space-y-4">
                             <h4 className="text-lg font-medium text-gray-900 border-b border-gray-200 pb-2">
-                                Account Information
+                                Thông Tin Tài Khoản
                             </h4>
 
                             <div className="space-y-3">
                                 <div className="flex items-center space-x-3">
                                     <Calendar className="h-5 w-5 text-gray-400" />
                                     <div>
-                                        <p className="text-sm text-gray-500">Member Since</p>
+                                        <p className="text-sm text-gray-500">Thành viên từ</p>
                                         <p className="text-gray-900">{formatDate(user.createdAt)}</p>
                                     </div>
                                 </div>
@@ -172,9 +172,9 @@ const UserDetailModal = ({ isOpen, onClose, user }) => {
                                 <div className="flex items-center space-x-3">
                                     <Eye className="h-5 w-5 text-gray-400" />
                                     <div>
-                                        <p className="text-sm text-gray-500">Last Login</p>
+                                        <p className="text-sm text-gray-500">Đăng nhập lần cuối</p>
                                         <p className="text-gray-900">
-                                            {user.lastLogin ? formatDate(user.lastLogin) : 'Never logged in'}
+                                            {user.lastLogin ? formatDate(user.lastLogin) : 'Chưa từng đăng nhập'}
                                         </p>
                                     </div>
                                 </div>
@@ -182,7 +182,7 @@ const UserDetailModal = ({ isOpen, onClose, user }) => {
                                 <div className="flex items-center space-x-3">
                                     <User className="h-5 w-5 text-gray-400" />
                                     <div>
-                                        <p className="text-sm text-gray-500">User ID</p>
+                                        <p className="text-sm text-gray-500">ID Người dùng</p>
                                         <p className="text-gray-900 font-mono">{user.id}</p>
                                     </div>
                                 </div>
@@ -191,8 +191,8 @@ const UserDetailModal = ({ isOpen, onClose, user }) => {
                                     <div className="flex items-center space-x-3">
                                         <Camera className="h-5 w-5 text-gray-400" />
                                         <div>
-                                            <p className="text-sm text-gray-500">Profile Picture</p>
-                                            <p className="text-gray-900">Custom avatar uploaded</p>
+                                            <p className="text-sm text-gray-500">Ảnh đại diện</p>
+                                            <p className="text-gray-900">Đã tải lên ảnh đại diện tùy chỉnh</p>
                                         </div>
                                     </div>
                                 )}
@@ -200,42 +200,42 @@ const UserDetailModal = ({ isOpen, onClose, user }) => {
                         </div>
                     </div>
 
-                    {/* Additional Stats */}
+                    {/* Tóm tắt Tài khoản */}
                     <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-                        <h4 className="text-lg font-medium text-gray-900 mb-3">Account Summary</h4>
+                        <h4 className="text-lg font-medium text-gray-900 mb-3">Tóm Tắt Tài Khoản</h4>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                             <div>
                                 <p className="text-2xl font-bold text-blue-600">{user.roles?.length || 1}</p>
-                                <p className="text-sm text-gray-600">Role{user.roles?.length > 1 ? 's' : ''}</p>
+                                <p className="text-sm text-gray-600">Vai trò{user.roles?.length > 1 ? 's' : ''}</p>
                             </div>
                             <div>
                                 <p className="text-2xl font-bold text-blue-600">
                                     {user.createdAt ? Math.ceil((new Date() - new Date(user.createdAt)) / (1000 * 60 * 60 * 24)) : 0}
                                 </p>
-                                <p className="text-sm text-gray-600">Days Active</p>
+                                <p className="text-sm text-gray-600">Ngày hoạt động</p>
                             </div>
                             <div>
                                 <p className="text-2xl font-bold text-blue-600">
-                                    {user.isActive ? 'Yes' : 'No'}
+                                    {user.isActive ? 'Có' : 'Không'}
                                 </p>
-                                <p className="text-sm text-gray-600">Can Login</p>
+                                <p className="text-sm text-gray-600">Có thể đăng nhập</p>
                             </div>
                             <div>
                                 <p className="text-2xl font-bold text-blue-600">
-                                    {user.lastLogin ? 'Recent' : 'Never'}
+                                    {user.lastLogin ? 'Gần đây' : 'Chưa bao giờ'}
                                 </p>
-                                <p className="text-sm text-gray-600">Last Activity</p>
+                                <p className="text-sm text-gray-600">Hoạt động cuối</p>
                             </div>
                         </div>
                     </div>
 
-                    {/* Actions */}
+                    {/* Hành động */}
                     <div className="flex justify-end pt-6">
                         <button
                             onClick={onClose}
                             className="btn-primary"
                         >
-                            Close
+                            Đóng
                         </button>
                     </div>
                 </div>

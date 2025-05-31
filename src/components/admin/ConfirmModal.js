@@ -6,10 +6,10 @@ const ConfirmModal = ({
                           onClose,
                           onConfirm,
                           isLoading = false,
-                          title = 'Confirm Action',
-                          message = 'Are you sure you want to proceed?',
-                          confirmText = 'Confirm',
-                          cancelText = 'Cancel',
+                          title = 'Xác nhận Hành động',
+                          message = 'Bạn có chắc chắn muốn tiếp tục?',
+                          confirmText = 'Xác nhận',
+                          cancelText = 'Hủy bỏ',
                           confirmButtonClass = 'btn-danger',
                           icon = 'warning',
                           showIcon = true
@@ -92,7 +92,7 @@ const ConfirmModal = ({
                             {isLoading ? (
                                 <div className="flex items-center">
                                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                    Processing...
+                                    Đang xử lý...
                                 </div>
                             ) : (
                                 confirmText

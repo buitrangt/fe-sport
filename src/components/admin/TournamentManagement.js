@@ -34,18 +34,18 @@ const TournamentManagement = () => {
   const [notifications, setNotifications] = useState([]);
   const queryClient = useQueryClient();
 
-  // Safe notification system
+  // Hệ thống thông báo an toàn
   const showNotification = (type, message) => {
     console.log(`${type.toUpperCase()}: ${message}`);
     const notification = { id: Date.now(), type, message };
     setNotifications(prev => [...prev, notification]);
     
-    // Auto remove after 3 seconds
+    // Tự động xóa sau 3 giây
     setTimeout(() => {
       setNotifications(prev => prev.filter(n => n.id !== notification.id));
     }, 3000);
     
-    // Also show native alert for important messages
+    // Đồng thời hiển thị cảnh báo gốc cho các tin nhắn quan trọng
     if (type === 'error') {
       alert(`❌ ${message}`);
     }
@@ -132,7 +132,7 @@ const TournamentManagement = () => {
         queryClient.invalidateQueries(QUERY_KEYS.TOURNAMENTS);
       },
       onError: (error) => {
-        showNotification('error', error.response?.data?.message || 'Failed to delete tournament');
+        showNotification('error', error.response?.data?.message || 'Không thể xóa giải đấu');
       }
     }
   );
@@ -145,7 +145,7 @@ const TournamentManagement = () => {
         queryClient.invalidateQueries(QUERY_KEYS.TOURNAMENTS);
       },
       onError: (error) => {
-        showNotification('error', error.response?.data?.message || 'Failed to start tournament');
+        showNotification('error', error.response?.data?.message || 'Không thể bắt đầu giải đấu');
       }
     }
   );
@@ -179,7 +179,7 @@ const TournamentManagement = () => {
           <button
             onClick={() => handleStartTournament(tournament.id)}
             className="text-gray-600 hover:text-green-600 transition-colors"
-            title="Start Tournament"
+            title="Bắt đầu giải đấu"
             disabled={startTournamentMutation.isLoading}
           >
             <Play className="h-4 w-4" />
@@ -190,7 +190,7 @@ const TournamentManagement = () => {
         return (
           <button
             className="text-gray-600 hover:text-yellow-600 transition-colors"
-            title="Pause Tournament"
+            title="Tạm dừng giải đấu"
           >
             <Pause className="h-4 w-4" />
           </button>
@@ -200,17 +200,17 @@ const TournamentManagement = () => {
     }
   };
 
-  // Render error state
+  // Render trạng thái lỗi
   if (error) {
     return (
       <div className="text-center py-8">
         <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-        <p className="text-red-600 mb-4">Error loading tournaments: {error.message}</p>
+        <p className="text-red-600 mb-4">Lỗi khi tải giải đấu: {error.message}</p>
         <button 
           onClick={() => queryClient.invalidateQueries(QUERY_KEYS.TOURNAMENTS)}
           className="btn-primary"
         >
-          Retry
+          Thử lại
         </button>
       </div>
     );
@@ -228,7 +228,7 @@ const TournamentManagement = () => {
 
   return (
     <div className="space-y-6">
-      {/* Notifications */}
+      {/* Thông báo */}
       {notifications.length > 0 && (
         <div className="fixed top-4 right-4 z-50 space-y-2">
           {notifications.map((notification) => (
@@ -250,27 +250,27 @@ const TournamentManagement = () => {
         </div>
       )}
 
-      {/* Header */}
+      {/* Tiêu đề */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Tournament Management</h2>
-          <p className="text-gray-600">Create and manage tournaments, scheduling, and results</p>
+          <h2 className="text-2xl font-bold text-gray-900">Quản lý giải đấu</h2>
+          <p className="text-gray-600">Tạo và quản lý các giải đấu, lịch trình và kết quả</p>
         </div>
         <div className="flex items-center space-x-3">
           <div className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm font-medium">
-            {pagination.totalItems} Tournaments
+            {pagination.totalItems} Giải đấu
           </div>
           <button 
             onClick={() => setShowCreateModal(true)}
             className="btn-primary"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Create Tournament
+            Tạo giải đấu
           </button>
         </div>
       </div>
 
-      {/* Search and Filters */}
+      {/* Tìm kiếm và Bộ lọc */}
       <div className="bg-white rounded-lg border border-gray-200 p-4">
         <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
@@ -278,7 +278,7 @@ const TournamentManagement = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <input
                 type="text"
-                placeholder="Search tournaments by name..."
+                placeholder="Tìm kiếm giải đấu theo tên..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 input-field"
@@ -292,15 +292,15 @@ const TournamentManagement = () => {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="input-field min-w-[150px]"
             >
-              <option value="">All Status</option>
-              <option value="DRAFT">Draft</option>
-              <option value="REGISTRATION">Registration</option>
-              <option value="REGISTRATION_OPEN">Registration Open</option>
-              <option value="REGISTRATION_CLOSED">Registration Closed</option>
-              <option value="ONGOING">Ongoing</option>
-              <option value="IN_PROGRESS">In Progress</option>
-              <option value="COMPLETED">Completed</option>
-              <option value="CANCELLED">Cancelled</option>
+              <option value="">Tất cả trạng thái</option>
+              <option value="DRAFT">Bản nháp</option>
+              <option value="REGISTRATION">Đăng ký</option>
+              <option value="REGISTRATION_OPEN">Mở đăng ký</option>
+              <option value="REGISTRATION_CLOSED">Đóng đăng ký</option>
+              <option value="ONGOING">Đang diễn ra</option>
+              <option value="IN_PROGRESS">Đang tiến hành</option>
+              <option value="COMPLETED">Đã hoàn thành</option>
+              <option value="CANCELLED">Đã hủy</option>
             </select>
 
             <button
@@ -308,13 +308,13 @@ const TournamentManagement = () => {
               className="btn-primary whitespace-nowrap"
             >
               <Filter className="h-4 w-4 mr-2" />
-              Apply
+              Áp dụng
             </button>
           </div>
         </form>
       </div>
 
-      {/* Tournaments Table */}
+      {/* Bảng các giải đấu */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         {isLoading ? (
           <div className="p-8 text-center">
@@ -323,19 +323,19 @@ const TournamentManagement = () => {
         ) : !Array.isArray(tournamentData) ? (
           <div className="p-8 text-center">
             <AlertTriangle className="h-12 w-12 text-red-400 mx-auto mb-4" />
-            <p className="text-red-600 mb-2">Data format error: tournaments data is not an array</p>
-            <p className="text-sm text-gray-500">Expected: Array, Received: {typeof tournamentData}</p>
+            <p className="text-red-600 mb-2">Lỗi định dạng dữ liệu: dữ liệu giải đấu không phải là một mảng</p>
+            <p className="text-sm text-gray-500">Dự kiến: Mảng, Đã nhận: {typeof tournamentData}</p>
           </div>
         ) : tournamentData.length === 0 ? (
           <div className="p-8 text-center">
             <Trophy className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600">No tournaments found</p>
+            <p className="text-gray-600">Không tìm thấy giải đấu nào</p>
             <button 
               onClick={() => setShowCreateModal(true)}
               className="mt-4 btn-primary"
             >
               <Plus className="h-4 w-4 mr-2" />
-              Create Your First Tournament
+              Tạo giải đấu đầu tiên của bạn
             </button>
           </div>
         ) : (
@@ -344,22 +344,22 @@ const TournamentManagement = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Tournament
+                    Giải đấu
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                    Trạng thái
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Teams
+                    Đội
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Schedule
+                    Lịch trình
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Location
+                    Địa điểm
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                    Hành động
                   </th>
                 </tr>
               </thead>
@@ -403,7 +403,7 @@ const TournamentManagement = () => {
                         </div>
                         {tournament.endDate && (
                           <div className="text-xs text-gray-500">
-                            Until {formatDate(tournament.endDate)}
+                            Đến {formatDate(tournament.endDate)}
                           </div>
                         )}
                       </div>
@@ -412,7 +412,7 @@ const TournamentManagement = () => {
                       <div className="flex items-center space-x-1 text-sm text-gray-500">
                         <MapPin className="h-4 w-4" />
                         <span className="truncate max-w-24" title={tournament.location}>
-                          {tournament.location || 'TBD'}
+                          {tournament.location || 'Chưa xác định'}
                         </span>
                       </div>
                     </td>
@@ -421,7 +421,7 @@ const TournamentManagement = () => {
                         <button
                           onClick={() => window.open(`/tournaments/${tournament.id}`, '_blank')}
                           className="text-gray-600 hover:text-primary-600 transition-colors"
-                          title="View Tournament"
+                          title="Xem giải đấu"
                         >
                           <Eye className="h-4 w-4" />
                         </button>
@@ -429,7 +429,7 @@ const TournamentManagement = () => {
                         <button
                           onClick={() => handleDeleteTournament(tournament.id)}
                           className="text-gray-600 hover:text-red-600 transition-colors"
-                          title="Delete Tournament"
+                          title="Xóa giải đấu"
                           disabled={deleteTournamentMutation.isLoading}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -443,12 +443,12 @@ const TournamentManagement = () => {
           </div>
         )}
 
-        {/* Pagination */}
+        {/* Phân trang */}
         {pagination.totalPages > 1 && (
           <div className="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700">
-                Showing page {pagination.currentPage} of {pagination.totalPages}
+                Hiển thị trang {pagination.currentPage} trên {pagination.totalPages}
               </div>
               <div className="flex space-x-2">
                 <button
@@ -456,14 +456,14 @@ const TournamentManagement = () => {
                   disabled={!pagination.hasPrev}
                   className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Previous
+                  Trước
                 </button>
                 <button
                   onClick={() => setPage(page + 1)}
                   disabled={!pagination.hasNext}
                   className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Next
+                  Tiếp
                 </button>
               </div>
             </div>
@@ -471,7 +471,7 @@ const TournamentManagement = () => {
         )}
       </div>
 
-      {/* Tournament Create Form */}
+      {/* Biểu mẫu tạo giải đấu */}
       <TournamentCreateForm
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}

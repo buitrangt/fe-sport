@@ -13,64 +13,64 @@ const TournamentBracketGenerator = ({ tournament, onBracketGenerated }) => {
   const handleGenerateBracket = async () => {
     setIsGenerating(true);
     try {
-      console.log('🚀 Generating bracket for tournament:', tournament.id);
-      console.log('📊 Bracket data:', bracketData);
-      console.log('👥 Current teams:', tournament.currentTeams);
+      console.log('🚀 Đang tạo nhánh đấu cho giải đấu:', tournament.id);
+      console.log('📊 Dữ liệu nhánh đấu:', bracketData);
+      console.log('👥 Số đội hiện tại:', tournament.currentTeams);
       
-      // Debug: Check teams data before generating bracket
+      // Gỡ lỗi: Kiểm tra dữ liệu đội trước khi tạo nhánh đấu
       try {
         const teamsResponse = await fetch(`http://localhost:8080/api/tournaments/${tournament.id}/teams`);
         const teamsData = await teamsResponse.json();
-        console.log('📊 Teams API response:', teamsData);
-        console.log('📊 Teams count:', teamsData?.data?.length || 0);
-        console.log('📊 Team IDs:', teamsData?.data?.map(t => ({ id: t.id, name: t.name })) || []);
+        console.log('📊 Phản hồi API đội:', teamsData);
+        console.log('📊 Số lượng đội:', teamsData?.data?.length || 0);
+        console.log('📊 ID đội:', teamsData?.data?.map(t => ({ id: t.id, name: t.name })) || []);
       } catch (teamError) {
-        console.error('⚠️ Failed to fetch teams for debugging:', teamError);
+        console.error('⚠️ Không thể lấy dữ liệu đội để gỡ lỗi:', teamError);
       }
       
-      // FIXED: Send correct request format
+      // ĐÃ SỬA: Gửi đúng định dạng yêu cầu
       const requestData = {
         shuffleTeams: bracketData.randomize,
         bracketType: bracketData.type
       };
       
-      console.log('📤 [Generate] Sending request:', requestData);
+      console.log('📤 [Tạo] Đang gửi yêu cầu:', requestData);
       const response = await tournamentKnockoutService.generateBracket(tournament.id, requestData);
-      console.log('✅ Generate bracket success:', response);
+      console.log('✅ Tạo nhánh đấu thành công:', response);
       
-      toast.success('Tournament bracket generated successfully!');
+      toast.success('Nhánh đấu giải đấu đã được tạo thành công!');
       onBracketGenerated?.(response.data);
     } catch (error) {
-      console.error('❌ Generate bracket error:', error);
-      console.error('📋 Error details:', {
+      console.error('❌ Lỗi tạo nhánh đấu:', error);
+      console.error('📋 Chi tiết lỗi:', {
         status: error.response?.status,
         data: error.response?.data,
         message: error.message,
         statusText: error.response?.statusText
       });
       
-      // More detailed error handling
-      let errorMessage = 'Failed to generate bracket';
+      // Xử lý lỗi chi tiết hơn
+      let errorMessage = 'Không thể tạo nhánh đấu';
       
       if (error.response?.status === 400) {
         const backendMessage = error.response?.data?.message;
         if (backendMessage?.includes('Data truncated')) {
-          errorMessage = '🗃️ Database configuration issue. Tournament status field may be too short. Please contact administrator.';
+          errorMessage = '🗃️ Lỗi cấu hình cơ sở dữ liệu. Trường trạng thái giải đấu có thể quá ngắn. Vui lòng liên hệ quản trị viên.';
         } else if (backendMessage?.includes('not-null property references a null')) {
           if (backendMessage.includes('team1') || backendMessage.includes('team2')) {
-            errorMessage = '👥 Teams data issue. Cannot create matches because team assignments are null. Please check if teams are properly registered and have valid IDs.';
+            errorMessage = '👥 Lỗi dữ liệu đội. Không thể tạo trận đấu vì việc gán đội là null. Vui lòng kiểm tra xem các đội đã được đăng ký đúng cách và có ID hợp lệ hay không.';
           } else {
-            errorMessage = `🗃️ Database constraint violation: ${backendMessage}`;
+            errorMessage = `🗃️ Vi phạm ràng buộc cơ sở dữ liệu: ${backendMessage}`;
           }
         } else if (backendMessage?.includes('not enough teams')) {
-          errorMessage = `⚠️ Not enough teams to generate bracket. Need at least 2 teams, current: ${tournament.currentTeams || 0}`;
+          errorMessage = `⚠️ Không đủ đội để tạo nhánh đấu. Cần ít nhất 2 đội, hiện tại: ${tournament.currentTeams || 0}`;
         } else if (backendMessage) {
           errorMessage = backendMessage;
         } else {
-          errorMessage = 'Invalid tournament data. Please check if tournament has enough registered teams.';
+          errorMessage = 'Dữ liệu giải đấu không hợp lệ. Vui lòng kiểm tra xem giải đấu có đủ đội đã đăng ký hay không.';
         }
       } else if (error.response?.status === 500) {
-        errorMessage = '🔧 Server error. Please check backend logs and try again.';
+        errorMessage = '🔧 Lỗi máy chủ. Vui lòng kiểm tra nhật ký backend và thử lại.';
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       }
@@ -93,11 +93,11 @@ const TournamentBracketGenerator = ({ tournament, onBracketGenerated }) => {
   const handleStartKnockout = async () => {
     try {
       await tournamentKnockoutService.startKnockout(tournament.id);
-      toast.success('Knockout tournament started!');
-      window.location.reload(); // Refresh to update tournament status
+      toast.success('Giải đấu loại trực tiếp đã bắt đầu!');
+      window.location.reload(); // Tải lại để cập nhật trạng thái giải đấu
     } catch (error) {
-      console.error('Start knockout error:', error);
-      toast.error(error.response?.data?.message || 'Failed to start knockout tournament');
+      console.error('Lỗi khi bắt đầu loại trực tiếp:', error);
+      toast.error(error.response?.data?.message || 'Không thể bắt đầu giải đấu loại trực tiếp');
     }
   };
 
@@ -108,8 +108,8 @@ const TournamentBracketGenerator = ({ tournament, onBracketGenerated }) => {
           <Trophy className="h-6 w-6 text-white" />
         </div>
         <div>
-          <h3 className="text-xl font-semibold text-gray-900">Tournament Bracket</h3>
-          <p className="text-gray-600">Generate and manage tournament brackets</p>
+          <h3 className="text-xl font-semibold text-gray-900">Nhánh đấu giải đấu</h3>
+          <p className="text-gray-600">Tạo và quản lý nhánh đấu giải đấu</p>
         </div>
       </div>
 
@@ -119,10 +119,10 @@ const TournamentBracketGenerator = ({ tournament, onBracketGenerated }) => {
             <div className="flex items-start space-x-3">
               <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
               <div>
-                <h4 className="text-sm font-medium text-blue-900">Ready to Generate Bracket</h4>
+                <h4 className="text-sm font-medium text-blue-900">Sẵn sàng tạo nhánh đấu</h4>
                 <p className="text-sm text-blue-700 mt-1">
-                  Tournament has {tournament.currentTeams || tournament.registeredTeams || 0} registered teams. 
-                  Generate the bracket to set up matches.
+                  Giải đấu có {tournament.currentTeams || tournament.registeredTeams || 0} đội đã đăng ký. 
+                  Hãy tạo nhánh đấu để thiết lập các trận đấu.
                 </p>
               </div>
             </div>
@@ -131,15 +131,15 @@ const TournamentBracketGenerator = ({ tournament, onBracketGenerated }) => {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Bracket Type
+                Loại nhánh đấu
               </label>
               <select
                 value={bracketData.type}
                 onChange={(e) => setBracketData({ ...bracketData, type: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               >
-                <option value="SINGLE_ELIMINATION">Single Elimination</option>
-                <option value="DOUBLE_ELIMINATION">Double Elimination</option>
+                <option value="SINGLE_ELIMINATION">Loại trực tiếp đơn</option>
+                <option value="DOUBLE_ELIMINATION">Loại trực tiếp kép</option>
               </select>
             </div>
 
@@ -152,7 +152,7 @@ const TournamentBracketGenerator = ({ tournament, onBracketGenerated }) => {
                 className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
               />
               <label htmlFor="randomize" className="text-sm text-gray-700">
-                Randomize team placement
+                Ngẫu nhiên vị trí đội
               </label>
             </div>
 
@@ -167,7 +167,7 @@ const TournamentBracketGenerator = ({ tournament, onBracketGenerated }) => {
                 ) : (
                   <Play className="h-4 w-4" />
                 )}
-                <span>{isGenerating ? 'Generating...' : 'Generate Bracket'}</span>
+                <span>{isGenerating ? 'Đang tạo...' : 'Tạo nhánh đấu'}</span>
               </button>
             </div>
           </div>
@@ -180,9 +180,9 @@ const TournamentBracketGenerator = ({ tournament, onBracketGenerated }) => {
             <div className="flex items-start space-x-3">
               <Trophy className="h-5 w-5 text-green-600 mt-0.5" />
               <div>
-                <h4 className="text-sm font-medium text-green-900">Bracket Generated</h4>
+                <h4 className="text-sm font-medium text-green-900">Nhánh đấu đã được tạo</h4>
                 <p className="text-sm text-green-700 mt-1">
-                  Tournament bracket is ready. You can now start the knockout phase.
+                  Nhánh đấu giải đấu đã sẵn sàng. Bây giờ bạn có thể bắt đầu vòng loại trực tiếp.
                 </p>
               </div>
             </div>
@@ -193,7 +193,7 @@ const TournamentBracketGenerator = ({ tournament, onBracketGenerated }) => {
             className="btn-primary flex items-center space-x-2"
           >
             <Play className="h-4 w-4" />
-            <span>Start Knockout Tournament</span>
+            <span>Bắt đầu giải đấu loại trực tiếp</span>
           </button>
         </div>
       )}
@@ -203,9 +203,9 @@ const TournamentBracketGenerator = ({ tournament, onBracketGenerated }) => {
           <div className="flex items-start space-x-3">
             <Users className="h-5 w-5 text-orange-600 mt-0.5" />
             <div>
-              <h4 className="text-sm font-medium text-orange-900">Tournament In Progress</h4>
+              <h4 className="text-sm font-medium text-orange-900">Giải đấu đang diễn ra</h4>
               <p className="text-sm text-orange-700 mt-1">
-                The knockout tournament is currently ongoing. Manage matches from the matches tab.
+                Giải đấu loại trực tiếp hiện đang diễn ra. Quản lý các trận đấu từ tab trận đấu.
               </p>
             </div>
           </div>
@@ -217,9 +217,9 @@ const TournamentBracketGenerator = ({ tournament, onBracketGenerated }) => {
           <div className="flex items-start space-x-3">
             <Trophy className="h-5 w-5 text-gray-600 mt-0.5" />
             <div>
-              <h4 className="text-sm font-medium text-gray-900">Tournament Completed</h4>
+              <h4 className="text-sm font-medium text-gray-900">Giải đấu đã hoàn thành</h4>
               <p className="text-sm text-gray-700 mt-1">
-                This tournament has been completed. View the final results and bracket.
+                Giải đấu này đã hoàn thành. Xem kết quả cuối cùng và nhánh đấu.
               </p>
             </div>
           </div>

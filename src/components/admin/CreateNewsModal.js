@@ -38,18 +38,18 @@ const CreateNewsModal = ({ show, onClose, onNewsCreated }) => {
     },
     {
       onSuccess: () => {
-        toast.success('News article created successfully' + (selectedFile ? ' and attachment uploaded!' : '!'));
+        toast.success('Bài viết tin tức đã được tạo thành công' + (selectedFile ? ' và tệp đính kèm đã được tải lên!' : '!'));
         queryClient.invalidateQueries('admin-news'); // Vô hiệu hóa cache admin-news
         queryClient.invalidateQueries('news'); // Vô hiệu hóa cache public news
         onClose(); // Đóng modal
         onNewsCreated && onNewsCreated(); // Gọi callback nếu có
       },
       onError: (error) => {
-        console.error("Error in createNewsMutation:", error);
+        console.error("Lỗi trong createNewsMutation:", error);
         if (error.message && error.message.includes("News ID not found")) {
           toast.error('Lỗi: Không thể tạo tin tức hoặc lấy ID để tải ảnh lên. Vui lòng thử lại.');
         } else {
-          toast.error('Failed to create news article. Please try again.');
+          toast.error('Không thể tạo bài viết tin tức. Vui lòng thử lại.');
         }
       }
     }
@@ -101,7 +101,7 @@ const CreateNewsModal = ({ show, onClose, onNewsCreated }) => {
       <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-auto max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-2xl font-bold text-gray-900">Create New News Article</h3>
+            <h3 className="text-2xl font-bold text-gray-900">Tạo Bài Viết Tin Tức Mới</h3>
             <button
               onClick={onClose}
               className="text-gray-500 hover:text-gray-700 transition-colors"
@@ -112,7 +112,7 @@ const CreateNewsModal = ({ show, onClose, onNewsCreated }) => {
           <form onSubmit={handleCreateNews} className="space-y-4">
             <div>
               <label htmlFor="modal-name" className="block text-sm font-medium text-gray-700 mb-2">
-                Article Name <span className="text-red-500">*</span>
+                Tên Bài Viết <span className="text-red-500">*</span>
               </label>
               <input
                 id="modal-name"
@@ -120,7 +120,7 @@ const CreateNewsModal = ({ show, onClose, onNewsCreated }) => {
                 type="text"
                 required
                 className="input-field"
-                placeholder="Enter article name..."
+                placeholder="Nhập tên bài viết..."
                 value={newsForm.name}
                 onChange={handleFormChange}
               />
@@ -128,14 +128,14 @@ const CreateNewsModal = ({ show, onClose, onNewsCreated }) => {
 
             <div>
               <label htmlFor="modal-shortDescription" className="block text-sm font-medium text-gray-700 mb-2">
-                Short Description (Optional)
+                Mô Tả Ngắn (Tùy chọn)
               </label>
               <textarea
                 id="modal-shortDescription"
                 name="shortDescription"
                 rows={3}
                 className="input-field"
-                placeholder="Brief summary of the article..."
+                placeholder="Tóm tắt ngắn gọn về bài viết..."
                 value={newsForm.shortDescription}
                 onChange={handleFormChange}
               />
@@ -143,7 +143,7 @@ const CreateNewsModal = ({ show, onClose, onNewsCreated }) => {
 
             <div>
               <label htmlFor="modal-content" className="block text-sm font-medium text-gray-700 mb-2">
-                Article Content <span className="text-red-500">*</span>
+                Nội Dung Bài Viết <span className="text-red-500">*</span>
               </label>
               <textarea
                 id="modal-content"
@@ -151,7 +151,7 @@ const CreateNewsModal = ({ show, onClose, onNewsCreated }) => {
                 rows={8}
                 required
                 className="input-field"
-                placeholder="Write your article content here..."
+                placeholder="Viết nội dung bài viết của bạn tại đây..."
                 value={newsForm.content}
                 onChange={handleFormChange}
               />
@@ -160,7 +160,7 @@ const CreateNewsModal = ({ show, onClose, onNewsCreated }) => {
             {/* File Upload Section (chỉ 1 file) */}
             <div>
               <label htmlFor="modal-file-upload" className="block text-sm font-medium text-gray-700 mb-2">
-                Upload Image (Max 1 file, image format only)
+                Tải Ảnh Lên (Tối đa 1 tệp, chỉ định dạng ảnh)
               </label>
               <button type="button"
                       onClick={() => fileInputRef.current?.click()}
@@ -174,7 +174,7 @@ const CreateNewsModal = ({ show, onClose, onNewsCreated }) => {
                 accept="image/*"
                 onChange={handleFileChange}
                 ref={fileInputRef}
-                hidden // Hide the native input
+                hidden // Ẩn input gốc
               />
               {selectedFile && (
                 <div className="mt-2 text-sm text-gray-600">
@@ -200,7 +200,7 @@ const CreateNewsModal = ({ show, onClose, onNewsCreated }) => {
                 {createNewsMutation.isLoading ? (
                   <div className="flex items-center justify-center space-x-2">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Tạo...</span>
+                    <span>Đang tạo...</span>
                   </div>
                 ) : (
                   'Tạo'
