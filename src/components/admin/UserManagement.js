@@ -47,7 +47,6 @@ const UserManagement = () => {
 
     const queryClient = useQueryClient();
 
-    // Lấy người dùng với phân trang và bộ lọc
     const { data: usersResponse, isLoading, error } = useQuery(
         ['admin-users', { page, size, sortBy, sortDirection, search: searchTerm, role: roleFilter, isActive: statusFilter }],
         () => adminUserService.getAllUsers({
@@ -57,8 +56,6 @@ const UserManagement = () => {
             sortDirection,
             search: searchTerm || undefined,
             role: roleFilter || undefined,
-            // Giữ isActive ở đây, vì API của bạn có thể mong đợi tên tham số này cho bộ lọc
-            // Nếu backend của bạn mong đợi 'active', hãy thay đổi thành 'active'
             isActive: statusFilter !== '' ? statusFilter === 'true' : undefined
         }),
         {
@@ -494,7 +491,6 @@ const UserManagement = () => {
                                     >
                                         Đã tạo {sortBy === 'createdAt' && (sortDirection === 'ASC' ? '↑' : '↓')}
                                     </th>
-                                    {/* Cột "Đăng nhập lần cuối" đã bị xóa như yêu cầu trước đó */}
                                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Hành động
                                     </th>
@@ -543,19 +539,16 @@ const UserManagement = () => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                // Thay đổi từ user.isActive thành user.active
                                                 user.active
                                                     ? 'bg-green-100 text-green-800'
                                                     : 'bg-red-100 text-red-800'
                                             }`}>
-                                                {/* Thay đổi từ user.isActive thành user.active */}
                                                 {user.active ? 'Hoạt động' : 'Không hoạt động'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             {formatDate(user.createdAt)}
                                         </td>
-                                        {/* Cột "Đăng nhập lần cuối" đã bị xóa ở đây */}
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <div className="flex items-center justify-end space-x-2">
                                                 <button
@@ -582,7 +575,6 @@ const UserManagement = () => {
                                                 <button
                                                     onClick={() => handleToggleStatus(user)}
                                                     className={`transition-colors ${
-                                                        // Sử dụng user.active để xác định icon và màu sắc
                                                         user.active
                                                             ? 'text-gray-600 hover:text-red-600'
                                                             : 'text-gray-600 hover:text-green-600'
@@ -590,7 +582,6 @@ const UserManagement = () => {
                                                     title={user.active ? 'Vô hiệu hóa' : 'Kích hoạt'}
                                                     disabled={toggleStatusMutation.isLoading}
                                                 >
-                                                    {/* Sử dụng user.active để hiển thị icon */}
                                                     {user.active ? (
                                                         <UserX className="h-4 w-4" />
                                                     ) : (

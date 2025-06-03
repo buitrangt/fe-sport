@@ -35,31 +35,31 @@ const LoginPage = () => {
     }
   };
 
-  const handleGoogleSuccess = async (credentialResponse) => {
-    console.log("Google Login Success (via GoogleLogin component):", credentialResponse);
+  // const handleGoogleSuccess = async (credentialResponse) => {
+  //   console.log("Google Login Success (via GoogleLogin component):", credentialResponse);
 
-    const googleIdToken = credentialResponse.credential;
+  //   const googleIdToken = credentialResponse.credential;
 
-    if (googleIdToken) {
-      try {
-        await loginWithGoogle(googleIdToken);
-        toast.success('Đăng nhập bằng Google thành công!');
-        // Thay đổi ở đây: Chuyển hướng về trang chủ
-        navigate('/');
-      } catch (error) {
-        console.error('Backend login with Google ID Token failed:', error);
-        toast.error(error.message || 'Đăng nhập bằng Google thất bại ở backend.');
-      }
-    } else {
-      toast.error('Phản hồi đăng nhập Google thiếu ID token (credential).');
-      console.error('credentialResponse của Google không chứa ID token.');
-    }
-  };
+  //   if (googleIdToken) {
+  //     try {
+  //       await loginWithGoogle(googleIdToken);
+  //       toast.success('Đăng nhập bằng Google thành công!');
+  //       // Thay đổi ở đây: Chuyển hướng về trang chủ
+  //       navigate('/');
+  //     } catch (error) {
+  //       console.error('Backend login with Google ID Token failed:', error);
+  //       toast.error(error.message || 'Đăng nhập bằng Google thất bại ở backend.');
+  //     }
+  //   } else {
+  //     toast.error('Phản hồi đăng nhập Google thiếu ID token (credential).');
+  //     console.error('credentialResponse của Google không chứa ID token.');
+  //   }
+  // };
 
-  const handleGoogleError = () => {
-    console.log('Đăng nhập bằng Google thất bại');
-    toast.error('Đăng nhập bằng Google thất bại. Vui lòng thử lại.');
-  };
+  // const handleGoogleError = () => {
+  //   console.log('Đăng nhập bằng Google thất bại');
+  //   toast.error('Đăng nhập bằng Google thất bại. Vui lòng thử lại.');
+  // };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-900 via-primary-800 to-sports-purple flex items-center justify-center p-4">
@@ -173,19 +173,19 @@ const LoginPage = () => {
             </button>
           </form>
 
-          <div className="relative my-6">
+          {/* <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300"></div>
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="bg-white px-2 text-gray-500">Hoặc</span>
             </div>
-          </div>
+          </div> */}
 
-          <GoogleLogin
+          {/* <GoogleLogin
             onSuccess={handleGoogleSuccess}
             onError={handleGoogleError}
-          />
+          /> */}
 
           <div className="mt-8 text-center">
             <p className="text-gray-600">
